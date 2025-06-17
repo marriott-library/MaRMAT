@@ -1,5 +1,5 @@
 # Marriott Reparative Metadata Assessment Tool (MaRMAT)
-The Marriott Reparative Metadata Assessment Tool (MaRMAT) is an open-source application created by librarians at the University of Utah’s J. Willard Marriott Library to help metadata practitioners flag various terms and phrases within metadata records using pre-curated and custom lexicons. MaRMAT is schema agnostic and supports library and museum professionals in assessing metadata for harmful, outdated, and otherwise problematic language in tabular metadata. In addition to reparative work, MaRMAT can be used to support broader metadata assessment and collections content analysis.
+The Marriott Reparative Metadata Assessment Tool (MaRMAT) is an open-source application created by librarians at the University of Utah’s J. Willard Marriott Library to help metadata practitioners flag various terms and phrases within metadata records using pre-curated and custom lexicons. MaRMAT is schema agnostic and supports library and museum professionals in assessing metadata for harmful, outdated, and otherwise problematic language in tabular metadata. In addition to reparative work, MaRMAT can be used to support broader metadata assessment and collections content analysis. Learn more about MaRMAT on our website: [www.marmatproject.org](https://marmatproject.org/).
 
 ## **Table of Contents**
 1. [About](#1-about)
