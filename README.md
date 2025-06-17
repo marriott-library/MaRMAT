@@ -57,7 +57,7 @@ TBD
 
 TBD
 
-### 3 Notes
+### 3. Notes
 - Ensure that both the lexicon and metadata files are in CSV format.
 - The lexicon file should contain columns for terms and their corresponding categories ("Terms","Category").
 - The metadata file should contain the text data to be analyzed, with each row representing a separate entry.
