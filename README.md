@@ -3,22 +3,18 @@ The Marriott Reparative Metadata Assessment Tool (MaRMAT) is an open-source appl
 
 ## **Table of Contents**
 1. [About](#1-about)
-
    1.1 [Features](#11-features)
-   
    1.2 [The Lexicons](#12-the-lexicons)
-
 2. [Installation](#2-installation)
-
    2.1 [Download](#21-download)
-
    2.2 [Dependencies](#22-dependencies)
-
    2.3 [Troubleshooting](#23-troubleshooting)
-
-3. [Notes](#3-notes)
-4. [Credits and Acknowledgments](#4-credits-and-acknowledgments)
-5. [User Feedback Survey](#5-user-feedback-survey)
+3. [Running MaRMAT](#3-running-marmat)
+   3.1 [Download](#31-macos-users)
+   3.2 [Dependencies](#32-windows-users)
+5. [Tips](#4-tips)
+6. [Credits and Acknowledgments](#5-credits-and-acknowledgments)
+7. [User Feedback Survey](#6-user-feedback-survey)
 
 ## 1. About
 The Marriott Reparative Metadata Assessment Tool (MaRMAT) is an open-source application created by librarians at the University of Utah’s J. Willard Marriott Library to help metadata practitioners flag various terms and phrases within metadata records using pre-curated and custom lexicons. MaRMAT is schema agnostic and supports library and museum professionals in assessing metadata for harmful, outdated, and otherwise problematic language in tabular metadata. In addition to reparative work, MaRMAT can be used to support broader metadata assessment and collections content analysis.
@@ -45,65 +41,57 @@ MaRMAT uses specialized lexicons—carefully curated lists of terms—to identif
 
 ## 2. Installation
 
-### 2.1 Download 
+### 2.1 Download
 
-TBD
+**MacOS Users:** Download TBD
+
+**Windows Users:** Download TBD
 
 ### 2.2 Dependencies
 
-1. To run MaRMAT, you will need **Python 3** installed on your computer. If Python is not installed, you can download it here:
+To run MaRMAT, you will need **Python 3** installed on your computer. If Python is not installed, you can download it here:
    - [Python for MacOS](https://www.python.org/downloads/mac-osx/)
    - [Python for Windows](https://www.python.org/downloads/windows/)
 
-2. MaRMAT also requires two Python libraries: `pandas` and `PyQt6`. To install them, follow the instructions for your operating system below.
+MaRMAT also requires two Python libraries: `pandas` and `PyQt6`. To install them, follow the instructions for your operating system below.
 
-**MacOS**: 
-- Open **Terminal** (Applications > Utilities > Terminal)  
-- Run the following command:
+**MacOS:**
+1. Open **Terminal** (Applications > Utilities > Terminal)
+2. Run the following command:
+   ```bash
+   pip3 install pandas PyQt6
+   ```
   
-```bash
-pip install pandas PyQt6
-```
-
-- If you encounter an error, try running:
-
-```bash
-pip3 install pandas PyQt6
-```
-
-- If you see a permissions error, try running the command with elevated privileges:
-
-```bash
-sudo pip install pandas PyQt6
-```
-  
-**Windows**: 
-- Open **Command Prompt** (search for `cmd`) or **PowerShell**
-- Run the following command: 
-  
-```bash
-pip install pandas PyQt6
-```
-
-- If you encounter an error, try running: 
-  
-```bash
-py -m pip install pandas PyQt6
-```
+**Windows:**
+1. Open **Command Prompt** (search for `cmd`) or **PowerShell**
+2. Run the following command:
+   ```bash
+   py -m pip install pandas PyQt6
+   ```
 
 ### 2.3 Troubleshooting 
 
-TBD
+1. If you see a permissions error installing `pandas` and `PyQt6` on **MacOS**, try running the command with elevated privileges:
+   ```bash
+   sudo pip install pandas PyQt6
+   ```  
+## 3. Running MaRMAT
 
-### 3. Notes
+### 3.1 MacOS Users
+Download TBD
+
+### 3.2 Windows Users
+Download TBD
+
+## 4. Tips
 - Ensure that both the lexicon and metadata files are in CSV format.
 - The lexicon file should contain columns for terms and their corresponding categories ("Terms","Category").
 - The metadata file should contain the text data to be analyzed, with each row representing a separate entry.
 - The metadata file should contain a column, such as a Record ID, that you can use as an "Identifier" to reconcile the tool's output with your original metadata. 
 - The tool outputs matching results to a CSV file named "matching_results.csv" in the tool's directory.
 
-## 4. Credits and Acknowledgments
+## 5. Credits and Acknowledgments
 [MaRMAT-beta](https://github.com/marriott-library/MaRMAT-Beta) was released in July 2024. It was developed by [Kaylee Alexander](https://github.com/kayleealexander) in collaboration with ChatGPT 3.5 with input from [Rachel Wittmann](https://github.com/RachelJaneWittmann) and [Anna Neatrour](https://github.com/aneatrour) at the University of Utah. The current version of MaRMAT was fully reprogrammed and redesigned by Aiden deBoer thanks to an internal "Jumpstart Grant" awarded by the J. Willard Marriott Library in 2025. MaRMAT was inspired by the [Duke University Libraries Description Audit Tool](https://github.com/duke-libraries/description-audit/tree/main) and informed by resources such as [The Inclusive Metadata Toolkit](https://osf.io/yf96h), developed by the Digital Library Federation's Cultural Assessment Working Group.
 
-## 5. User Feedback Survey
+## 6. User Feedback Survey
 After using MaRMAT, please take [our suvery](TBD) and tell us about your exeprience using MARMAT. We appreciate your feedback!
