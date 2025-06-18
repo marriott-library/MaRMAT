@@ -113,7 +113,6 @@ MaRMAT also requires two Python libraries: `pandas` and `PyQt6`. To install them
 - The lexicon file should contain columns for terms and their corresponding categories ("Terms","Category").
 - The metadata file should contain the text data to be analyzed, with each row representing a separate entry.
 - The metadata file should contain a column, such as a Record ID, that you can use as an "Identifier" to reconcile the tool's output with your original metadata. 
-- The tool outputs matching results to a CSV file named "matching_results.csv" in the tool's directory.
 
 ## 5. Credits and Acknowledgments
 The current version of MaRMAT was fully reprogrammed and redesigned by [Aiden deBoer](https://github.com/FreeThings) thanks to an internal "Jumpstart Grant" awarded by the J. Willard Marriott Library in 2025. [MaRMAT-beta](https://github.com/marriott-library/MaRMAT-Beta) was released in July 2024. It was developed by [Kaylee Alexander](https://github.com/kayleealexander) in collaboration with ChatGPT 3.5 with input from [Rachel Wittmann](https://github.com/RachelJaneWittmann) and [Anna Neatrour](https://github.com/aneatrour) at the University of Utah. MaRMAT was inspired by the [Duke University Libraries Description Audit Tool](https://github.com/duke-libraries/description-audit/tree/main) and informed by resources such as [The Inclusive Metadata Toolkit](https://osf.io/yf96h), developed by the Digital Library Federation's Cultural Assessment Working Group.
