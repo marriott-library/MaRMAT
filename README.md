@@ -51,7 +51,45 @@ TBD
 
 ### 2.2 Dependencies
 
-TBD
+1. To run MaRMAT, you will need **Python 3** installed on your computer. If Python is not installed, you can download it here:
+   - [Python for MacOS](https://www.python.org/downloads/mac-osx/)
+   - [Python for Windows](https://www.python.org/downloads/windows/)
+
+2. MaRMAT also requires two Python libraries: `pandas` and `PyQt6`. To install them, follow the instructions for your operating system below.
+
+**MacOS**: 
+- Open **Terminal** (Applications > Utilities > Terminal)  
+- Run the following command:
+  
+```bash
+pip install pandas PyQt6
+```
+
+- If you encounter an error, try running:
+
+```bash
+pip3 install pandas PyQt6
+```
+
+- If you see a permissions error, try running the command with elevated privileges:
+
+```bash
+sudo pip install pandas PyQt6
+```
+  
+**Windows**: 
+- Open **Command Prompt** (search for `cmd`) or **PowerShell**
+- Run the following command: 
+  
+```bash
+pip install pandas PyQt6
+```
+
+- If you encounter an error, try running: 
+  
+```bash
+py -m pip install pandas PyQt6
+```
 
 ### 2.3 Troubleshooting 
 
