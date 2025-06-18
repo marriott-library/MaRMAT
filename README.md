@@ -3,17 +3,28 @@ The Marriott Reparative Metadata Assessment Tool (MaRMAT) is an open-source appl
 
 ## **Table of Contents**
 1. [About](#1-about)
+
    1.1 [Features](#11-features)
+
    1.2 [The Lexicons](#12-the-lexicons)
+
 2. [Installation](#2-installation)
+
    2.1 [Download](#21-download)
+
    2.2 [Dependencies](#22-dependencies)
+
    2.3 [Troubleshooting](#23-troubleshooting)
 3. [Running MaRMAT](#3-running-marmat)
+
    3.1 [Download](#31-macos-users)
+
    3.2 [Dependencies](#32-windows-users)
+
 5. [Tips](#4-tips)
+
 6. [Credits and Acknowledgments](#5-credits-and-acknowledgments)
+
 7. [User Feedback Survey](#6-user-feedback-survey)
 
 ## 1. About
