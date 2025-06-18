@@ -8,7 +8,7 @@ The Marriott Reparative Metadata Assessment Tool (MaRMAT) is an open-source appl
 
    1.2 [The Lexicons](#12-the-lexicons)
 
-2. [Download and Installation](#2-download-and-installation)
+2. [Installation](#2-installation)
 
    2.1 [Download](#21-download)
 
@@ -53,7 +53,7 @@ MaRMAT uses specialized lexicons—carefully curated lists of terms—to identif
 | Library of Congress Subject Headings (LCSH) Lexicon​   | The [LCSH Lexicon](TBD) includes selected changed and canceled [Library of Congress Subject Headings](https://id.loc.gov/) as well as headings that have been identified on [The Cataloguing Lab](https://cataloginglab.org/problem-lcsh/). Select changed and canceled headings, mostly relating to people and places, were mined from the [Library of Congress Subject Heading Approved Monthly Lists](https://classweb.org/approved-subjects/) for 2023-2024, along with a few notable changes from 2025. The LCSH Lexicon is best suited for use against metadata fields that use LCSH as a controlled vocabulary (e.g., subject). |
 |Sensitive Content Lexicon​   | The Sensitive Content Lexicon includes terms may be used to identify records with sensitive content that may be eligible for either a sensitive content viewer or removal from public display. Sensitive topics identified include deceased people, nudity, and graphic, violent, or sexual content. It also includes Indigenous American material that may need restriction or removal due to cultural sensitivity or potential violation of the [Native American Graves Protection and Repatriation Act (NAGPRA)](https://www.bia.gov/service/nagpra). Each organization has their own set of parameters for implementing content warnings and criteria for sensitive content. Please use this lexicon directionally and adhere to your organization's established policies or guidelines. |
 
-## 2. Download and Installation
+## 2. Installation
 
 ### 2.1 Download
 
