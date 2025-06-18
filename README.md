@@ -15,17 +15,20 @@ The Marriott Reparative Metadata Assessment Tool (MaRMAT) is an open-source appl
    2.2 [Dependencies](#22-dependencies)
 
    2.3 [Troubleshooting](#23-troubleshooting)
+   
 3. [Running MaRMAT](#3-running-marmat)
 
-   3.1 [Download](#31-macos-users)
+   3.1 [MacOS Users](#31-macos-users)
 
-   3.2 [Dependencies](#32-windows-users)
+   3.2 [Windows Users](#32-windows-users)
 
-5. [Tips](#4-tips)
+4. [Tips](#4-tips)
 
-6. [Credits and Acknowledgments](#5-credits-and-acknowledgments)
+5. [Credits and Acknowledgments](#5-credits-and-acknowledgments)
 
-7. [User Feedback Survey](#6-user-feedback-survey)
+6. [User Feedback Survey](#6-user-feedback-survey)
+
+7. [Report Bug](#7-report-bug)
 
 ## 1. About
 The Marriott Reparative Metadata Assessment Tool (MaRMAT) is an open-source application created by librarians at the University of Utah’s J. Willard Marriott Library to help metadata practitioners flag various terms and phrases within metadata records using pre-curated and custom lexicons. MaRMAT is schema agnostic and supports library and museum professionals in assessing metadata for harmful, outdated, and otherwise problematic language in tabular metadata. In addition to reparative work, MaRMAT can be used to support broader metadata assessment and collections content analysis.
@@ -89,10 +92,10 @@ MaRMAT also requires two Python libraries: `pandas` and `PyQt6`. To install them
 ## 3. Running MaRMAT
 
 ### 3.1 MacOS Users
-Download TBD
+Instructions TBD
 
 ### 3.2 Windows Users
-Download TBD
+Instructions TBD
 
 ## 4. Tips
 - Ensure that both the lexicon and metadata files are in CSV format.
@@ -102,7 +105,10 @@ Download TBD
 - The tool outputs matching results to a CSV file named "matching_results.csv" in the tool's directory.
 
 ## 5. Credits and Acknowledgments
-[MaRMAT-beta](https://github.com/marriott-library/MaRMAT-Beta) was released in July 2024. It was developed by [Kaylee Alexander](https://github.com/kayleealexander) in collaboration with ChatGPT 3.5 with input from [Rachel Wittmann](https://github.com/RachelJaneWittmann) and [Anna Neatrour](https://github.com/aneatrour) at the University of Utah. The current version of MaRMAT was fully reprogrammed and redesigned by Aiden deBoer thanks to an internal "Jumpstart Grant" awarded by the J. Willard Marriott Library in 2025. MaRMAT was inspired by the [Duke University Libraries Description Audit Tool](https://github.com/duke-libraries/description-audit/tree/main) and informed by resources such as [The Inclusive Metadata Toolkit](https://osf.io/yf96h), developed by the Digital Library Federation's Cultural Assessment Working Group.
+The current version of MaRMAT was fully reprogrammed and redesigned by [Aiden deBoer](https://github.com/FreeThings) thanks to an internal "Jumpstart Grant" awarded by the J. Willard Marriott Library in 2025. [MaRMAT-beta](https://github.com/marriott-library/MaRMAT-Beta) was released in July 2024. It was developed by [Kaylee Alexander](https://github.com/kayleealexander) in collaboration with ChatGPT 3.5 with input from [Rachel Wittmann](https://github.com/RachelJaneWittmann) and [Anna Neatrour](https://github.com/aneatrour) at the University of Utah. MaRMAT was inspired by the [Duke University Libraries Description Audit Tool](https://github.com/duke-libraries/description-audit/tree/main) and informed by resources such as [The Inclusive Metadata Toolkit](https://osf.io/yf96h), developed by the Digital Library Federation's Cultural Assessment Working Group.
 
 ## 6. User Feedback Survey
-After using MaRMAT, please take [our suvery](TBD) and tell us about your exeprience using MARMAT. We appreciate your feedback!
+After using MaRMAT, please take [our suvery](https://forms.gle/xCUQiG6nn8beHqJU6) and tell us about your exeprience using MARMAT. We appreciate your feedback!
+
+## 7. Report Bug
+Encountered a bug? Report it [here](https://forms.gle/CfCCuw3vnxuCdhuh8).
