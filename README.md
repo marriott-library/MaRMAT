@@ -57,9 +57,9 @@ MaRMAT uses specialized lexicons—carefully curated lists of terms—to identif
 
 ### 2.1 Download
 
-**MacOS Users:** Download TBD
+**MacOS Users:** [Download](https://github.com/marriott-library/MaRMAT/releases/tag/v2.6.0-rc)
 
-**Windows Users:** Download TBD
+**Windows Users:** [Download](https://github.com/marriott-library/MaRMAT/releases/tag/v2.6.0-rc)
 
 ### 2.2 Dependencies
 
@@ -77,6 +77,13 @@ MaRMAT also requires two Python libraries: `pandas` and `PyQt6`. To install them
    ```
   
 **Windows:**
+
+(You have two options for installation)
+
+Option A:
+1. Open MaRMAT folder and run `install-dependencies.bat`
+
+Option B:
 1. Open **Command Prompt** (search for `cmd`) or **PowerShell**
 2. Run the following command:
    ```bash
@@ -92,7 +99,7 @@ MaRMAT also requires two Python libraries: `pandas` and `PyQt6`. To install them
 ## 3. Running MaRMAT
 
 ### 3.1 MacOS Users
-1. Download [TBD](TBD)
+1. [Download](https://github.com/marriott-library/MaRMAT/releases/tag/v2.6.0-rc)
 2. Unzip the downloaded folder to a location on your computer, such as your `Desktop` or `Downloads` folder.
 3. Use the `cd` command in `Terminal` to change directories to the unzipped MaRMAT folder. For example, if you unzipped the folder to your Desktop, run:
    ```bash
@@ -104,9 +111,10 @@ MaRMAT also requires two Python libraries: `pandas` and `PyQt6`. To install them
    ```
 
 ### 3.2 Windows Users
-1. Download [TBD](TBD)
+1. [Download](https://github.com/marriott-library/MaRMAT/releases/tag/v2.6.0-rc)
 2. Unzip the downloaded folder to a location on your computer, such as your `Desktop` or `Downloads` folder.
-3. Open MaRMAT by double-clicking on the `run-marmat.bat` file in the directory. 
+3. If the necesssary python libraries haven't been installed yet double-click `install-dependencies.bat`.
+4. Open MaRMAT by double-clicking on the `run-marmat.bat` file in the directory. 
 
 ## 4. Tips
 - Ensure that both the lexicon and metadata files are in CSV format.
