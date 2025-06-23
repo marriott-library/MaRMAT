@@ -72,7 +72,7 @@ To run MaRMAT, you will need **Python 3** installed on your computer. If Python 
 MaRMAT also requires two Python libraries: `pandas` and `PyQt6`. To install them, follow the instructions for your operating system below.
 
 **MacOS:**
-1. Open **Terminal** (Applications > Utilities > Terminal)
+1. Open **Terminal** (Applications > Utilities > Terminal).
 2. Run the following command:
    ```bash
    pip3 install pandas PyQt6
@@ -83,7 +83,8 @@ MaRMAT also requires two Python libraries: `pandas` and `PyQt6`. To install them
 Windows users have two options for installation:
 
 Option A:
-1. Unzip the `MaRMAT_v.2.6.0-rc_Windows.zip` folder, navigate to the `src` folder, and run `install-dependencies.bat`
+1. Unzip the `MaRMAT_v.2.6.0-rc_Windows.zip`
+2. Double-click on the `install-dependencies.bat` file
 
 Option B:
 1. Open **Command Prompt** (search for `cmd`) or **PowerShell**
@@ -115,9 +116,8 @@ Option B:
 ### 3.2 Windows Users
 1. Download `MaRMAT_v.2.6.0-rc_Windows.zip` from our [release assets](https://github.com/marriott-library/MaRMAT/releases/tag/v2.6.0-rc).
 2. Unzip the downloaded folder to a location on your computer, such as your `Desktop` or `Downloads` folder.
-3. Navigate to the `src` folder within the unzipped folder.
-4. If the necesssary python libraries haven't been installed yet, double-click to `install-dependencies.bat` file.
-5. Open MaRMAT by double-clicking the `run-marmat.bat` file.
+3. If the necesssary python libraries haven't been installed yet, double-click to `install-dependencies.bat` file.
+4. Open MaRMAT by double-clicking the `run-marmat.bat` file.
 
 ## 4. Tips
 - Ensure that both the lexicon and metadata files are in CSV format.
