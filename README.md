@@ -57,9 +57,11 @@ MaRMAT uses specialized lexicons—carefully curated lists of terms—to identif
 
 ### 2.1 Download
 
-**MacOS Users:** [Download](https://github.com/marriott-library/MaRMAT/releases/tag/v2.6.0-rc)
+**MacOS Users:** Go to our [v2.6.0-rc release](https://github.com/marriott-library/MaRMAT/releases/tag/v2.6.0-rc) and download `MaRMAT_v.2.6.0-rc_macOS.zip` from our assets.
 
-**Windows Users:** [Download](https://github.com/marriott-library/MaRMAT/releases/tag/v2.6.0-rc)
+**Windows Users:** Go to our [v2.6.0-rc release](https://github.com/marriott-library/MaRMAT/releases/tag/v2.6.0-rc) and download `MaRMAT_v.2.6.0-rc_Windows.zip` from our assets.
+
+**Linux Users:** Go to our [v2.6.0-rc release](https://github.com/marriott-library/MaRMAT/releases/tag/v2.6.0-rc) and download `MaRMAT_v.2.6.0-rc_Linux-x64.zip` from our assets.
 
 ### 2.2 Dependencies
 
@@ -78,10 +80,10 @@ MaRMAT also requires two Python libraries: `pandas` and `PyQt6`. To install them
   
 **Windows:**
 
-(You have two options for installation)
+Windows users have two options for installation:
 
 Option A:
-1. Open MaRMAT folder and run `install-dependencies.bat`
+1. Unzip the `MaRMAT_v.2.6.0-rc_Windows.zip` folder, navigate to the `src` folder, and run `install-dependencies.bat`
 
 Option B:
 1. Open **Command Prompt** (search for `cmd`) or **PowerShell**
@@ -99,22 +101,23 @@ Option B:
 ## 3. Running MaRMAT
 
 ### 3.1 MacOS Users
-1. [Download](https://github.com/marriott-library/MaRMAT/releases/tag/v2.6.0-rc)
+1. Download `MaRMAT_v.2.6.0-rc_macOS.zip` from our [release assets](https://github.com/marriott-library/MaRMAT/releases/tag/v2.6.0-rc).
 2. Unzip the downloaded folder to a location on your computer, such as your `Desktop` or `Downloads` folder.
 3. Use the `cd` command in `Terminal` to change directories to the unzipped MaRMAT folder. For example, if you unzipped the folder to your Desktop, run:
    ```bash
-   cd Desktop/marmat-src
+   cd Desktop/MaRMAT_v.2.6.0-rc_macOS/src
    ```
-4. Run the following command to launch the MaRMAT user interface:
+4. Then run the following command to launch the MaRMAT user interface:
    ```bash
    python3 main.py
    ```
 
 ### 3.2 Windows Users
-1. [Download](https://github.com/marriott-library/MaRMAT/releases/tag/v2.6.0-rc)
+1. Download `MaRMAT_v.2.6.0-rc_Windows.zip` from our [release assets](https://github.com/marriott-library/MaRMAT/releases/tag/v2.6.0-rc).
 2. Unzip the downloaded folder to a location on your computer, such as your `Desktop` or `Downloads` folder.
-3. If the necesssary python libraries haven't been installed yet double-click `install-dependencies.bat`.
-4. Open MaRMAT by double-clicking on the `run-marmat.bat` file in the directory. 
+3. Navigate to the `src` folder within the unzipped folder.
+4. If the necesssary python libraries haven't been installed yet, double-click to `install-dependencies.bat` file.
+5. Open MaRMAT by double-clicking the `run-marmat.bat` file.
 
 ## 4. Tips
 - Ensure that both the lexicon and metadata files are in CSV format.
