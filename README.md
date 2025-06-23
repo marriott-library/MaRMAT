@@ -45,7 +45,7 @@ MaRMAT was inspired by [Duke University Libraries Description Audit Tool](https:
 - Support for user-contributed lexicons
 
 ### 1.2 The Lexicons
-MaRMAT uses specialized lexicons—carefully curated lists of terms—to identify potentially harmful, outdated, or problematic language within metadata records. These lexicons include pre-curated sets created by our team of librarians as well as the ability for users to build and incorporate custom term lists tailored to their specific assessment goals. By leveraging these lexicons, MaRMAT empowers metadata practitioners to conduct thorough and thoughtful reviews of their collections, supporting more inclusive and accurate descriptions.
+MaRMAT uses specialized lexicons—carefully curated lists of terms—to identify potentially harmful, outdated, or problematic language within metadata records. These lexicons include pre-curated sets created by our team of librarians as well as the ability for users to build and incorporate custom term lists tailored to their specific assessment goals. By leveraging these lexicons, MaRMAT empowers metadata practitioners to conduct thorough and thoughtful reviews of their collections, supporting more inclusive and accurate descriptions. Access CSV files of our lexicons [here](https://github.com/marriott-library/MaRMAT/tree/main/Lexicons) or on our [website](https://www.marmatproject.org/lexicons/).
 
 | Lexicon      | Description |
 | :----------:| ---------- |
