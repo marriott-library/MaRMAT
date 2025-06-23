@@ -57,11 +57,11 @@ MaRMAT uses specialized lexicons—carefully curated lists of terms—to identif
 
 ### 2.1 Download
 
-**MacOS Users:** Go to [v2.6.0-rc](https://github.com/marriott-library/MaRMAT/releases/tag/v2.6.0-rc) and download `MaRMAT_v.2.6.0-rc_macOS.zip` from our assets.
+**MacOS Users:** Go to [v2.6.0-rc](https://github.com/marriott-library/MaRMAT/releases/tag/v2.6.0-rc) and download `MaRMAT_v.2.6.0-rc_macOS.zip` from Assets.
 
-**Windows Users:** Go to [v2.6.0-rc](https://github.com/marriott-library/MaRMAT/releases/tag/v2.6.0-rc) and download `MaRMAT_v.2.6.0-rc_Windows.zip` from our assets.
+**Windows Users:** Go to [v2.6.0-rc](https://github.com/marriott-library/MaRMAT/releases/tag/v2.6.0-rc) and download `MaRMAT_v.2.6.0-rc_Windows.zip` from Assets.
 
-**Linux Users:** Go to [v2.6.0-rc](https://github.com/marriott-library/MaRMAT/releases/tag/v2.6.0-rc) and download `MaRMAT_v.2.6.0-rc_Linux-x64.zip` from our assets.
+**Linux Users:** Go to [v2.6.0-rc](https://github.com/marriott-library/MaRMAT/releases/tag/v2.6.0-rc) and download `MaRMAT_v.2.6.0-rc_Linux-x64.zip` from Assets.
 
 ### 2.2 Dependencies
 
