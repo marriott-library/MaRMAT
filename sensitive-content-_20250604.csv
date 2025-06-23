@@ -1,0 +1,160 @@
+term,category
+beheaded,DeceasedPeople
+burial,DeceasedPeople
+cadaver,DeceasedPeople
+committed suicide,DeceasedPeople
+corpse,DeceasedPeople
+dead body,DeceasedPeople
+deceased,DeceasedPeople
+decedent,DeceasedPeople
+execution,DeceasedPeople
+executions,DeceasedPeople
+extrajudicial executions,DeceasedPeople
+extrajudicial killings,DeceasedPeople
+fatal accident,DeceasedPeople
+fatal injury,DeceasedPeople
+fatalities,DeceasedPeople
+fatality,DeceasedPeople
+genocide,DeceasedPeople
+graves,DeceasedPeople
+gravesites,DeceasedPeople
+homicide,DeceasedPeople
+human remains,DeceasedPeople
+infanticide,DeceasedPeople
+killed,DeceasedPeople
+killed herself,DeceasedPeople
+killed himself,DeceasedPeople
+mass grave,DeceasedPeople
+massacre,DeceasedPeople
+murder,DeceasedPeople
+murder scene,DeceasedPeople
+murdered,DeceasedPeople
+murders,DeceasedPeople
+post-mortem,DeceasedPeople
+public execution,DeceasedPeople
+skeleton,DeceasedPeople
+human skeleton,DeceasedPeople
+skeletal remains,DeceasedPeople
+strangled,DeceasedPeople
+strangulation,DeceasedPeople
+suicide,DeceasedPeople
+accident victim,GraphicContent
+amputation,GraphicContent
+bleeding,GraphicContent
+burns,GraphicContent
+disfigurement,GraphicContent
+dismember,GraphicContent
+dismembered,GraphicContent
+dismembering,GraphicContent
+dismemberment,GraphicContent
+gore,GraphicContent
+graphic content,GraphicContent
+injury,GraphicContent
+wound,GraphicContent
+wounds,GraphicContent
+burial mound,IndigenousAmericanSensitive
+ceremonial,IndigenousAmericanSensitive
+ceremonial dance,IndigenousAmericanSensitive
+ceremonial mound,IndigenousAmericanSensitive
+cliff dwelling,IndigenousAmericanSensitive
+ghost dance,IndigenousAmericanSensitive
+green corn ceremony,IndigenousAmericanSensitive
+indian placement program,IndigenousAmericanSensitive
+indian school,IndigenousAmericanSensitive
+indian student placement program,IndigenousAmericanSensitive
+kiva,IndigenousAmericanSensitive
+medicine man,IndigenousAmericanSensitive
+medicine woman,IndigenousAmericanSensitive
+native american boarding school,IndigenousAmericanSensitive
+off-reservation boarding school,IndigenousAmericanSensitive
+petroglyph,IndigenousAmericanSensitive
+peyote,IndigenousAmericanSensitive
+pictograph,IndigenousAmericanSensitive
+residential school,IndigenousAmericanSensitive
+ritual,IndigenousAmericanSensitive
+sacred,IndigenousAmericanSensitive
+shaman,IndigenousAmericanSensitive
+sky burial,IndigenousAmericanSensitive
+snake dance,IndigenousAmericanSensitive
+sun dance,IndigenousAmericanSensitive
+sweat lodge,IndigenousAmericanSensitive
+vision quest,IndigenousAmericanSensitive
+naked,NudeContent
+nudity,NudeContent
+without clothes,NudeContent
+child sexual abuse,SexualViolence
+molestation,SexualViolence
+molested,SexualViolence
+molesting,SexualViolence
+nonconsensual sex,SexualViolence
+pedophile,SexualViolence
+pedophiles,SexualViolence
+pedophilia,SexualViolence
+rape,SexualViolence
+raped,SexualViolence
+rapist,SexualViolence
+ravishment,SexualViolence
+sexual abuse,SexualViolence
+sexual assault,SexualViolence
+sexual assaults,SexualViolence
+sexually assaulted,SexualViolence
+abduction,ViolentContent
+abuse,ViolentContent
+abused,ViolentContent
+abused child,ViolentContent
+abused children,ViolentContent
+abused teenager,ViolentContent
+abused teenagers,ViolentContent
+abusive parent,ViolentContent
+abusive parents,ViolentContent
+act of terror,ViolentContent
+assault,ViolentContent
+assaulted,ViolentContent
+beaten,ViolentContent
+beheading,ViolentContent
+bloodshed,ViolentContent
+blunt force trauma,ViolentContent
+brutality,ViolentContent
+burned at the stake,ViolentContent
+capital punishment,ViolentContent
+carnage,ViolentContent
+casualties,ViolentContent
+casualty,ViolentContent
+child abuse,ViolentContent
+crucifixion,ViolentContent
+crucify,ViolentContent
+decapitation,ViolentContent
+disembowel,ViolentContent
+disemboweled,ViolentContent
+disembowled,ViolentContent
+execution,ViolentContent
+family violence,ViolentContent
+gunshot,ViolentContent
+homicide,ViolentContent
+human trafficking,ViolentContent
+infantacide,ViolentContent
+kidnap,ViolentContent
+kidnapping,ViolentContent
+killing,ViolentContent
+laceration,ViolentContent
+lynch,ViolentContent
+lynch mob,ViolentContent
+lynched,ViolentContent
+lynching,ViolentContent
+mutilation,ViolentContent
+neonaticide,ViolentContent
+public executions,ViolentContent
+putting to death,ViolentContent
+riot,ViolentContent
+slaying,ViolentContent
+stabbed,ViolentContent
+stabbing,ViolentContent
+stoning,ViolentContent
+termination,ViolentContent
+terrorism,ViolentContent
+terrorist,ViolentContent
+torture,ViolentContent
+trauma,ViolentContent
+violation,ViolentContent
+violence,ViolentContent
+violent,ViolentContent
