@@ -129,7 +129,7 @@ Option B:
 The current version of MaRMAT was fully reprogrammed and redesigned by [Aiden deBoer](https://github.com/FreeThings) thanks to an internal "Jumpstart Grant" awarded by the J. Willard Marriott Library in 2025. [MaRMAT-beta](https://github.com/marriott-library/MaRMAT-Beta) was released in July 2024. It was developed by [Kaylee Alexander](https://github.com/kayleealexander) in collaboration with ChatGPT 3.5 with input from [Rachel Wittmann](https://github.com/RachelJaneWittmann) and [Anna Neatrour](https://github.com/aneatrour) at the University of Utah. MaRMAT was inspired by the [Duke University Libraries Description Audit Tool](https://github.com/duke-libraries/description-audit/tree/main) and informed by resources such as [The Inclusive Metadata Toolkit](https://osf.io/yf96h), developed by the Digital Library Federation's Cultural Assessment Working Group.
 
 ## 6. User Feedback Survey
-After using MaRMAT, please take [our suvery](https://forms.gle/xCUQiG6nn8beHqJU6) and tell us about your exeprience using MARMAT. We appreciate your feedback!
+After using MaRMAT, please take [our survey](https://forms.gle/xCUQiG6nn8beHqJU6) and tell us about your experience. We appreciate your feedback!
 
 ## 7. Report Bug
 Encountered a bug? Report it [here](https://forms.gle/CfCCuw3vnxuCdhuh8).
