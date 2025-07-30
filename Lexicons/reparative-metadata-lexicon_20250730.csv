@@ -1,0 +1,582 @@
+term,category
+able bodied,AbilityTerm
+able-bodied,AbilityTerm
+amputee,AbilityTerm
+amputees,AbilityTerm
+asperger's syndrome,AbilityTerm
+birth defect,AbilityTerm
+birth defects,AbilityTerm
+blind,AbilityTerm
+cleft lip,AbilityTerm
+confined to a wheelchair,AbilityTerm
+cretin,AbilityTerm
+cretins,AbilityTerm
+cripple,AbilityTerm
+crippled,AbilityTerm
+cripples,AbilityTerm
+deaf,AbilityTerm
+deaf-mute,AbilityTerm
+deaf-mutes,AbilityTerm
+deformed,AbilityTerm
+differently abled,AbilityTerm
+disabled,AbilityTerm
+disabled people,AbilityTerm
+disabled person,AbilityTerm
+disfigured,AbilityTerm
+dwarf,AbilityTerm
+dwarfs,AbilityTerm
+dwarves,AbilityTerm
+epileptic,AbilityTerm
+epileptics,AbilityTerm
+handicap,AbilityTerm
+handicapped,AbilityTerm
+handicaps,AbilityTerm
+harelip,AbilityTerm
+hearing disorder,AbilityTerm
+hearing disorders,AbilityTerm
+hearing impaired,AbilityTerm
+imbecile,AbilityTerm
+imbeciles,AbilityTerm
+invalid,AbilityTerm
+invalids,AbilityTerm
+lame,AbilityTerm
+lazy eye,AbilityTerm
+midget,AbilityTerm
+midgets,AbilityTerm
+moron,AbilityTerm
+morons,AbilityTerm
+paraplegia,AbilityTerm
+paraplegic,AbilityTerm
+paraplegics,AbilityTerm
+physically challenged,AbilityTerm
+pinhead,AbilityTerm
+retard,AbilityTerm
+retarded,AbilityTerm
+retards,AbilityTerm
+slow learner,AbilityTerm
+slow learners,AbilityTerm
+special needs,AbilityTerm
+spina bifida,AbilityTerm
+stupid,AbilityTerm
+the deaf,AbilityTerm
+the disabled,AbilityTerm
+wheelchair-bound,AbilityTerm
+acclaimed,AggrandizementTerm
+ambitious,AggrandizementTerm
+celebrated,AggrandizementTerm
+distinguished,AggrandizementTerm
+eminent,AggrandizementTerm
+esteemed,AggrandizementTerm
+expert,AggrandizementTerm
+experts,AggrandizementTerm
+famous,AggrandizementTerm
+father of,AggrandizementTerm
+foremost,AggrandizementTerm
+founding father,AggrandizementTerm
+founding fathers,AggrandizementTerm
+genius,AggrandizementTerm
+influential,AggrandizementTerm
+man of letters,AggrandizementTerm
+masterpiece,AggrandizementTerm
+masters,AggrandizementTerm
+matriarchs,AggrandizementTerm
+men of letters,AggrandizementTerm
+notable,AggrandizementTerm
+patriot,AggrandizementTerm
+patriots,AggrandizementTerm
+pioneer,AggrandizementTerm
+pioneer of,AggrandizementTerm
+pioneers,AggrandizementTerm
+plantation owner,AggrandizementTerm
+pioneers in,AggrandizementTerm
+preeminent,AggrandizementTerm
+prestigious,AggrandizementTerm
+prolific,AggrandizementTerm
+prominent,AggrandizementTerm
+renowned,AggrandizementTerm
+respected,AggrandizementTerm
+revolutionary,AggrandizementTerm
+seminal,AggrandizementTerm
+successful,AggrandizementTerm
+wealthy,AggrandizementTerm
+bum,ClassTerm
+bums,ClassTerm
+food stamps,ClassTerm
+government cheese,ClassTerm
+grease monkey,ClassTerm
+halfway house,ClassTerm
+halfway houses,ClassTerm
+hobo,ClassTerm
+hoboes,ClassTerm
+hobos,ClassTerm
+homeless,ClassTerm
+homelessness,ClassTerm
+poor,ClassTerm
+poor child,ClassTerm
+poor family,ClassTerm
+poor girl,ClassTerm
+poor man,ClassTerm
+poor teenager,ClassTerm
+poor woman,ClassTerm
+poors,ClassTerm
+slum,ClassTerm
+slum clearance,ClassTerm
+slum clearances,ClassTerm
+slums,ClassTerm
+tramp,ClassTerm
+tramps,ClassTerm
+welfare queen,ClassTerm
+welfare recipient,ClassTerm
+welfare recipients,ClassTerm
+working class,ClassTerm
+working mother,ClassTerm
+working poor,ClassTerm
+bovver,ClassTermBritEng
+bovvers,ClassTermBritEng
+bread line,ClassTermBritEng
+breadline,ClassTermBritEng
+chav,ClassTermBritEng
+chavs,ClassTermBritEng
+ned,ClassTermBritEng
+neds,ClassTermBritEng
+crackhead,DrugUseTerm
+dope fiend,DrugUseTerm
+dope fiends,DrugUseTerm
+drug addict,DrugUseTerm
+drunkenness,DrugUseTerm
+junkie,DrugUseTerm
+junkies,DrugUseTerm
+meth head,DrugUseTerm
+meth heads,DrugUseTerm
+methhead,DrugUseTerm
+methheads,DrugUseTerm
+potheads,DrugUseTerm
+substance abuser,DrugUseTerm
+trippers,DrugUseTerm
+chunky,ExclusionTerm
+fat,ExclusionTerm
+freak,ExclusionTerm
+geek,ExclusionTerm
+obese,ExclusionTerm
+porker,ExclusionTerm
+problem child,ExclusionTerm
+problem children,ExclusionTerm
+problem youth,ExclusionTerm
+problem youths,ExclusionTerm
+sideshow freak,ExclusionTerm
+sideshow freaks,ExclusionTerm
+victim,ExclusionTerm
+victims,ExclusionTerm
+daughter,GenderTerm
+daughters,GenderTerm
+gentleman,GenderTerm
+gentlemen,GenderTerm
+girlfriend,GenderTerm
+girlfriends,GenderTerm
+grandfather clause,GenderTerm
+grandfather in,GenderTerm
+grandfathered in ,GenderTerm
+matriarch,GenderTerm
+miss,GenderTerm
+mrs.,GenderTerm
+patriarch,GenderTerm
+patriarchs,GenderTerm
+wife,GenderTerm
+wives,GenderTerm
+women noncitizen,GenderTerm
+aryan brotherhood,HateGroupTerm
+kkk,HateGroupTerm
+ku klux klan,HateGroupTerm
+national front,HateGroupTerm
+nazi,HateGroupTerm
+nazis,HateGroupTerm
+neo nazi,HateGroupTerm
+neo nazis,HateGroupTerm
+neo-nazi,HateGroupTerm
+neo-nazis,HateGroupTerm
+proud boy,HateGroupTerm
+proud boys,HateGroupTerm
+white supremacist,HateGroupTerm
+white supremacists,HateGroupTerm
+convict,IncarcerationTerm
+convicts,IncarcerationTerm
+criminal,IncarcerationTerm
+criminals,IncarcerationTerm
+delinquent,IncarcerationTerm
+delinquents,IncarcerationTerm
+ex-con,IncarcerationTerm
+ex-cons,IncarcerationTerm
+ex-offender,IncarcerationTerm
+ex-offenders,IncarcerationTerm
+ex-prisoner,IncarcerationTerm
+ex-prisoners,IncarcerationTerm
+felon,IncarcerationTerm
+felons,IncarcerationTerm
+inmate,IncarcerationTerm
+inmates,IncarcerationTerm
+juvenile offender,IncarcerationTerm
+juvenile offenders,IncarcerationTerm
+offender,IncarcerationTerm
+offenders,IncarcerationTerm
+parolee,IncarcerationTerm
+parolees,IncarcerationTerm
+prisoner,IncarcerationTerm
+prisoners,IncarcerationTerm
+sex offender,IncarcerationTerm
+sex offenders,IncarcerationTerm
+assembly center,JapaneseincarcerationTerm
+assembly centers,JapaneseincarcerationTerm
+civilian exclusion order,JapaneseincarcerationTerm
+civilian exclusion orders,JapaneseincarcerationTerm
+evacuate,JapaneseincarcerationTerm
+evacuation,JapaneseincarcerationTerm
+evacuee,JapaneseincarcerationTerm
+evacuees,JapaneseincarcerationTerm
+internment,JapaneseincarcerationTerm
+native american alien,JapaneseincarcerationTerm
+native american aliens,JapaneseincarcerationTerm
+non-alien,JapaneseincarcerationTerm
+non-aliens,JapaneseincarcerationTerm
+relocate,JapaneseincarcerationTerm
+relocation,JapaneseincarcerationTerm
+relocation center,JapaneseincarcerationTerm
+relocation centers,JapaneseincarcerationTerm
+biologically female,LGBTQTerm
+biologically male,LGBTQTerm
+bisexual,LGBTQTerm
+bisexuals,LGBTQTerm
+butch,LGBTQTerm
+dyke,LGBTQTerm
+dykes,LGBTQTerm
+fag,LGBTQTerm
+faggot,LGBTQTerm
+faggots,LGBTQTerm
+fags,LGBTQTerm
+fairies,LGBTQTerm
+fairy,LGBTQTerm
+gay,LGBTQTerm
+gay lifestyle,LGBTQTerm
+gay lifestyles,LGBTQTerm
+gays,LGBTQTerm
+gender identity disorder,LGBTQTerm
+gender minorities,LGBTQTerm
+homo,LGBTQTerm
+homosexual,LGBTQTerm
+homosexuality,LGBTQTerm
+homosexuals,LGBTQTerm
+lesbianism,LGBTQTerm
+lesbians,LGBTQTerm
+lesbo,LGBTQTerm
+queer,LGBTQTerm
+queers,LGBTQTerm
+sexual minorities,LGBTQTerm
+sexual minority,LGBTQTerm
+sexual orientation,LGBTQTerm
+sexual preference,LGBTQTerm
+tomboy,LGBTQTerm
+tomboys,LGBTQTerm
+tranny,LGBTQTerm
+transvestite,LGBTQTerm
+brain damage,MentalHealthTerm
+brain damaged,MentalHealthTerm
+committed suicide,MentalHealthTerm
+crazies,MentalHealthTerm
+crazy,MentalHealthTerm
+drug abuse,MentalHealthTerm
+dumb,MentalHealthTerm
+emotionally disturbed,MentalHealthTerm
+hysterical,MentalHealthTerm
+insane,MentalHealthTerm
+mentally ill,MentalHealthTerm
+spaz,MentalHealthTerm
+spazzes,MentalHealthTerm
+suicidal behavior,MentalHealthTerm
+suicide,MentalHealthTerm
+aboriginal,RaceTerm
+aboriginals,RaceTerm
+aborigine,RaceTerm
+aborigines,RaceTerm
+afro-american,RaceTerm
+alien,RaceTerm
+alien criminal,RaceTerm
+alien criminals,RaceTerm
+alien detention center,RaceTerm
+alien detention centers,RaceTerm
+alien properties,RaceTerm
+alien property,RaceTerm
+aliens,RaceTerm
+anasazi,RaceTerm
+antisemitism,RaceTerm
+apartheid,RaceTerm
+arab,RaceTerm
+arabs,RaceTerm
+asiatic,RaceTerm
+barbarian,RaceTerm
+barbarians,RaceTerm
+barbaric,RaceTerm
+beaner,RaceTerm
+beaners,RaceTerm
+beggar,RaceTerm
+beggars,RaceTerm
+black face,RaceTerm
+blackface,RaceTerm
+blackie,RaceTerm
+blacks,RaceTerm
+brown face,RaceTerm
+brownface,RaceTerm
+bushman,RaceTerm
+bushmen,RaceTerm
+bushwoman,RaceTerm
+bushwomen,RaceTerm
+cakewalk,RaceTerm
+cakewalks,RaceTerm
+camel jockey,RaceTerm
+camel jockeys,RaceTerm
+casuals,RaceTerm
+chink,RaceTerm
+chinks,RaceTerm
+circle the wagons,RaceTerm
+civilized,RaceTerm
+color blind,RaceTerm
+colored,RaceTerm
+coloreds,RaceTerm
+coolie,RaceTerm
+coolies,RaceTerm
+coon,RaceTerm
+coons,RaceTerm
+cotton picker,RaceTerm
+cotton pickers,RaceTerm
+cracker,RaceTerm
+crackers,RaceTerm
+dago,RaceTerm
+dagoes,RaceTerm
+dot head,RaceTerm
+dot heads,RaceTerm
+eskimo,RaceTerm
+eskimo kiss,RaceTerm
+eskimos,RaceTerm
+ethnic,RaceTerm
+ghetto,RaceTerm
+ghettos,RaceTerm
+gook,RaceTerm
+gooks,RaceTerm
+greaseball,RaceTerm
+guinea,RaceTerm
+guineas,RaceTerm
+gyp,RaceTerm
+gypped,RaceTerm
+gypsies,RaceTerm
+gypsy,RaceTerm
+haji,RaceTerm
+hispanic,RaceTerm
+hispanics,RaceTerm
+honkies,RaceTerm
+honky,RaceTerm
+hooligan,RaceTerm
+hooligans,RaceTerm
+illegal alien,RaceTerm
+illegal aliens,RaceTerm
+illegal immigrant,RaceTerm
+illegal immigrants,RaceTerm
+illegal immigration,RaceTerm
+illegals,RaceTerm
+indian,RaceTerm
+indian giver,RaceTerm
+indians,RaceTerm
+injun,RaceTerm
+injuns,RaceTerm
+jap,RaceTerm
+japs,RaceTerm
+jew,RaceTerm
+jews,RaceTerm
+jihad,RaceTerm
+jip,RaceTerm
+jipped,RaceTerm
+kike,RaceTerm
+kikes,RaceTerm
+lamenite,RaceTerm
+lamenites,RaceTerm
+mammy,RaceTerm
+mick,RaceTerm
+micks,RaceTerm
+mixed race people,RaceTerm
+mojado,RaceTerm
+mongoloid,RaceTerm
+mongoloids,RaceTerm
+mongrel,RaceTerm
+mongrels,RaceTerm
+mulatto,RaceTerm
+mulattoes,RaceTerm
+mulattos,RaceTerm
+mumbo jumbo,RaceTerm
+native americans,RaceTerm
+natives,RaceTerm
+negro,RaceTerm
+negroes,RaceTerm
+negros,RaceTerm
+nigger,RaceTerm
+niggers,RaceTerm
+noncitizen child,RaceTerm
+noncitizens,RaceTerm
+off the reservation,RaceTerm
+oriental,RaceTerm
+orientals,RaceTerm
+paddy wagon,RaceTerm
+paddywagon,RaceTerm
+peanut gallery,RaceTerm
+polygenism,RaceTerm
+polynesian,RaceTerm
+pow-wow,RaceTerm
+primitive people,RaceTerm
+primitives,RaceTerm
+pygmies,RaceTerm
+pygmy,RaceTerm
+race identity,RaceTerm
+race relations,RaceTerm
+race situation,RaceTerm
+race-based,RaceTerm
+racial,RaceTerm
+racial discrimination,RaceTerm
+racism,RaceTerm
+racism against,RaceTerm
+red face,RaceTerm
+redface,RaceTerm
+redline,RaceTerm
+redlining,RaceTerm
+redman,RaceTerm
+redmen,RaceTerm
+redskin,RaceTerm
+riot,RaceTerm
+riots,RaceTerm
+savage,RaceTerm
+savages,RaceTerm
+segregated,RaceTerm
+segregation in education,RaceTerm
+spic,RaceTerm
+spics,RaceTerm
+spook,RaceTerm
+spooks,RaceTerm
+squaw,RaceTerm
+squaws,RaceTerm
+towelhead,RaceTerm
+towelheads,RaceTerm
+tribal,RaceTerm
+tribe,RaceTerm
+troubles,RaceTerm
+uncivilized,RaceTerm
+unruly,RaceTerm
+uppity,RaceTerm
+wetback,RaceTerm
+white power,RaceTerm
+whites,RaceTerm
+whitey,RaceTerm
+wop,RaceTerm
+wops,RaceTerm
+yellow face,RaceTerm
+yellowface,RaceTerm
+zipperheads,RaceTerm
+coloured,RaceTermBritEng
+coloureds,RaceTermBritEng
+limey,RaceTermBritEng
+limeys,RaceTermBritEng
+paddies,RaceTermBritEng
+paddy,RaceTermBritEng
+bible thumper,ReligionTerm
+bible thumpers,ReligionTerm
+holy roller,ReligionTerm
+holy rollers,ReligionTerm
+sacred cow,ReligionTerm
+sacred cows,ReligionTerm
+spirit animal,ReligionTerm
+spirit animals,ReligionTerm
+brothel,SexWorkTerm
+brothels,SexWorkTerm
+call girl,SexWorkTerm
+call girls,SexWorkTerm
+exotic dancer,SexWorkTerm
+pimp,SexWorkTerm
+pimps,SexWorkTerm
+prostitute,SexWorkTerm
+prostitutes,SexWorkTerm
+stripper,SexWorkTerm
+strippers,SexWorkTerm
+whore,SexWorkTerm
+whores,SexWorkTerm
+woman of the night,SexWorkTerm
+women of the night,SexWorkTerm
+ass,SlangTerm
+asshole,SlangTerm
+assholes,SlangTerm
+bastard,SlangTerm
+bastards,SlangTerm
+bitch,SlangTerm
+bitches,SlangTerm
+bullshit,SlangTerm
+cock,SlangTerm
+crap,SlangTerm
+cunt,SlangTerm
+dickhead,SlangTerm
+dickheads,SlangTerm
+dork,SlangTerm
+dorks,SlangTerm
+fuck,SlangTerm
+fucker,SlangTerm
+fuckers,SlangTerm
+fucks,SlangTerm
+goddamn,SlangTerm
+holy shit,SlangTerm
+horseshit,SlangTerm
+nerd,SlangTerm
+nerds,SlangTerm
+piss,SlangTerm
+shit,SlangTerm
+slut,SlangTerm
+sluts,SlangTerm
+tits,SlangTerm
+wimp,SlangTerm
+wimps,SlangTerm
+arse,SlangTermBritEng
+arsehead,SlangTermBritEng
+arsehole,SlangTermBritEng
+arseholes,SlangTermBritEng
+arses,SlangTermBritEng
+bloody,SlangTermBritEng
+bollocks,SlangTermBritEng
+frigger,SlangTermBritEng
+abolition,SlaveryTerm
+abolitionist,SlaveryTerm
+abolitionists,SlaveryTerm
+bill of sale,SlaveryTerm
+bills of sale,SlaveryTerm
+child slave,SlaveryTerm
+crack the whip,SlaveryTerm
+cracking the whip,SlaveryTerm
+enslave,SlaveryTerm
+enslaved,SlaveryTerm
+freed slave,SlaveryTerm
+freedman,SlaveryTerm
+freedmen,SlaveryTerm
+freeholder,SlaveryTerm
+fugitive slave,SlaveryTerm
+hired out,SlaveryTerm
+hiring out,SlaveryTerm
+indentured servant,SlaveryTerm
+indentured servants,SlaveryTerm
+indentured servitude,SlaveryTerm
+manumission,SlaveryTerm
+manumitted,SlaveryTerm
+master,SlaveryTerm
+overseer,SlaveryTerm
+plantation,SlaveryTerm
+plantation owners,SlaveryTerm
+plantations,SlaveryTerm
+runaway slave,SlaveryTerm
+sambo,SlaveryTerm
+slave,SlaveryTerm
+slaveholder,SlaveryTerm
+slaveholders,SlaveryTerm
+slavery,SlaveryTerm
+slaves,SlaveryTerm
+slaves,SlaveryTerm
+stakeholder,SlaveryTerm
+whipping,SlaveryTerm
