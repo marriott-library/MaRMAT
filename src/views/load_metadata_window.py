@@ -26,6 +26,8 @@ from PyQt6.QtWidgets import (
     QTableWidget,
     QTableWidgetItem,
     QWidget,
+    QComboBox,
+    QSizePolicy
 )
 
 
@@ -75,10 +77,30 @@ class MetadataWindow(QWidget):
         layout.addWidget(self.info_label)
 
         # Button to load the CSV file
+        button_tab_layout = QHBoxLayout()
         self.load_button = QPushButton("Load Metadata")
         self.load_button.clicked.connect(self.load_csv)
         self.load_button.setStyleSheet("background-color: #890000; color: white;")  # Set button color
-        layout.addWidget(self.load_button)
+        
+        self.delimiter_box = QComboBox()
+        self.delimiter_box.setStyleSheet("background-color: #f0f0f0; color: black;")  # Set background and text color
+        self.delimiter_box.setToolTip("Select the delimiter used in your CSV file")
+        self.delimiter_box.setFont(QFont("Calibri", 14))  # Set font size
+        self.delimiter_box.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
+        self.load_button.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        self.delimiter_box.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
+
+        self.delimiter_box.addItem("Select Delimiter")
+        self.delimiter_box.addItem("Comma (,)")
+        self.delimiter_box.addItem("Tab (\\t)")
+        self.delimiter_box.adjustSize()
+
+        self.delimiter_box.setCurrentIndex(0)  # Default to "Select Delimiter"
+        
+        button_tab_layout.addWidget(self.load_button)
+        button_tab_layout.addWidget(self.delimiter_box)
+
+        layout.addLayout(button_tab_layout)
 
         # Table to display the CSV content
         self.table_widget = QTableWidget()
@@ -122,7 +144,12 @@ class MetadataWindow(QWidget):
 
                 # Determine delimiter based on file extension
                 _, file_extension = os.path.splitext(self.file_path)
-                delimiter = '\t' if file_extension.lower() == '.tsv' else ','
+                if self.delimiter_box.currentText() == "Select Delimiter":
+                    delimiter = '\t' if file_extension.lower() == '.tsv' else ','
+                elif self.delimiter_box.currentText() == "Comma (,)":
+                    delimiter = ','
+                elif self.delimiter_box.currentText() == "Tab (\\t)":
+                    delimiter = '\t'
 
                 # Load the file into a DataFrame with TSV-specific handling
                 self.df = pd.read_csv(self.file_path, delimiter=delimiter, encoding='utf-8', on_bad_lines='warn', nrows=1000)
