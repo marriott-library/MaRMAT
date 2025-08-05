@@ -125,7 +125,7 @@ class MetadataWindow(QWidget):
                 delimiter = '\t' if file_extension.lower() == '.tsv' else ','
 
                 # Load the file into a DataFrame with TSV-specific handling
-                self.df = pd.read_csv(self.file_path, delimiter=delimiter, encoding='utf-8', on_bad_lines='warn')
+                self.df = pd.read_csv(self.file_path, delimiter=delimiter, encoding='utf-8', on_bad_lines='warn', nrows=1000)
 
                 self.load_button.setDisabled(True)  # Disable the load button after loading the file
                 self.load_button.setStyleSheet("")  # Change button color to grey
