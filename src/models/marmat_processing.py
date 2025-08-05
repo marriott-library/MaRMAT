@@ -101,7 +101,7 @@ class marmat_processing(QObject):
             print(f"An error occurred while loading lexicon: {e}")
             return False
 
-    def load_metadata(self, file_path) -> bool:
+    def load_metadata(self, file_path, delimiter=',') -> bool:
         """
         
         Load the metadata file.
@@ -115,7 +115,7 @@ class marmat_processing(QObject):
         """
         file_path = re.sub(r'["]', '', file_path)
         try:
-            self.metadata_df = pd.read_csv(file_path)
+            self.metadata_df = pd.read_csv(file_path, delimiter=delimiter, encoding='utf-8', on_bad_lines='warn')
             print("Metadata loaded successfully.")
             self.metadata_df = self.metadata_df.rename(columns=str.lower)
             return True

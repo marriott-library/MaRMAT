@@ -66,12 +66,12 @@ class MetadataWindow(QWidget):
         layout = QVBoxLayout()
 
         # Label for the title
-        self.title_label = QLabel("<b>Please load a metadata file (.csv)</b>")
+        self.title_label = QLabel("<b>Please load a metadata file (.csv or .tsv)</b>")
         self.title_label.setFont(QFont("Calibri", 36))  # Set font size
         layout.addWidget(self.title_label)
 
         # Label to display information about the CSV
-        self.info_label = QLabel("Click the <b>Load Metadata</b> button to load the metadata file you want MaRMAT to analyze. MaRMAT only supports CSV file uploads. Once loaded, click Next.") # Initial text
+        self.info_label = QLabel("Click the <b>Load Metadata</b> button to load the metadata file you want MaRMAT to analyze.<br>MaRMAT only supports CSV and TSV file uploads. Once loaded, click Next.") # Initial text
         layout.addWidget(self.info_label)
 
         # Button to load the CSV file
@@ -106,16 +106,26 @@ class MetadataWindow(QWidget):
 
     def load_csv(self):
         """ Load a CSV file and display its content in the table widget. Uses a thread to handle long-running tasks. """
-        self.file_path, _ = QFileDialog.getOpenFileName(self, "Open CSV", self.controller.get_default_metadata_path(), "CSV Files (*.csv)")
 
+        self.file_path, _ = QFileDialog.getOpenFileName(
+            self,
+            "Open CSV/TSV",
+            self.controller.get_default_metadata_path(),
+            "Data Files (*.csv *.tsv);;CSV Files (*.csv);;TSV Files (*.tsv);;All Files (*)"
+        )
+        
         if self.file_path:
             try:
 
                 self.next_button.setEnabled(False)  # Disable the next button until the file is loaded
                 self.next_button.setStyleSheet("")  # Change button color to grey
 
-                # Load the CSV file into a DataFrame
-                self.df = pd.read_csv(self.file_path, nrows=1000)  # Limit to first 1000 rows
+                # Determine delimiter based on file extension
+                _, file_extension = os.path.splitext(self.file_path)
+                delimiter = '\t' if file_extension.lower() == '.tsv' else ','
+
+                # Load the file into a DataFrame with TSV-specific handling
+                self.df = pd.read_csv(self.file_path, delimiter=delimiter, encoding='utf-8', on_bad_lines='warn')
 
                 self.load_button.setDisabled(True)  # Disable the load button after loading the file
                 self.load_button.setStyleSheet("")  # Change button color to grey
@@ -128,7 +138,7 @@ class MetadataWindow(QWidget):
                     self.show_alert("Warning", "The file is larger than 100 MB. This may take a while to load.")
 
                 self.thread = QThread()
-                self.worker = Worker(self.controller, self.file_path)  # Pass the file path to the worker
+                self.worker = Worker(self.controller, self.file_path, delimiter)  # Pass the file path to the worker
                 self.worker.moveToThread(self.thread)
 
                 self.thread.started.connect(self.worker.run)
@@ -241,6 +251,15 @@ class MetadataWindow(QWidget):
         
         self.msg_box.exec()
         self.msg_box.deleteLater()
+        
+    def resizeEvent(self, event):
+        # Get new size
+        width = self.width()
+        height = self.height()
+
+        self.info_label.setFont(QFont("Calibri", width//70))  # Set font size
+        # Always call base implementation
+        super().resizeEvent(event)
 
 class Worker(QThread):
     """
@@ -258,7 +277,7 @@ class Worker(QThread):
     
     finished = pyqtSignal(bool)
 
-    def __init__(self, controller, file_path):
+    def __init__(self, controller, file_path, delimiter):
         """ 
 
         Initialize the worker with a controller and file path 
@@ -271,10 +290,11 @@ class Worker(QThread):
         super().__init__()
         self.controller = controller
         self.file_path = file_path
+        self.delimiter = delimiter
 
     def run(self):
         """ Run the long-running task in a separate thread """
-        if self.controller.load_metadata(self.file_path):
+        if self.controller.load_metadata(self.file_path, self.delimiter):
             self.finished.emit(True)
         else:
             self.finished.emit(False)

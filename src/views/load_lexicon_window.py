@@ -69,7 +69,7 @@ class LexiconWindow(QWidget):
         layout.addWidget(self.title_label)
 
         # Label to display information about the CSV
-        self.info_label = QLabel("Click the <b>Load Lexicon</b> button to load the lexicon file you want MaRMAT to analyze your metadata file against. MaRMAT only supports CSV file uploads. Once loaded, click <b>Next</b>. ") # Initial text
+        self.info_label = QLabel("Click the <b>Load Lexicon</b> button to load the lexicon file you want MaRMAT to analyze your metadata file against.<br>MaRMAT only supports CSV file uploads. Once loaded, click <b>Next</b>. ") # Initial text
         layout.addWidget(self.info_label)
 
         # Button to load the CSV file
@@ -208,3 +208,14 @@ class LexiconWindow(QWidget):
         
         self.msg_box.exec()
         self.msg_box.deleteLater()
+    
+    def resizeEvent(self, event):
+        # Get new size
+        width = self.width()
+        height = self.height()
+
+        # Use width or height to calculate font size
+        self.info_label.setFont(QFont("Calibri", width//60))  # Set font size
+
+        # Always call base implementation
+        super().resizeEvent(event)

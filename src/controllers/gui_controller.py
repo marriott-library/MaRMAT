@@ -127,7 +127,7 @@ class MainController:
         self.stack.setWindowIcon(self.main_window.windowIcon())  # Set the window icon
         self.stack.setWindowTitle("MaRMAT 2.6.0-rc")  # Set the window title
         
-        self.stack.setMinimumSize(100, 100)
+        self.stack.setMinimumSize(540, 420)
         
           # Start the event loop
         self.stack.show()  # Show the main window in normal mode
@@ -135,7 +135,18 @@ class MainController:
         if self.settings_model.fullscreen_enabled:
             self.stack.showFullScreen()
         else:
-            self.stack.showMaximized()
+            self.stack.showNormal()
+            # self.stack.setFixedSize(1280, 720) 
+            self.stack.resize(1280, 720)  # Set a fixed size for the window
+            
+            # Get current screen geometry
+            screen = self.stack.screen()
+            geometry = screen.availableGeometry()
+
+            # Center the window on the screen
+            x = (geometry.width() - self.stack.width()) // 2
+            y = (geometry.height() - self.stack.height()) // 2
+            self.stack.move(x, y)
 
 
     # Functions to handle user input and actions
@@ -147,7 +158,7 @@ class MainController:
 
     # Functions to handle model operations
 
-    def load_metadata(self, file_path) -> bool:
+    def load_metadata(self, file_path, delimiter=',') -> bool:
         """
         Load metadata from file path.
         
@@ -158,7 +169,7 @@ class MainController:
             bool: True if metadata is loaded successfully, False otherwise.
 
         """
-        if self.model.load_metadata(file_path):
+        if self.model.load_metadata(file_path, delimiter=delimiter):
             print("Metadata loaded:", file_path)
             print("Metadata shape:", self.model.metadata_df.shape)
             return True
@@ -311,7 +322,17 @@ class MainController:
             self.settings_model.fullscreen_enabled = False
             self.save_settings()
             print("Exiting fullscreen mode...")
-            self.stack.showMaximized()
+            self.stack.showNormal()
+            # self.stack.setFixedSize(1280, 720)  # Set a fixed size for the window
+            self.stack.resize(1280, 720)
+            # Get current screen geometry
+            screen = self.stack.screen()
+            geometry = screen.availableGeometry()
+
+            # Center the window on the screen
+            x = (geometry.width() - self.stack.width()) // 2
+            y = (geometry.height() - self.stack.height()) // 2
+            self.stack.move(x, y)
         else:
             self.settings_model.fullscreen_enabled = True
             self.save_settings()

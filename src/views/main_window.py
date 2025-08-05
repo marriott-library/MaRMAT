@@ -253,3 +253,15 @@ class MainWindow(QMainWindow):
             QCoreApplication.instance().quit()
         else:
             super().keyPressEvent(event)  # Keep default behavior
+  
+  
+    def resizeEvent(self, event):
+        # Get new size
+        width = self.width()
+        height = self.height()
+
+        # Use width or height to calculate font size
+        self.title_label.setFont(QFont("Calibri", width//45))  # Set font size
+
+        # Always call base implementation
+        super().resizeEvent(event)
