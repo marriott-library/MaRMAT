@@ -79,7 +79,7 @@ influential,AggrandizementTerm
 man of letters,AggrandizementTerm
 masterpiece,AggrandizementTerm
 masters,AggrandizementTerm
-matriarches,AggrandizementTerm
+matriarchs,AggrandizementTerm
 men of letters,AggrandizementTerm
 notable,AggrandizementTerm
 patriot,AggrandizementTerm
@@ -88,7 +88,7 @@ pioneer,AggrandizementTerm
 pioneer of,AggrandizementTerm
 pioneers,AggrandizementTerm
 plantation owner,AggrandizementTerm
-poineers in,AggrandizementTerm
+pioneers in,AggrandizementTerm
 preeminent,AggrandizementTerm
 prestigious,AggrandizementTerm
 prolific,AggrandizementTerm
@@ -180,7 +180,7 @@ matriarch,GenderTerm
 miss,GenderTerm
 mrs.,GenderTerm
 patriarch,GenderTerm
-patriarches,GenderTerm
+patriarchs,GenderTerm
 wife,GenderTerm
 wives,GenderTerm
 women noncitizen,GenderTerm
@@ -202,8 +202,8 @@ convict,IncarcerationTerm
 convicts,IncarcerationTerm
 criminal,IncarcerationTerm
 criminals,IncarcerationTerm
-deliquent,IncarcerationTerm
-deliquents,IncarcerationTerm
+delinquent,IncarcerationTerm
+delinquents,IncarcerationTerm
 ex-con,IncarcerationTerm
 ex-cons,IncarcerationTerm
 ex-offender,IncarcerationTerm
