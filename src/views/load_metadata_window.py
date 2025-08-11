@@ -93,6 +93,9 @@ class MetadataWindow(QWidget):
         self.delimiter_box.addItem("Select Delimiter")
         self.delimiter_box.addItem("Comma (,)")
         self.delimiter_box.addItem("Tab (\\t)")
+        self.delimiter_box.addItem("Semicolon (;)")
+        self.delimiter_box.addItem("Space ( )")
+        self.delimiter_box.addItem("Pipe (|)")
         self.delimiter_box.adjustSize()
 
         self.delimiter_box.setCurrentIndex(0)  # Default to "Select Delimiter"
@@ -150,6 +153,14 @@ class MetadataWindow(QWidget):
                     delimiter = ','
                 elif self.delimiter_box.currentText() == "Tab (\\t)":
                     delimiter = '\t'
+                elif self.delimiter_box.currentText() == "Semicolon (;)":
+                    delimiter = ';'
+                elif self.delimiter_box.currentText() == "Space ( )":
+                    delimiter = ' '
+                elif self.delimiter_box.currentText() == "Pipe (|)":
+                    delimiter = '|'
+                else:
+                    delimiter = ','  # Default to comma if somehow nothing is selected
 
                 # Load the file into a DataFrame with TSV-specific handling
                 self.df = pd.read_csv(self.file_path, delimiter=delimiter, encoding='utf-8', on_bad_lines='warn', nrows=1000)
