@@ -11,7 +11,7 @@ Adapted from:
     - Rachel Wittman (Creator of MaRMAT)
     - Kaylee Alexander (Creator of MaRMAT)
 
-Date: 2025-06-18
+Date: 2025-08-11
 
 """
 
@@ -44,6 +44,7 @@ class marmat_processing(QObject):
     categories = [] # Categories selected for matching
     matches_df = pd.DataFrame # DataFrame to store matches
     filtered_lexicon = pd.DataFrame # DataFrame to store filtered lexicon
+    output_file_type = '.csv' # Default output file type
 
     # Multithreading signals
     progress_update = pyqtSignal(int) # Signal to update progress bar
@@ -217,7 +218,13 @@ class marmat_processing(QObject):
 
         # Write results to CSV
         try:
-            self.matches_df.to_csv(output_file, index=False)
+            print(output_file)
+            if output_file.endswith('.csv'):
+                print("Saving results as CSV")
+                self.matches_df.to_csv(output_file, index=False)
+            else:
+                print("Saving results as TSV")
+                self.matches_df.to_csv(output_file, sep='\t', index=False)
             print(f"Results saved to {output_file}")
         except Exception as e:
             print(f"An error occurred while saving results: {e}")

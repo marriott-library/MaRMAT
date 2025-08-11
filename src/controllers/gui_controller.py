@@ -9,7 +9,7 @@ and manages the different views of the application.
 Author:
     - Aiden deBoer
 
-Date: 2025-06-18
+Date: 2025-08-11
 
 """
 
@@ -351,6 +351,18 @@ class MainController:
             subprocess.run(["xdg-open", self.output_path])
         else:
             raise OSError("Unsupported operating system")
+    
+    def set_output_file_type(self, file_type):
+        """
+        
+        Set the output file type.
+        
+        Args:
+            file_type (str): The file type to set for the output file.
+        
+        """
+        self.model.output_file_type = file_type
+        print("Output file type set:", file_type)
     
     def save_settings(self):
         """Save settings."""

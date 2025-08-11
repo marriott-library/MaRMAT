@@ -7,7 +7,7 @@ Window for performing matching in the MaRMAT application.
 Author:
     - Aiden deBoer
 
-Date: 2025-06-18
+Date: 2025-08-11
 
 """
 
@@ -176,7 +176,7 @@ class PerformMatchingWindow(QMainWindow):
             self,
             "Select Output File",
             directory,
-            "CSV Files (*.csv);;All Files (*)",
+            "CSV Files (*.csv);;TSV Files (*.tsv);;All Files (*)",
             options=options
         )
 
@@ -185,6 +185,9 @@ class PerformMatchingWindow(QMainWindow):
             print(f"Output file selected: {self.output_file_path}")
             self.controller.set_output_path(file_path)
 
+            if not self.output_file_path.endswith('.csv'):
+                self.controller.set_output_file_type('.tsv')  # Set output file type to TSV if not CSV
+            
             # Update the text edit to show the selected file path
             self.output_file_textedit.setText(f"{self.output_file_path}")
             self.perform_matching_button.setEnabled(True)  # Enable the perform matching button
