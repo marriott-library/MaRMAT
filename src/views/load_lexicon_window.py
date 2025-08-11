@@ -160,6 +160,7 @@ class LexiconWindow(QWidget):
 
     def go_to_next_page(self):
         """ Action when the 'Next' button is clicked """
+        self.controller.set_font_size(14)  # Set initial font size
         self.controller.show_data_selection_screen()
 
     def go_to_previous_page(self):
