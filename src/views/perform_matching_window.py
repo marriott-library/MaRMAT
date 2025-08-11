@@ -14,7 +14,7 @@ Date: 2025-08-11
 from pathlib import Path
 
 from PyQt6.QtCore import QCoreApplication, QThread, Qt, pyqtSignal
-from PyQt6.QtGui import QFont, QPixmap
+from PyQt6.QtGui import QFont, QPixmap, QKeySequence, QShortcut
 from PyQt6.QtWidgets import (
     QFileDialog,
     QHBoxLayout,
@@ -63,6 +63,16 @@ class PerformMatchingWindow(QMainWindow):
         self.controller = controller
         self.output_file_path = ""  # Store the selected output file path
         self.init_ui()
+        
+        # Shortcuts
+        zoom_in = QShortcut(QKeySequence("Ctrl+="), self)
+        zoom_in.activated.connect(lambda: self.controller.adjust_font_size(1))
+
+        zoom_out = QShortcut(QKeySequence("Ctrl+-"), self)
+        zoom_out.activated.connect(lambda: self.controller.adjust_font_size(-1))
+        
+        reset_zoom = QShortcut(QKeySequence("Ctrl+0"), self)
+        reset_zoom.activated.connect(lambda: self.controller.adjust_font_size(0))
 
     def init_ui(self):
         """Initialize the UI components for the Perform Matching window."""

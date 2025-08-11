@@ -7,14 +7,14 @@ Window for the main interface of the MaRMAT application.
 Author:
   - Aiden deBoer
 
-Date: 2025-06-18
+Date: 2025-08-11
 
 """
 
 from pathlib import Path  # For file path handling
 
 from PyQt6.QtCore import QCoreApplication, Qt, QTimer
-from PyQt6.QtGui import QFont, QIcon, QPixmap
+from PyQt6.QtGui import QFont, QIcon, QPixmap, QKeySequence, QShortcut
 from PyQt6.QtWidgets import (
     QHBoxLayout,
     QLabel,
@@ -22,7 +22,7 @@ from PyQt6.QtWidgets import (
     QMessageBox,
     QPushButton,
     QVBoxLayout,
-    QWidget,
+    QWidget
 )
 
 
@@ -61,6 +61,16 @@ class MainWindow(QMainWindow):
         
         self.init_ui()
         
+        # Shortcuts
+        zoom_in = QShortcut(QKeySequence("Ctrl+="), self)
+        zoom_in.activated.connect(lambda: self.controller.adjust_font_size(1))
+
+        zoom_out = QShortcut(QKeySequence("Ctrl+-"), self)
+        zoom_out.activated.connect(lambda: self.controller.adjust_font_size(-1))
+        
+        reset_zoom = QShortcut(QKeySequence("Ctrl+0"), self)
+        reset_zoom.activated.connect(lambda: self.controller.adjust_font_size(0))
+
         # Welcome message after a short delay
         # This is to ensure the UI is fully loaded before showing the alert
         QTimer.singleShot(500, lambda: self.show_alert("Welcome to MaRMAT 2.6.0-rc!", "The Marriott Reparative Metadata Assessment Tool (MaRMAT) is an open-source application created by librarians at the University of Utah’s J. Willard Marriott Library to help metadata practitioners flag various terms and phrases within metadata records using pre-curated and custom lexicons. MaRMAT is schema agnostic and supports library and museum professionals in assessing metadata for harmful, outdated, and otherwise problematic language as well as in performing text-based analyses of tabular metadata.<br><br><b>New to the tool?</b> Click Getting Started for a step-by-step walkthrough.<br><br>Click <b>OK</b> to continue."))

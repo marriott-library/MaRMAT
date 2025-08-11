@@ -20,8 +20,9 @@ import subprocess
 import pandas as pd
 
 # PyQt6
-from PyQt6.QtCore import QThread, pyqtSignal
+from PyQt6.QtCore import QThread
 from PyQt6.QtWidgets import QStackedWidget, QFileDialog
+from PyQt6.QtGui import QFont
 
 # Application views
 from views import (
@@ -438,3 +439,23 @@ class MainController:
         
         """
         return self.settings_model.default_results_path if self.settings_model.default_results_path else str(os.getcwd())
+    
+    def adjust_font_size(self, amount: int):
+        """
+        
+        Change the default font size by a specified amount.
+        
+        Args:
+            amount (int): The amount to change the font size by.
+        
+        """
+        if amount == 0:
+            current_font = self.stack.font()
+            current_font.setPointSize(18)  # Reset to default size
+            self.stack.setFont(current_font)
+            return
+        
+        current_font = self.stack.font()
+        new_size = max(8, current_font.pointSize() + amount)
+        current_font.setPointSize(new_size)
+        self.stack.setFont(current_font)

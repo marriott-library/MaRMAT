@@ -8,13 +8,13 @@ This module provides a GUI for users to select columns and categories from their
 Author:
     - Aiden deBoer
 
-Date: 2025-06-18
+Date: 2025-08-11
 
 """
 from PyQt6.QtCore import Qt, QCoreApplication
 from PyQt6.QtWidgets import (QMainWindow, QVBoxLayout, QHBoxLayout, QComboBox, 
                              QListWidget, QPushButton, QWidget, QLabel, QListWidgetItem)
-from PyQt6.QtGui import QFont
+from PyQt6.QtGui import QFont, QKeySequence, QShortcut
 
 class DataSelectionWindow(QMainWindow):
     """
@@ -39,6 +39,16 @@ class DataSelectionWindow(QMainWindow):
 
         self.controller = controller
         self.init_ui()
+        
+                # Shortcuts
+        zoom_in = QShortcut(QKeySequence("Ctrl+="), self)
+        zoom_in.activated.connect(lambda: self.controller.adjust_font_size(1))
+
+        zoom_out = QShortcut(QKeySequence("Ctrl+-"), self)
+        zoom_out.activated.connect(lambda: self.controller.adjust_font_size(-1))
+        
+        reset_zoom = QShortcut(QKeySequence("Ctrl+0"), self)
+        reset_zoom.activated.connect(lambda: self.controller.adjust_font_size(0))
 
     def init_ui(self):
         """Initialize the user interface for the data selection window."""

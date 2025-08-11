@@ -7,7 +7,7 @@ Window for loading a metadata file in the MaRMAT project.
 Author:
     - Aiden deBoer
 
-Date: 2025-06-18
+Date: 2025-08-11
 
 """
 import os
@@ -15,7 +15,7 @@ from pathlib import Path
 
 import pandas as pd
 from PyQt6.QtCore import QCoreApplication, QThread, Qt, pyqtSignal
-from PyQt6.QtGui import QFont, QPixmap
+from PyQt6.QtGui import QFont, QPixmap, QKeySequence, QShortcut
 from PyQt6.QtWidgets import (
     QFileDialog,
     QLabel,
@@ -61,6 +61,16 @@ class MetadataWindow(QWidget):
 
         self.controller = controller
         self.init_ui()
+        
+        # Shortcuts
+        zoom_in = QShortcut(QKeySequence("Ctrl+="), self)
+        zoom_in.activated.connect(lambda: self.controller.adjust_font_size(1))
+
+        zoom_out = QShortcut(QKeySequence("Ctrl+-"), self)
+        zoom_out.activated.connect(lambda: self.controller.adjust_font_size(-1))
+        
+        reset_zoom = QShortcut(QKeySequence("Ctrl+0"), self)
+        reset_zoom.activated.connect(lambda: self.controller.adjust_font_size(0))
 
     def init_ui(self):
         """ Initialize the user interface for the MetadataWindow """

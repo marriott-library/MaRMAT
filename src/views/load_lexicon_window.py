@@ -7,11 +7,11 @@ Window for loading a lexicon file in the MaRMAT project.
 Author:
     - Aiden deBoer
 
-Date: 2025-06-18
+Date: 2025-08-11
 
 """
 from PyQt6.QtCore import Qt, QCoreApplication
-from PyQt6.QtGui import QPixmap, QFont
+from PyQt6.QtGui import QPixmap, QFont, QKeySequence, QShortcut
 from PyQt6.QtWidgets import (
     QVBoxLayout,
     QHBoxLayout,
@@ -57,6 +57,16 @@ class LexiconWindow(QWidget):
 
         self.controller = controller
         self.init_ui()
+        
+                # Shortcuts
+        zoom_in = QShortcut(QKeySequence("Ctrl+="), self)
+        zoom_in.activated.connect(lambda: self.controller.adjust_font_size(1))
+
+        zoom_out = QShortcut(QKeySequence("Ctrl+-"), self)
+        zoom_out.activated.connect(lambda: self.controller.adjust_font_size(-1))
+        
+        reset_zoom = QShortcut(QKeySequence("Ctrl+0"), self)
+        reset_zoom.activated.connect(lambda: self.controller.adjust_font_size(0))
 
     def init_ui(self):
         """ Initialize the user interface for the LexiconWindow """
