@@ -113,6 +113,7 @@ class PerformMatchingWindow(QMainWindow):
         # Create a line edit to display the selected file path
         self.output_file_textedit = QLineEdit("Output file: Not selected")
         self.output_file_textedit.setAlignment(Qt.AlignmentFlag.AlignTop)
+        self.output_file_textedit.setReadOnly(True)
         file_location_layout.addWidget(self.output_file_textedit)
 
         # Create a button to select the output file location

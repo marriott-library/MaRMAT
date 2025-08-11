@@ -91,8 +91,8 @@ class MainWindow(QMainWindow):
         if pixmap.isNull():
             print(f"Error: Unable to load image from {self.path_to_image}")
         else:
-            scaled_pixmap = pixmap.scaled(512, 512, Qt.AspectRatioMode.KeepAspectRatio)  # Resize to 512x512 while maintaining aspect ratio
-            self.image_label.setPixmap(scaled_pixmap)
+            self.scaled_pixmap = pixmap.scaled(512, 512, Qt.AspectRatioMode.KeepAspectRatio)  # Resize to 512x512 while maintaining aspect ratio
+            self.image_label.setPixmap(self.scaled_pixmap)
 
         # Create and center the label’s text
         self.title_label = QLabel("<i>Welcome to <b>The Marriott Reparative Metadata Assessment Tool (MaRMAT)</b>!</i>")
@@ -272,6 +272,8 @@ class MainWindow(QMainWindow):
 
         # Use width or height to calculate font size
         self.title_label.setFont(QFont("Calibri", width//45))  # Set font size
+        # self.scaled_pixmap = self.scaled_pixmap.scaled(width//2, height//2, Qt.AspectRatioMode.KeepAspectRatio)  # Resize image while maintaining aspect ratio
+        # self.image_label.setPixmap(self.scaled_pixmap)
 
         # Always call base implementation
         super().resizeEvent(event)

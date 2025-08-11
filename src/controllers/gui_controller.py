@@ -473,4 +473,4 @@ class MainController:
         new_size = max(8, size)
         current_font.setPointSize(new_size)
         self.stack.setFont(current_font)
-        print("Font size set to:", new_size)
+        print("Font size set to:", new_size)    
