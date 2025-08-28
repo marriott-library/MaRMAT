@@ -8,15 +8,16 @@ This module provides a GUI for users to select columns and categories from their
 Author:
     - Aiden deBoer
 
-Date: 2025-08-11
+Date: 2025-08-28
 
 """
 from PyQt6.QtCore import Qt, QCoreApplication
 from PyQt6.QtWidgets import (QMainWindow, QVBoxLayout, QHBoxLayout, QComboBox, 
                              QListWidget, QPushButton, QWidget, QLabel, QListWidgetItem)
 from PyQt6.QtGui import QFont, QKeySequence, QShortcut
+from views.base_widget import BaseWidget
 
-class DataSelectionWindow(QMainWindow):
+class DataSelectionWindow(BaseWidget):
     """
     
     DataSelectionWindow class for selecting columns and categories from metadata and lexicon files.
@@ -40,16 +41,6 @@ class DataSelectionWindow(QMainWindow):
         self.controller = controller
         self.init_ui()
         
-                # Shortcuts
-        zoom_in = QShortcut(QKeySequence("Ctrl+="), self)
-        zoom_in.activated.connect(lambda: self.controller.adjust_font_size(1))
-
-        zoom_out = QShortcut(QKeySequence("Ctrl+-"), self)
-        zoom_out.activated.connect(lambda: self.controller.adjust_font_size(-1))
-        
-        reset_zoom = QShortcut(QKeySequence("Ctrl+0"), self)
-        reset_zoom.activated.connect(lambda: self.controller.adjust_font_size(0))
-
     def init_ui(self):
         """Initialize the user interface for the data selection window."""
 
@@ -67,8 +58,8 @@ class DataSelectionWindow(QMainWindow):
         title_label.setFont(QFont("Calibri", 48))
         title_desc_layout.addWidget(title_label)
         description_text = """
-On this screen, you will select the ID column from your metadata file that you want to use as a unique identifier (i.e., key column) between your original file and MaRMAT’s output file. 
-You will then select the fields from your metadata file that you want MaRMAT to analyze and the categories of terms from the lexicon that you want MaRMAT to check for in your metadata file.
+            On this screen, you will select the ID column from your metadata file that you want to use as a unique identifier (i.e., key column) between your original file and MaRMAT’s output file. 
+            You will then select the fields from your metadata file that you want MaRMAT to analyze and the categories of terms from the lexicon that you want MaRMAT to check for in your metadata file.
         """
         instructions_label = QLabel(description_text)
         instructions_label.setAlignment(Qt.AlignmentFlag.AlignTop)
@@ -95,6 +86,16 @@ You will then select the fields from your metadata file that you want MaRMAT to 
         self.column_list_widget = QListWidget()
         self.column_list_widget.setSelectionMode(QListWidget.SelectionMode.NoSelection)
         self.column_list_widget.addItems(self.controller.get_metadata_columns())
+
+        # # Print the self.column_list_widget items
+        # print("Metadata columns in list:")
+        # for index in range(self.column_list_widget.count()):
+        #     item = self.column_list_widget.item(index)
+        #     print(f" - {item.text()}")
+
+        # print("Metadata columns:")
+        # for col in self.controller.get_metadata_columns():
+        #     print(f" - {col}")
 
         for index in range(self.column_list_widget.count()):
             item = self.column_list_widget.item(index)
@@ -185,9 +186,7 @@ You will then select the fields from your metadata file that you want MaRMAT to 
         main_layout.addLayout(button_layout)
 
         # Set the layout to the window
-        container = QWidget()
-        container.setLayout(main_layout)
-        self.setCentralWidget(container)
+        self.setLayout(main_layout)
 
     def toggle_item_check_state(self, item: QListWidgetItem):
         """
@@ -296,6 +295,37 @@ You will then select the fields from your metadata file that you want MaRMAT to 
 
         self.close()
 
+    def refresh_data(self):
+        """
+        Refresh the metadata and lexicon lists from the controller.
+        Safe to call after controller loads files.
+        """
+
+        # --- Identifier dropdown ---
+        self.column_combo.clear()
+        metadata_columns = self.controller.get_metadata_columns() or []
+        self.column_combo.addItems(metadata_columns)
+
+        # --- Metadata list ---
+        self.column_list_widget.clear()
+        self.column_list_widget.addItems(metadata_columns)
+        for i in range(self.column_list_widget.count()):
+            self.column_list_widget.item(i).setCheckState(Qt.CheckState.Unchecked)
+
+        # --- Lexicon list ---
+        self.lexicon_list_widget.clear()
+        lexicon_columns = self.controller.get_lexicon_columns() or []
+        self.lexicon_list_widget.addItems(lexicon_columns)
+        for i in range(self.lexicon_list_widget.count()):
+            self.lexicon_list_widget.item(i).setCheckState(Qt.CheckState.Unchecked)
+
+        # --- Reset buttons ---
+        self.select_all_button_column.setText("Select All Fields")
+        self.select_all_button_lexicon.setText("Select All Fields")
+
+        # Update button state
+        self.update_button_state()
+
 
     def go_to_next_page(self):
         """ Action when the 'Next' button is clicked """
@@ -305,20 +335,3 @@ You will then select the fields from your metadata file that you want MaRMAT to 
     def go_to_previous_page(self):
         """ Return to the previous page, the metadata loading screen """
         self.controller.show_lexicon_screen()  # Go back to the metadata loading screen
-    
-    def keyPressEvent(self, event):
-        """
-
-        Override the key press event to handle specific key actions.
-        
-        Args:
-            event (QKeyEvent): The key press event to handle.
-        
-        """
-        if event.key() == Qt.Key.Key_F11:
-            self.controller.toggle_fullscreen()  # Call the controller's toggle_fullscreen method
-        elif event.key() == Qt.Key.Key_Escape:
-            # Close the application
-            QCoreApplication.instance().quit()
-        else:
-            super().keyPressEvent(event)  # Keep default behavior

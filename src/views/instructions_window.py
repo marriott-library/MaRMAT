@@ -7,14 +7,17 @@ This module defines the InstructionsWindow class, which provides detailed instru
 Author:
     - Aiden deBoer
 
-Date: 2025-08-11
+Date: 2025-08-28
 
 """
 from PyQt6.QtCore import Qt, QCoreApplication
 from PyQt6.QtWidgets import QMainWindow, QLabel, QVBoxLayout, QWidget, QScrollArea, QPushButton
 from PyQt6.QtGui import QFont, QKeySequence, QShortcut
 
-class InstructionsWindow(QMainWindow):
+from views.base_widget import BaseWidget
+    
+
+class InstructionsWindow(BaseWidget):
     """
     
     InstructionsWindow class for displaying detailed instructions on how to use the MaRMAT application.
@@ -39,15 +42,6 @@ class InstructionsWindow(QMainWindow):
         self.controller = controller
         self.init_ui()
         
-        # Shortcuts
-        zoom_in = QShortcut(QKeySequence("Ctrl+="), self)
-        zoom_in.activated.connect(lambda: self.controller.adjust_font_size(1))
-
-        zoom_out = QShortcut(QKeySequence("Ctrl+-"), self)
-        zoom_out.activated.connect(lambda: self.controller.adjust_font_size(-1))
-        
-        reset_zoom = QShortcut(QKeySequence("Ctrl+0"), self)
-        reset_zoom.activated.connect(lambda: self.controller.adjust_font_size(0))
 
     def init_ui(self):
         """Initialize the user interface for the InstructionsWindow."""
@@ -179,23 +173,4 @@ class InstructionsWindow(QMainWindow):
         layout.addWidget(back_button, alignment=Qt.AlignmentFlag.AlignCenter)
 
         # Set the central widget of the window
-        container = QWidget()
-        container.setLayout(layout)
-        self.setCentralWidget(container)
-
-    def keyPressEvent(self, event):
-        """
-        
-        Override the key press event to handle specific key actions.
-        
-        Args:
-            event (QKeyEvent): The key press event that occurred.
-
-        """
-        if event.key() == Qt.Key.Key_F11:
-            self.controller.toggle_fullscreen()  # Call the controller's toggle_fullscreen method
-        elif event.key() == Qt.Key.Key_Escape:
-            # Close the application
-            QCoreApplication.instance().quit()
-        else:
-            super().keyPressEvent(event)  # Keep default behavior
+        self.setLayout(layout)

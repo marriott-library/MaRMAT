@@ -7,7 +7,7 @@ Window for the main interface of the MaRMAT application.
 Author:
   - Aiden deBoer
 
-Date: 2025-08-11
+Date: 2025-08-28
 
 """
 
@@ -25,8 +25,10 @@ from PyQt6.QtWidgets import (
     QWidget
 )
 
+from views.base_widget import BaseWidget
 
-class MainWindow(QMainWindow):
+
+class MainWindow(BaseWidget):
     """
     
     Main window for the MaRMAT application.
@@ -61,15 +63,6 @@ class MainWindow(QMainWindow):
         
         self.init_ui()
         
-        # Shortcuts
-        zoom_in = QShortcut(QKeySequence("Ctrl+="), self)
-        zoom_in.activated.connect(lambda: self.controller.adjust_font_size(1))
-
-        zoom_out = QShortcut(QKeySequence("Ctrl+-"), self)
-        zoom_out.activated.connect(lambda: self.controller.adjust_font_size(-1))
-        
-        reset_zoom = QShortcut(QKeySequence("Ctrl+0"), self)
-        reset_zoom.activated.connect(lambda: self.controller.adjust_font_size(0))
 
         # Welcome message after a short delay
         # This is to ensure the UI is fully loaded before showing the alert
@@ -95,7 +88,7 @@ class MainWindow(QMainWindow):
             self.image_label.setPixmap(self.scaled_pixmap)
 
         # Create and center the label’s text
-        self.title_label = QLabel("<i>Welcome to <b>The Marriott Reparative Metadata Assessment Tool (MaRMAT)</b>!</i>")
+        self.title_label = QLabel("<i>Welcome to the <b>Marriott Reparative Metadata Assessment Tool (MaRMAT)</b></i>")
         self.title_label.setFont(QFont("Calibri", 36))  # Set font size
         self.title_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
@@ -133,60 +126,62 @@ class MainWindow(QMainWindow):
         self.version_label.setFont(QFont("Calibri", 10))  # Set font size for version label
         self.version_label.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignBottom)
 
-        self.credit_label = """<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Main Title Window</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: Calibri, sans-serif;
-      height: 100vh;
-      position: relative;
-    }
+        self.credit_label = """
+        <html lang="en">
+          <head>
+            <meta charset="UTF-8">
+            <title>Main Title Window</title>
+            <style>
+              body {
+                margin: 0;
+                padding: 0;
+                font-family: Calibri, sans-serif;
+                height: 100vh;
+                position: relative;
+              }
 
-    .credits {
-      position: absolute;
-      bottom: 10px;
-      left: 10px;
-      font-size: 12px;
-      color: #555;
-    }
+              .credits {
+                position: absolute;
+                bottom: 10px;
+                left: 10px;
+                font-size: 12px;
+                color: #555;
+              }
 
-    .credits h2 {
-      margin: 4px 0 2px 0;
-      font-size: 13px;
-    }
+              .credits h2 {
+                margin: 4px 0 2px 0;
+                font-size: 13px;
+              }
 
-    .credits ul {
-      margin: 0 0 8px 0;
-      padding-left: 16px;
-      list-style: none;
-    }
+              .credits ul {
+                margin: 0 0 8px 0;
+                padding-left: 16px;
+                list-style: none;
+              }
 
-    .credits li {
-      margin: 0;
-    }
-  </style>
-</head>
-<body>
+              .credits li {
+                margin: 0;
+              }
+            </style>
+          </head>
+          <body>
 
-  <div class="credits">
-    <h3>Concept and Design:</h3>
-    <ul>
-      <li>Rachel Wittmann</li>
-      <li>Kaylee Alexander</li>
-    </ul>
+            <div class="credits">
+              <h3>Concept and Design:</h3>
+              <ul>
+                <li>Rachel Wittmann</li>
+                <li>Kaylee Alexander</li>
+              </ul>
 
-    <h3>Programming and Development:</h3>
-    <ul>
-      <li>Aiden DeBoer</li>
-    </ul>
-  </div>
+              <h3>Programming and Development:</h3>
+              <ul>
+                <li>Aiden DeBoer</li>
+              </ul>
+            </div>
 
-</body>
-</html>"""
+          </body>
+          </html>
+          """
 
         self.credit_label = QLabel(self.credit_label)
         self.credit_label.setFont(QFont("Calibri", 10))  # Set font size for credit label
@@ -210,59 +205,7 @@ class MainWindow(QMainWindow):
         layout.addLayout(version_and_credit_container)
 
         # Create the container widget and set the layout
-        container = QWidget()
-        container.setLayout(layout)
-        self.setCentralWidget(container)
-    
-    def show_alert(self, title, message):
-        """
-        
-        Show an alert message box with a custom icon and message.
-
-        Args:
-            title (str): The title of the message box.
-            message (str): The message to display in the message box.
-        
-        """
-
-        if self.controller.settings_model.popups_enabled is False:
-            return
-
-        self.msg_box = QMessageBox(self)
-        self.msg_box.setWindowTitle(title)
-        self.msg_box.setText(message)
-        
-        # Load and set a custom icon
-        self.path_to_small_image = Path(__file__).resolve().parent.parent / "data" / "sticker-transparent-(64x64).png" 
-        if not self.path_to_small_image.exists():
-            print(f"Error: Icon file not found at {self.path_to_small_image}")
-        else:
-            pixmap = QPixmap(str(self.path_to_small_image))
-        self.msg_box.setIconPixmap(pixmap)
-
-        self.msg_box.setStandardButtons(QMessageBox.StandardButton.Ok)
-        self.msg_box.setStyleSheet("QMessageBox { font-size: 16px; }")
-        self.msg_box.setBaseSize(400, 200)
-        
-        self.msg_box.exec()
-        self.msg_box.deleteLater()
-    
-    def keyPressEvent(self, event):
-        """
-        
-        Override the key press event to handle specific key actions.
-        
-        Args:
-            event (QKeyEvent): The key press event to handle.
-
-        """
-        if event.key() == Qt.Key.Key_F11:
-            self.controller.toggle_fullscreen()  # Call the controller's toggle_fullscreen method
-        elif event.key() == Qt.Key.Key_Escape:
-            # Close the application
-            QCoreApplication.instance().quit()
-        else:
-            super().keyPressEvent(event)  # Keep default behavior
+        self.setLayout(layout)
   
   
     def resizeEvent(self, event):

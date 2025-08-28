@@ -9,7 +9,7 @@ and manages the different views of the application.
 Author:
     - Aiden deBoer
 
-Date: 2025-08-11
+Date: 2025-08-28
 
 """
 
@@ -103,12 +103,12 @@ class MainController:
 
     def show_data_selection_screen(self):
         """Switch to the data selection screen"""
-        self.data_selection_window.init_ui()  # Initialize the data selection window
+        self.data_selection_window.refresh_data()
         self.stack.setCurrentWidget(self.data_selection_window)
 
     def show_perform_matching_screen(self):
         """Switch to the perform matching screen"""
-        self.perform_matching_window.init_ui()
+        # self.perform_matching_window.init_ui()
         self.stack.setCurrentWidget(self.perform_matching_window)
         
     def show_settings_screen(self):

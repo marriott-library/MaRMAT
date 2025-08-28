@@ -7,7 +7,7 @@ Window for loading a lexicon file in the MaRMAT project.
 Author:
     - Aiden deBoer
 
-Date: 2025-08-11
+Date: 2025-08-28
 
 """
 from PyQt6.QtCore import Qt, QCoreApplication
@@ -26,9 +26,9 @@ from PyQt6.QtWidgets import (
 
 import pandas as pd
 from pathlib import Path  # For file path handling
-
-
-class LexiconWindow(QWidget):
+from views.base_widget import BaseWidget
+    
+class LexiconWindow(BaseWidget):
     """
     Window for loading a lexicon file in the MaRMAT project.
     This window allows users to load a CSV file containing lexicon data,
@@ -58,15 +58,6 @@ class LexiconWindow(QWidget):
         self.controller = controller
         self.init_ui()
         
-                # Shortcuts
-        zoom_in = QShortcut(QKeySequence("Ctrl+="), self)
-        zoom_in.activated.connect(lambda: self.controller.adjust_font_size(1))
-
-        zoom_out = QShortcut(QKeySequence("Ctrl+-"), self)
-        zoom_out.activated.connect(lambda: self.controller.adjust_font_size(-1))
-        
-        reset_zoom = QShortcut(QKeySequence("Ctrl+0"), self)
-        reset_zoom.activated.connect(lambda: self.controller.adjust_font_size(0))
 
     def init_ui(self):
         """ Initialize the user interface for the LexiconWindow """
@@ -183,50 +174,3 @@ class LexiconWindow(QWidget):
             QCoreApplication.instance().quit()
         else:
             super().keyPressEvent(event)  # Keep default behavior
-    
-    def show_alert(self, title, message) -> None:
-        """ 
-        
-        Show an alert message
-        
-        Args:
-            title (str): The title of the alert message box.
-            message (str): The message to display in the alert box.
-        
-        Returns:
-            None
-
-        """
-
-        if self.controller.settings_model.popups_enabled is False:
-            return
-
-        self.msg_box = QMessageBox(self)
-        self.msg_box.setWindowTitle(title)
-        self.msg_box.setText(message)
-        
-        # Load and set a custom icon
-        self.path_to_small_image = Path(__file__).resolve().parent.parent / "data" / "sticker-transparent-(64x64).png" 
-        if not self.path_to_small_image.exists():
-            print(f"Error: Icon file not found at {self.path_to_small_image}")
-        else:
-            pixmap = QPixmap(str(self.path_to_small_image))
-        self.msg_box.setIconPixmap(pixmap)
-
-        self.msg_box.setStandardButtons(QMessageBox.StandardButton.Ok)
-        self.msg_box.setStyleSheet("QMessageBox { font-size: 16px; }")
-        self.msg_box.setBaseSize(400, 200)
-        
-        self.msg_box.exec()
-        self.msg_box.deleteLater()
-    
-    def resizeEvent(self, event):
-        # Get new size
-        width = self.width()
-        height = self.height()
-
-        # Use width or height to calculate font size
-        self.info_label.setFont(QFont("Calibri", width//60))  # Set font size
-
-        # Always call base implementation
-        super().resizeEvent(event)

@@ -7,7 +7,7 @@ Window for performing matching in the MaRMAT application.
 Author:
     - Aiden deBoer
 
-Date: 2025-08-11
+Date: 2025-08-28
 
 """
 
@@ -29,8 +29,9 @@ from PyQt6.QtWidgets import (
     QVBoxLayout,
     QWidget,
 )
+from views.base_widget import BaseWidget
 
-class PerformMatchingWindow(QMainWindow):
+class PerformMatchingWindow(BaseWidget):
     """
     
     Window for performing matching in the MaRMAT application.
@@ -64,15 +65,7 @@ class PerformMatchingWindow(QMainWindow):
         self.output_file_path = ""  # Store the selected output file path
         self.init_ui()
         
-        # Shortcuts
-        zoom_in = QShortcut(QKeySequence("Ctrl+="), self)
-        zoom_in.activated.connect(lambda: self.controller.adjust_font_size(1))
 
-        zoom_out = QShortcut(QKeySequence("Ctrl+-"), self)
-        zoom_out.activated.connect(lambda: self.controller.adjust_font_size(-1))
-        
-        reset_zoom = QShortcut(QKeySequence("Ctrl+0"), self)
-        reset_zoom.activated.connect(lambda: self.controller.adjust_font_size(0))
 
     def init_ui(self):
         """Initialize the UI components for the Perform Matching window."""
@@ -173,16 +166,25 @@ class PerformMatchingWindow(QMainWindow):
         layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
         # Set the central widget of the window
-        container = QWidget()
-        container.setLayout(layout)
-        self.setCentralWidget(container)
+        self.setLayout(layout)
 
     def select_output_file(self):
         """Open a file dialog to select the output file location."""
         options = QFileDialog.Option(0)  # Initialize with no special options
 
-        directory = str(Path(self.controller.settings_model.default_results_path) / "MaRMAT_output.csv") # Use the default results path from settings
+        # Safely construct the default directory
+        try:
+            default_path = self.controller.settings_model.default_results_path
+            if default_path and Path(default_path).exists():
+                directory = str(Path(default_path) / "MaRMAT_output.csv")
+            else:
+                directory = "MaRMAT_output.csv"  # Fallback to current directory
+            print(f"Default directory: {directory}")
+        except Exception as e:
+            print(f"Error setting default directory: {e}")
+            directory = "MaRMAT_output.csv"
 
+        print("Opening file dialog...")
         file_path, _ = QFileDialog.getSaveFileName(
             self,
             "Select Output File",
@@ -190,8 +192,10 @@ class PerformMatchingWindow(QMainWindow):
             "CSV Files (*.csv);;TSV Files (*.tsv);;All Files (*)",
             options=options
         )
-
-        if file_path:
+        print(f"File dialog returned: '{file_path}'")
+        
+        if file_path and file_path.strip():  # Check for both empty string and whitespace
+            print(f"Valid file path selected: {file_path}")
             self.output_file_path = file_path
             print(f"Output file selected: {self.output_file_path}")
             self.controller.set_output_path(file_path)
@@ -200,11 +204,31 @@ class PerformMatchingWindow(QMainWindow):
                 self.controller.set_output_file_type('.tsv')  # Set output file type to TSV if not CSV
             
             # Update the text edit to show the selected file path
+            print("Updating text edit...")
             self.output_file_textedit.setText(f"{self.output_file_path}")
-            self.perform_matching_button.setEnabled(True)  # Enable the perform matching button
-            self.perform_matching_button.setStyleSheet("background-color: #890000; color: white;")  # Set button color
-            self.select_file_button.setStyleSheet("")  # Set button color
-    
+            
+            # Enable and style the perform matching button
+            print("Enabling perform matching button...")
+            self.perform_matching_button.setEnabled(True)
+            self.perform_matching_button.setStyleSheet("background-color: #890000; color: white;")
+            
+            # Reset the select button style (remove highlight)
+            print("Resetting select button style...")
+            self.select_file_button.setStyleSheet("")
+            
+            # Show success alert
+            print("Showing success alert...")
+            self.show_alert("Output File Selected", f"Output file selected: {self.output_file_path}")
+            
+            # Set tooltip to show full path
+            self.output_file_textedit.setToolTip(self.output_file_path)
+            
+            print("File selection completed successfully")
+        else:
+            # User cancelled the dialog - optionally handle this case
+            print("File selection cancelled by user or empty path returned")
+            # You might want to show a message or leave things as they were
+
     def show_matching_results(self):
         """Display the matching results in the table widget."""
         df = self.controller.get_matching_results()
@@ -247,13 +271,13 @@ class PerformMatchingWindow(QMainWindow):
             self.table_widget.setColumnCount(1)
             self.table_widget.setItem(0, 0, QTableWidgetItem("No matching results to display."))
             print("No matching results to display.")
-        
+
     def perform_matching(self):
         """Perform the matching process."""
 
         print("Performing matching...")
         
-        self.controller.set_output_path(self.output_file_textedit.text())  # Ensure the output path is set before starting matching
+        self.controller.set_output_path(self.output_file_path)  # Ensure the output path is set before starting matching
 
         self.perform_matching_button.setEnabled(False)
         self.select_file_button.setEnabled(False)
@@ -288,55 +312,6 @@ class PerformMatchingWindow(QMainWindow):
         
         """
         self.progress_bar.setValue(value)
-    
-    def keyPressEvent(self, event):
-        """
-        
-        Override the key press event to handle specific key actions.
-        
-        Args:
-            event (QKeyEvent): The key press event to handle.
-
-        """
-        if event.key() == Qt.Key.Key_F11:
-            self.controller.toggle_fullscreen()  # Call the controller's toggle_fullscreen method
-        elif event.key() == Qt.Key.Key_Escape:
-            # Close the application
-            QCoreApplication.instance().quit()
-        else:
-            super().keyPressEvent(event)  # Keep default behavior
-
-    def show_alert(self, title, message):
-        """
-        
-        Show an alert message box with a custom icon and message.
-
-        Args:
-            title (str): The title of the message box.
-            message (str): The message to display in the message box.
-
-        """
-        if self.controller.settings_model.popups_enabled is False:
-            return
-
-        self.msg_box = QMessageBox(self)
-        self.msg_box.setWindowTitle(title)
-        self.msg_box.setText(message)
-        
-        # Load and set a custom icon
-        self.path_to_small_image = Path(__file__).resolve().parent.parent / "data" / "sticker-transparent-(64x64).png" 
-        if not self.path_to_small_image.exists():
-            print(f"Error: Icon file not found at {self.path_to_small_image}")
-        else:
-            pixmap = QPixmap(str(self.path_to_small_image))
-        self.msg_box.setIconPixmap(pixmap)
-
-        self.msg_box.setStandardButtons(QMessageBox.StandardButton.Ok)
-        self.msg_box.setStyleSheet("QMessageBox { font-size: 16px; }")
-        self.msg_box.setBaseSize(400, 200)
-        
-        self.msg_box.exec()
-        self.msg_box.deleteLater()
 
 class Worker(QThread):
     """
