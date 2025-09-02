@@ -126,7 +126,7 @@ class MainController:
         self.stack.setCurrentWidget(self.main_window)
         self.stack.showMaximized()  # Show the main window in full screen mode
         self.stack.setWindowIcon(self.main_window.windowIcon())  # Set the window icon
-        self.stack.setWindowTitle("MaRMAT 2.6.0-rc")  # Set the window title
+        self.stack.setWindowTitle("MaRMAT 2.6.1-rc")  # Set the window title
         
         self.stack.setMinimumSize(540, 420)
         

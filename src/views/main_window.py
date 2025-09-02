@@ -66,13 +66,13 @@ class MainWindow(BaseWidget):
 
         # Welcome message after a short delay
         # This is to ensure the UI is fully loaded before showing the alert
-        QTimer.singleShot(500, lambda: self.show_alert("Welcome to MaRMAT 2.6.0-rc!", "The Marriott Reparative Metadata Assessment Tool (MaRMAT) is an open-source application created by librarians at the University of Utah’s J. Willard Marriott Library to help metadata practitioners flag various terms and phrases within metadata records using pre-curated and custom lexicons. MaRMAT is schema agnostic and supports library and museum professionals in assessing metadata for harmful, outdated, and otherwise problematic language as well as in performing text-based analyses of tabular metadata.<br><br><b>New to the tool?</b> Click Getting Started for a step-by-step walkthrough.<br><br>Click <b>OK</b> to continue."))
+        QTimer.singleShot(500, lambda: self.show_alert("Welcome to MaRMAT 2.6.1-rc!", "The Marriott Reparative Metadata Assessment Tool (MaRMAT) is an open-source application created by librarians at the University of Utah’s J. Willard Marriott Library to help metadata practitioners flag various terms and phrases within metadata records using pre-curated and custom lexicons. MaRMAT is schema agnostic and supports library and museum professionals in assessing metadata for harmful, outdated, and otherwise problematic language as well as in performing text-based analyses of tabular metadata.<br><br><b>New to the tool?</b> Click Getting Started for a step-by-step walkthrough.<br><br>Click <b>OK</b> to continue."))
 
 
     def init_ui(self):
         """Initialize the user interface."""
         # Create the main layout for the window
-        self.setWindowTitle("MaRMAT 2.6.0-rc")
+        self.setWindowTitle("MaRMAT 2.6.1-rc")
         layout = QVBoxLayout()
         button_layout = QVBoxLayout()
 
@@ -121,7 +121,7 @@ class MainWindow(BaseWidget):
         # Version label
         version_and_credit_container = QHBoxLayout()
         
-        self.version_label = QLabel("""MaRMAT 2.6.0-rc<br>© 2025<br><b><a href="https://docs.google.com/forms/d/e/1FAIpQLScIxw2IEda2-GaUtNawuQCC4IrCrXiQgZybduVjKLj99peVLg/viewform?usp=dialog">Report Bug</a></b>""")
+        self.version_label = QLabel("""MaRMAT 2.6.1-rc<br>© 2025<br><b><a href="https://docs.google.com/forms/d/e/1FAIpQLScIxw2IEda2-GaUtNawuQCC4IrCrXiQgZybduVjKLj99peVLg/viewform?usp=dialog">Report Bug</a></b>""")
         self.version_label.setOpenExternalLinks(True)  # Enable clickable links in the label
         self.version_label.setFont(QFont("Calibri", 10))  # Set font size for version label
         self.version_label.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignBottom)
