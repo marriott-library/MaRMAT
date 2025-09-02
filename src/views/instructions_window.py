@@ -56,11 +56,11 @@ class InstructionsWindow(BaseWidget):
 
         From the MaRMAT homepage, click <b>Run MaRMAT</b>, then you’ll follow the prompts on each screen perform the analysis. Below is an overview of each step as well as additional information about how you can use MaRMAT.
         
-        <h2 style="font-size: 2em;">Step 1: Load Your Metadata File (.csv)</h2>
+        <h2 style="font-size: 2em;">Step 1: Load Your Metadata File (.csv/.tsv)</h2>
 
         <p style="margin-left: 1em;">
-        Click the <b>Load Metadata</b> button and select the metadata file you want MaRMAT to analyze. This should be a <b>CSV (Comma-Separated Values)</b> file containing the records you’d like to assess (e.g., collections metadata, bibliographic metadata, archival descriptions, catalog entries). Your file should include:
-        
+        Click the <b>Load Metadata</b> button and select the metadata file you want MaRMAT to analyze. This should be a <b>CSV (Comma-Separated Values)</b> or <b>TSV (Tab-Separated Values)</b> file containing the records you’d like to assess (e.g., collections metadata, bibliographic metadata, archival descriptions, catalog entries). Your file should include:
+
         <ul>
             <li>Descriptive fields (e.g., Title, Description, Subject)</li>
             <li>A unique identifier (e.g., ID, Accession Number) in one of the columns</li>
@@ -148,7 +148,11 @@ class InstructionsWindow(BaseWidget):
         <p style="margin-left: 1em;">
         When the process is complete, click <b>Finish</b> to return to the MaRMAT homepage.
         </p>
-
+        
+        <h2 style="font-size: 2em;">Additional Information</h2>
+        <p style="margin-left: 1em;">
+        You can resize the screen by pressing <b>Ctrl</b> and using the mouse wheel to zoom in and out. You can reset the zoom level by pressing <b>Ctrl</b> + <b>0</b>.
+        </p>
 
         """
 
