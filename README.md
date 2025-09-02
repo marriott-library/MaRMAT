@@ -120,7 +120,8 @@ Option B:
 4. Open MaRMAT by double-clicking the `run-marmat.bat` file.
 
 ## 4. Tips
-- Ensure that both the lexicon and metadata files are in CSV format.
+- Ensure metadata files can be in a TSV or CSV format.
+- Ensure the lexicon files are in a CSV format.
 - The lexicon file should contain columns for terms and their corresponding categories ("Terms","Category").
 - The metadata file should contain the text data to be analyzed, with each row representing a separate entry.
 - The metadata file should contain a column, such as a Record ID, that you can use as an "Identifier" to reconcile the tool's output with your original metadata. 
