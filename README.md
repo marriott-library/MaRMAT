@@ -31,7 +31,7 @@ The Marriott Reparative Metadata Assessment Tool (MaRMAT) is an open-source appl
 7. [Report Bug](#7-report-bug)
 
 ## 1. About
-The Marriott Reparative Metadata Assessment Tool (MaRMAT) is an open-source application created by librarians at the University of Utah’s J. Willard Marriott Library to help metadata practitioners flag various terms and phrases within metadata records using pre-curated and custom lexicons. MaRMAT is schema agnostic and supports library and museum professionals in assessing metadata for harmful, outdated, and otherwise problematic language in tabular metadata. In addition to reparative work, MaRMAT can be used to support broader metadata assessment and collections content analysis.
+The Marriott Reparative Metadata Assessment Tool (MaRMAT) is an open-source application created by librarians at the University of Utah’s J. Willard Marriott Library to help metadata practitioners flag various terms and phrases within metadata records using pre-curated and custom lexicons. MaRMAT is schema agnostic and supports library and museum professionals in assessing metadata for harmful, outdated, and otherwise problematic language in tabular metadata in CSV or TSV file formats. In addition to reparative work, MaRMAT can be used to support broader metadata assessment and collections content analysis.
 
 Identifying potentially harmful language—including problematic or outdated Library of Congress Subject Headings—is one important step toward reparative metadata practices. However, deciding what to change and how to change it requires thoughtful judgment by metadata practitioners. This work calls for awareness, education, and sensitivity to the communities and histories represented in digital collections. *[The Inclusive Metadata Toolkit](https://osf.io/yf96h)*, created by the Digital Library Federation’s Cultural Assessment Working Group, offers valuable resources to support decision-making in reparative metadata work. 
 
@@ -120,7 +120,8 @@ Option B:
 4. Open MaRMAT by double-clicking the `run-marmat.bat` file.
 
 ## 4. Tips
-- Ensure that both the lexicon and metadata files are in CSV format.
+- Ensure metadata files can be in a TSV or CSV format.
+- Ensure the lexicon files are in a CSV format.
 - The lexicon file should contain columns for terms and their corresponding categories ("Terms","Category").
 - The metadata file should contain the text data to be analyzed, with each row representing a separate entry.
 - The metadata file should contain a column, such as a Record ID, that you can use as an "Identifier" to reconcile the tool's output with your original metadata. 
