@@ -116,9 +116,40 @@ class marmat_processing(QObject):
         """
         file_path = re.sub(r'["]', '', file_path)
         try:
-            self.metadata_df = pd.read_csv(file_path, delimiter=delimiter, encoding='utf-8', on_bad_lines='warn')
+            file_extension = Path(file_path).suffix.lower()
+            
+            # Handle XML files separately
+            if file_extension == '.xml':
+                try:
+                    # Try to parse EAD files with proper namespace for c01/did elements
+                    namespaces = {'ead': 'urn:isbn:1-931666-22-9'}
+                    self.metadata_df = pd.read_xml(file_path, xpath='.//ead:c01/ead:did', 
+                                                 namespaces=namespaces, parser='etree', encoding='utf-8')
+                except Exception:
+                    try:
+                        # Try parsing c01 elements without namespace (for other XML types)
+                        self.metadata_df = pd.read_xml(file_path, xpath='.//c01/did', parser='etree', encoding='utf-8')
+                    except Exception:
+                        try:
+                            # Fallback: read the whole XML with etree parser
+                            self.metadata_df = pd.read_xml(file_path, parser='etree', encoding='utf-8')
+                        except Exception:
+                            # If XML parsing fails completely, create single row with raw XML
+                            with open(file_path, 'r', encoding='utf-8') as f:
+                                xml_content = f.read()
+                            self.metadata_df = pd.DataFrame({'xml_content': [xml_content]})
+            else:
+                # Handle CSV/TSV files
+                self.metadata_df = pd.read_csv(file_path, delimiter=delimiter, encoding='utf-8', on_bad_lines='warn')
+            
             print("Metadata loaded successfully.")
-            self.metadata_df = self.metadata_df.rename(columns=str.lower)
+            
+            # Normalize column names to lowercase when possible
+            try:
+                self.metadata_df = self.metadata_df.rename(columns=str.lower)
+            except Exception:
+                pass  # Skip if renaming fails
+                
             return True
         except Exception as e:
             print(f"An error occurred while loading metadata: {e}")

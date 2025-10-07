@@ -138,7 +138,7 @@ class MetadataWindow(BaseWidget):
             self,
             "Open CSV/TSV",
             self.controller.get_default_metadata_path(),
-            "Data Files (*.csv *.tsv);;CSV Files (*.csv);;TSV Files (*.tsv);;All Files (*)"
+            "Data Files (*.csv *.tsv *.xml);;CSV Files (*.csv);;TSV Files (*.tsv);;XML Files (*.xml);;All Files (*)"
         )
         
         if self.file_path:
@@ -164,12 +164,33 @@ class MetadataWindow(BaseWidget):
                 else:
                     delimiter = ','  # Default to comma if somehow nothing is selected
 
+
                 # Load the file into a DataFrame with TSV-specific handling
-                self.df = pd.read_csv(self.file_path, delimiter=delimiter, encoding='utf-8', on_bad_lines='warn', nrows=1000)
+                if file_extension.lower() == '.xml':
+                    try:
+                        # Try to parse EAD files with proper namespace for c01/did elements
+                        namespaces = {'ead': 'urn:isbn:1-931666-22-9'}
+                        self.df = pd.read_xml(self.file_path, xpath='.//ead:c01/ead:did', 
+                                            namespaces=namespaces, parser='etree', encoding='utf-8')
+                    except Exception:
+                        try:
+                            # Try parsing c01 elements without namespace (for other XML types)
+                            self.df = pd.read_xml(self.file_path, xpath='.//c01/did', parser='etree', encoding='utf-8')
+                        except Exception:
+                            try:
+                                # Fallback: read the whole XML with etree parser
+                                self.df = pd.read_xml(self.file_path, parser='etree', encoding='utf-8')
+                            except Exception:
+                                # If XML parsing fails, create single row with raw XML
+                                with open(self.file_path, 'r', encoding='utf-8') as f:
+                                    xml_content = f.read()
+                                self.df = pd.DataFrame({'xml_content': [xml_content]})
+                else:
+                    self.df = pd.read_csv(self.file_path, delimiter=delimiter, encoding='utf-8', on_bad_lines='warn', nrows=1000)
 
                 self.load_button.setDisabled(True)  # Disable the load button after loading the file
                 self.load_button.setStyleSheet("")  # Change button color to grey
-                self.info_label.setText(f"Loading CSV: {self.file_path} <br> <b>Please wait...</b>")
+                self.info_label.setText(f"Loading Metadata: {self.file_path} <br> <b>Please wait...</b>")
 
                 file_size = os.path.getsize(self.file_path)
                 print(f"File size: {file_size} bytes")
@@ -207,6 +228,13 @@ class MetadataWindow(BaseWidget):
             self.next_button.setEnabled(True)
             self.info_label.setText(f"CSV loaded successfully: {self.file_path}")
 
+            # Use the model's DataFrame if available (especially important for XML)
+            try:
+                if hasattr(self.controller.model, 'metadata_df') and self.controller.model.metadata_df is not None:
+                    self.df = self.controller.model.metadata_df
+            except Exception:
+                pass  # Fall back to the view's DataFrame
+                
             self.display_csv()
             self.show_alert("Success", "Metadata loaded successfully!<br>Only the <b>first 1000 rows</b> are displayed in the table widget. <br>Click Next to proceed to the next step.")
 
