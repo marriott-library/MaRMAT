@@ -15,7 +15,9 @@ Date: 2025-08-11
 
 """
 
-from pathlib import Path # Pathlib for file path handling
+from logging import root
+from pathlib import Path
+from bs4 import BeautifulSoup # BeautifulSoup for XML parsing
 import pandas as pd # Pandas for data manipulation
 import re # Regex for pattern matching
 from PyQt6.QtCore import QObject, pyqtSignal
@@ -118,42 +120,81 @@ class marmat_processing(QObject):
         try:
             file_extension = Path(file_path).suffix.lower()
             
-            # Handle XML files separately
+            # --- MODIFICATION START ---
             if file_extension == '.xml':
-                try:
-                    # Try to parse EAD files with proper namespace for c01/did elements
-                    namespaces = {'ead': 'urn:isbn:1-931666-22-9'}
-                    self.metadata_df = pd.read_xml(file_path, xpath='.//ead:c01/ead:did', 
-                                                 namespaces=namespaces, parser='etree', encoding='utf-8')
-                except Exception:
-                    try:
-                        # Try parsing c01 elements without namespace (for other XML types)
-                        self.metadata_df = pd.read_xml(file_path, xpath='.//c01/did', parser='etree', encoding='utf-8')
-                    except Exception:
-                        try:
-                            # Fallback: read the whole XML with etree parser
-                            self.metadata_df = pd.read_xml(file_path, parser='etree', encoding='utf-8')
-                        except Exception:
-                            # If XML parsing fails completely, create single row with raw XML
-                            with open(file_path, 'r', encoding='utf-8') as f:
-                                xml_content = f.read()
-                            self.metadata_df = pd.DataFrame({'xml_content': [xml_content]})
+                # Use the new, powerful EAD processor
+                self.metadata_df = self._process_ead_xml(file_path)
+                # Set the identifier column automatically for EAD
+                self.identifier_column = 'identifier'
+            # --- MODIFICATION END ---
             else:
-                # Handle CSV/TSV files
+                # Handle CSV/TSV files as before
                 self.metadata_df = pd.read_csv(file_path, delimiter=delimiter, encoding='utf-8', on_bad_lines='warn')
             
             print("Metadata loaded successfully.")
             
-            # Normalize column names to lowercase when possible
+            # Normalize column names to lowercase
             try:
-                self.metadata_df = self.metadata_df.rename(columns=str.lower)
+                self.metadata_df.rename(columns=str.lower, inplace=True)
             except Exception:
-                pass  # Skip if renaming fails
+                pass
                 
             return True
         except Exception as e:
             print(f"An error occurred while loading metadata: {e}")
             return False
+
+
+    def _process_ead_xml(self, file_path):
+        """
+        Parses an EAD XML file using BeautifulSoup to extract relevant text fields
+        into a structured DataFrame.
+
+        Args:
+            file_path (str): Path to the EAD XML file.
+
+        Returns:
+            DataFrame: DataFrame containing extracted fields for matching.
+
+        """
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                soup = BeautifulSoup(f, 'xml')
+
+            # Extract identifier (eadid)
+            eadid = soup.find('eadid').text if soup.find('eadid') else Path(file_path).stem
+
+            # Extract title
+            collection_title_tag = soup.find('unittitle')
+            collection_title = ' '.join(collection_title_tag.text.split()) if collection_title_tag else "No Title Found"
+
+            # Combine all relevant text for searching into a single field
+            # This includes paragraphs, scope content, and other descriptive tags
+            p_tags = soup.find_all('p')
+            scopecontent_tags = soup.find_all('scopecontent')
+            
+            all_text_parts = [p.get_text(separator=" ", strip=True) for p in p_tags]
+            all_text_parts.extend([s.get_text(separator=" ", strip=True) for s in scopecontent_tags])
+
+            searchable_text = ' '.join(all_text_parts)
+
+            # Create a DataFrame with the extracted data.
+            data = {
+                'identifier': [eadid],
+                'collection_title': [collection_title],
+                'searchable_text': [searchable_text]
+            }
+            df = pd.DataFrame(data)
+            
+            print(f"Successfully processed EAD file: {file_path}")
+            return df
+        
+        except Exception as e:
+            print(f"Could not process EAD file with BeautifulSoup: {e}")
+            # Fallback to reading the raw content if detailed parsing fails
+            with open(file_path, 'r', encoding='utf-8') as f:
+                xml_content = f.read()
+            return pd.DataFrame({'xml_content': [xml_content]})
 
     def select_columns(self, columns):
         """
@@ -337,6 +378,8 @@ class marmat_processing(QObject):
         
         
         self.matches_df = pd.DataFrame(matches)
+
+        self.matches_df = self.matches_df.sort_values(by='Identifier')
         
         self.progress_update.emit(100)
         self.finished.emit(self.matches_df)  # Emit signal when matching completes
