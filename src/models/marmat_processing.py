@@ -120,13 +120,11 @@ class marmat_processing(QObject):
         try:
             file_extension = Path(file_path).suffix.lower()
             
-            # --- MODIFICATION START ---
             if file_extension == '.xml':
                 # Use the new, powerful EAD processor
                 self.metadata_df = self._process_ead_xml(file_path)
                 # Set the identifier column automatically for EAD
                 self.identifier_column = 'identifier'
-            # --- MODIFICATION END ---
             else:
                 # Handle CSV/TSV files as before
                 self.metadata_df = pd.read_csv(file_path, delimiter=delimiter, encoding='utf-8', on_bad_lines='warn')
