@@ -21,6 +21,7 @@ from bs4 import BeautifulSoup # BeautifulSoup for XML parsing
 import pandas as pd # Pandas for data manipulation
 import re # Regex for pattern matching
 from PyQt6.QtCore import QObject, pyqtSignal
+import numpy as np # Needed for handling missing values
 
 class marmat_processing(QObject):
     """
@@ -146,53 +147,154 @@ class marmat_processing(QObject):
     def _process_ead_xml(self, file_path):
         """
         Parses an EAD XML file using BeautifulSoup to extract relevant text fields
-        into a structured DataFrame.
+        into a structured DataFrame, including a detailed inventory of components.
 
         Args:
             file_path (str): Path to the EAD XML file.
 
         Returns:
-            DataFrame: DataFrame containing extracted fields for matching.
-
+            DataFrame: DataFrame containing extracted fields, with a 'components'
+                    column listing each box/folder and its details.
         """
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 soup = BeautifulSoup(f, 'xml')
 
-            # Extract identifier (eadid)
+            # --- COLLECTION-LEVEL METADATA ---
             eadid = soup.find('eadid').text if soup.find('eadid') else Path(file_path).stem
-
-            # Extract title
             collection_title_tag = soup.find('unittitle')
             collection_title = ' '.join(collection_title_tag.text.split()) if collection_title_tag else "No Title Found"
+            biohist_tag = soup.find('bioghist')
+            biohist_text = ' '.join(biohist_tag.get_text(separator=" ", strip=True).split()) if biohist_tag else ""
 
-            # Combine all relevant text for searching into a single field
-            # This includes paragraphs, scope content, and other descriptive tags
-            p_tags = soup.find_all('p')
-            scopecontent_tags = soup.find_all('scopecontent')
-            
-            all_text_parts = [p.get_text(separator=" ", strip=True) for p in p_tags]
-            all_text_parts.extend([s.get_text(separator=" ", strip=True) for s in scopecontent_tags])
+            # --- NEW: COMPONENT-LEVEL EXTRACTION (Boxes and Folders) ---
+            components_list = []
+            # Find all component tags like <c>, <c01>, <c02>... using a regular expression
+            component_tags = soup.find_all(re.compile(r'^c\d{,2}$'))
 
+            for c_tag in component_tags:
+                # Process a component only if it contains a <container> tag (i.e., it's a physical unit)
+                if c_tag.find('container'):
+                    component_data = {
+                        'box': None,
+                        'folder': None,
+                        'title': '',
+                        'description': ''
+                    }
+
+                    # <did> usually holds the title and container info
+                    did_tag = c_tag.find('did', recursive=False)
+                    if did_tag:
+                        # Extract title for the component
+                        unittitle_tag = did_tag.find('unittitle')
+                        if unittitle_tag:
+                            component_data['title'] = ' '.join(unittitle_tag.text.split())
+
+                        # Extract box and folder numbers from <container> tags
+                        for container in did_tag.find_all('container'):
+                            container_type = container.get('type', '').lower()
+                            if container_type in ['box', 'folder']:
+                                component_data[container_type] = container.text.strip()
+                    
+                    # Extract descriptive text like <scopecontent> for this specific component
+                    scopecontent_tag = c_tag.find('scopecontent', recursive=False)
+                    if scopecontent_tag:
+                        component_data['description'] = ' '.join(scopecontent_tag.get_text(separator=' ', strip=True).split())
+                    
+                    # Add the extracted component data to our list
+                    components_list.append(component_data)
+
+            # --- AGGREGATED SEARCHABLE TEXT (Maintained for broad searches) ---
+            all_text_parts = [p.get_text(separator=" ", strip=True) for p in soup.find_all('p')]
+            all_text_parts.extend([s.get_text(separator=" ", strip=True) for s in soup.find_all('scopecontent')])
             searchable_text = ' '.join(all_text_parts)
 
-            # Create a DataFrame with the extracted data.
+            # --- DATAFRAME CREATION (Updated with new 'components' column) ---
             data = {
                 'identifier': [eadid],
                 'collection_title': [collection_title],
-                'searchable_text': [searchable_text]
+                'biographical_note': [biohist_text],
+                'searchable_text': [searchable_text],
+                'components': [components_list] # Add the list of components here
             }
             df = pd.DataFrame(data)
             
             print(f"Successfully processed EAD file: {file_path}")
-            return df
-        
+            # return df
+            return self.pivot_boxes_to_columns(df)
+
         except Exception as e:
             print(f"Could not process EAD file with BeautifulSoup: {e}")
-            # Fallback to reading the raw content if detailed parsing fails
             with open(file_path, 'r', encoding='utf-8') as f:
                 xml_content = f.read()
-            return pd.DataFrame({'xml_content': [xml_content]})
+            # Fallback still returns a DataFrame for consistency
+            return pd.DataFrame({
+                'identifier': [Path(file_path).stem],
+                'collection_title': ["Parsing Failed"],
+                'biographical_note': [""],
+                'searchable_text': [xml_content],
+                'components': [[]]
+            })
+
+
+    def pivot_boxes_to_columns(self, df_original):
+        """
+        Reshapes a DataFrame from the EAD processor to a wide format.
+
+        In the new format, each row represents a folder and each unique box
+        number becomes a column.
+
+        Args:
+            df_original (DataFrame): The DataFrame generated by _process_ead_xml.
+
+        Returns:
+            DataFrame: A new, pivoted DataFrame or an empty DataFrame if no
+                    components exist.
+        """
+        # 1. Explode the 'components' list to give each folder its own row
+        # This duplicates the collection-level info (identifier, title) for each row.
+        df_long = df_original.explode('components').dropna(subset=['components'])
+
+        if df_long.empty:
+            print("No components to pivot.")
+            return pd.DataFrame()
+
+        # 2. Normalize the 'components' column
+        # This turns the dictionary in 'components' into its own set of columns (box, folder, title, etc.)
+        components_df = df_long['components'].apply(pd.Series)
+        
+        # Combine the new component columns with the collection-level info
+        df_long = pd.concat([
+            df_long.drop(columns=['components']).reset_index(drop=True),
+            components_df.reset_index(drop=True)
+        ], axis=1)
+
+        # 3. Prepare for pivoting
+        # Create a clean 'contents' column to be the values in our new table
+        df_long['contents'] = df_long['title'].fillna('')
+        # Fill NaN descriptions with an empty string before concatenating
+        descriptions = df_long['description'].fillna('')
+        # Add description in parentheses if it exists
+        df_long['contents'] += np.where(descriptions != '', ' (' + descriptions + ')', '')
+        
+        # Create a clear column name for the boxes, e.g., "Box 1", "Box 2"
+        df_long['box_column'] = 'Box ' + df_long['box'].astype(str)
+
+        # 4. Pivot the table
+        # - index: What to use for the rows (collection identifier and folder number).
+        # - columns: What to use for the columns (the new box_column).
+        # - values: What to fill the cells with (the 'contents').
+        df_wide = df_long.pivot_table(
+            index=['identifier', 'collection_title', 'folder'],
+            columns='box_column',
+            values='contents',
+            aggfunc='first' # Use 'first' to handle any potential duplicates
+        ).reset_index()
+
+        # Clean up the column names for better presentation
+        df_wide.columns.name = None
+        
+        return df_wide
 
     def select_columns(self, columns):
         """
