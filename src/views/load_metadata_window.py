@@ -80,19 +80,15 @@ class MetadataWindow(BaseWidget):
 
         # Button to load the CSV file
         button_tab_layout = QHBoxLayout()
-        self.load_button = QPushButton("Load Metadata")
-        self.load_button.clicked.connect(self.load_csv)
-        self.load_button.setStyleSheet("background-color: #890000; color: white;")  # Set button color
         
         self.delimiter_box = QComboBox()
         self.delimiter_box.setStyleSheet("background-color: #f0f0f0; color: black;")  # Set background and text color
         self.delimiter_box.setToolTip("Select the delimiter used in your CSV file")
         self.delimiter_box.setFont(QFont("Calibri", 14))  # Set font size
         self.delimiter_box.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
-        self.load_button.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         self.delimiter_box.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
 
-        self.delimiter_box.addItem("Select Delimiter")
+        self.delimiter_box.addItem("Select Column Delimiter")
         self.delimiter_box.addItem("Comma (,)")
         self.delimiter_box.addItem("Tab (\\t)")
         self.delimiter_box.addItem("Semicolon (;)")
@@ -100,10 +96,32 @@ class MetadataWindow(BaseWidget):
         self.delimiter_box.addItem("Pipe (|)")
         self.delimiter_box.adjustSize()
 
+        # Connect method to make sure a delimeter is selected before loading
+        self.delimiter_box.currentIndexChanged.connect(self.update_load_button_state)
+
+        self.load_button = QPushButton("Load Metadata")
+        self.load_button.clicked.connect(self.load_csv)
+
+        self.load_button.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
+        self.delimiter_box.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        # # Make the QComboBox editable to access its QLineEdit
+        # self.delimiter_box.setEditable(True)
+
+        # # Get the QLineEdit object
+        # line_edit = self.delimiter_box.lineEdit()
+
+        # # Set the alignment to center
+        # line_edit.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        # # Make the QLineEdit read-only if you don't want direct editing
+        # line_edit.setReadOnly(True)
+
+        self.load_button.setEnabled(False)  # Initially disabled until a delimiter is selected
+
         self.delimiter_box.setCurrentIndex(0)  # Default to "Select Delimiter"
-        
-        button_tab_layout.addWidget(self.load_button)
+
         button_tab_layout.addWidget(self.delimiter_box)
+        button_tab_layout.addWidget(self.load_button)
 
         layout.addLayout(button_tab_layout)
 
@@ -130,6 +148,19 @@ class MetadataWindow(BaseWidget):
 
         # Set the layout to the window
         self.setLayout(layout)
+
+    def update_load_button_state(self):
+        """ Update the state of the load button based on delimiter selection """
+        if self.delimiter_box.currentText() == "Select Column Delimiter":
+            self.load_button.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
+            self.delimiter_box.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+            self.load_button.setEnabled(False)
+            self.load_button.setStyleSheet("background-color: grey; color: white;")  # Greyed out
+        else:
+            self.load_button.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+            self.delimiter_box.setSizePolicy(QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Fixed)
+            self.load_button.setEnabled(True)
+            self.load_button.setStyleSheet("background-color: #890000; color: white;")  # Active color
 
     def load_csv(self):
         """ Load a CSV file and display its content in the table widget. Uses a thread to handle long-running tasks. """
