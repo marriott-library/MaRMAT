@@ -75,7 +75,9 @@ class MetadataWindow(BaseWidget):
         layout.addWidget(self.title_label)
 
         # Label to display information about the CSV
-        self.info_label = QLabel("Click the <b>Load Metadata</b> button to load the metadata file you want MaRMAT to analyze.<br>MaRMAT only supports CSV and TSV file uploads. Once loaded, click Next.") # Initial text
+        self.info_label = QLabel("Select the column delimiter from the dropdown menu, then click the <b>Load Metadata</b> button to upload your metadata file.") # Initial text
+        # self.info_label.setFont(QFont("Calibri", 10))  # Set font size
+        # self.info_label.setWordWrap(True)
         layout.addWidget(self.info_label)
 
         # Button to load the CSV file
