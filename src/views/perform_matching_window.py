@@ -129,10 +129,20 @@ class PerformMatchingWindow(BaseWidget):
         self.perform_matching_button.clicked.connect(self.perform_matching)
         self.perform_matching_button.setEnabled(False)  # Disable the button initially
         
+        # Create a button to go back to the previous screen
+        self.back_button = QPushButton("Previous")
+        self.back_button.clicked.connect(self.controller.show_data_selection_screen)
+        self.back_button.setEnabled(True)  # Enable the button initially
+        
         # Create a button to go back to the previous screen or close
-        self.back_button = QPushButton("Finish")
-        self.back_button.clicked.connect(self.controller.show_main_screen)
-        self.back_button.setEnabled(False)  # Disable the button initially
+        self.finished_button = QPushButton("Finish")
+        self.finished_button.clicked.connect(self.controller.show_main_screen)
+        self.finished_button.setEnabled(False)  # Disable the button initially
+
+        # Create bottom layout for back and finish buttons
+        bottom_layout = QHBoxLayout()
+        bottom_layout.addWidget(self.back_button)
+        bottom_layout.addWidget(self.finished_button)
 
         # Create a table to display the matching results
         self.table_widget = QTableWidget()
@@ -162,7 +172,7 @@ class PerformMatchingWindow(BaseWidget):
         layout.addWidget(self.table_widget)  # Add the table widget to the layout
         layout.addWidget(finished_label)
         layout.addWidget(self.open_file_explorer_button)
-        layout.addWidget(self.back_button)
+        layout.addLayout(bottom_layout)
         layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
         # Set the central widget of the window
