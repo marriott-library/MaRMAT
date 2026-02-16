@@ -75,9 +75,10 @@ class MetadataWindow(BaseWidget):
         layout.addWidget(self.title_label)
 
         # Label to display information about the CSV
-        self.info_label = QLabel("Select the column delimiter from the dropdown menu, then click the <b>Load Metadata</b> button to upload your metadata file.") # Initial text
-        # self.info_label.setFont(QFont("Calibri", 10))  # Set font size
-        # self.info_label.setWordWrap(True)
+        self.info_label = QLabel(
+            "Select <span style='color: #FF7F7F;'>your spreadsheet’s</span> column delimiter from the dropdown menu, "
+            "then click the <b>Load Metadata</b> button to upload your metadata file."
+        )
         layout.addWidget(self.info_label)
 
         # Button to load the CSV file
@@ -358,7 +359,7 @@ class MetadataWindow(BaseWidget):
         width = self.width()
         height = self.height()
 
-        self.info_label.setFont(QFont("Calibri", width//70))  # Set font size
+        self.info_label.setFont(QFont("Calibri", width//80))  # Set font size
         # Always call base implementation
         super().resizeEvent(event)
 
