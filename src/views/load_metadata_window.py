@@ -14,7 +14,7 @@ import os
 from pathlib import Path
 
 import pandas as pd
-from PyQt6.QtCore import QCoreApplication, QThread, Qt, pyqtSignal
+from PyQt6.QtCore import QCoreApplication, QObject, QThread, Qt, pyqtSignal
 from PyQt6.QtGui import QFont, QPixmap, QKeySequence, QShortcut
 from PyQt6.QtWidgets import (
     QFileDialog,
@@ -27,6 +27,7 @@ from PyQt6.QtWidgets import (
     QTableWidgetItem,
     QWidget,
     QComboBox,
+    QProgressBar,
     QSizePolicy
 )
 from views.base_widget import BaseWidget
@@ -128,6 +129,15 @@ class MetadataWindow(BaseWidget):
 
         layout.addLayout(button_tab_layout)
 
+        # Progress bar shown during file loading (indeterminate / pulsing mode).
+        # Range (0, 0) tells Qt to display a continuous animation instead of a
+        # percentage, which is appropriate because CSV/XML reads cannot report
+        # granular progress.  Hidden by default and revealed only while loading.
+        self.progress_bar = QProgressBar()
+        self.progress_bar.setRange(0, 0)   # Indeterminate mode (pulsing)
+        self.progress_bar.setVisible(False) # Hidden until a load starts
+        layout.addWidget(self.progress_bar)
+
         # Table to display the CSV content
         self.table_widget = QTableWidget()
         layout.addWidget(self.table_widget)
@@ -165,131 +175,171 @@ class MetadataWindow(BaseWidget):
             self.load_button.setEnabled(True)
             self.load_button.setStyleSheet("background-color: #890000; color: white;")  # Active color
 
-    def load_csv(self):
-        """ Load a CSV file and display its content in the table widget. Uses a thread to handle long-running tasks. """
+    def _resolve_delimiter(self):
+        """
+        Map the human-readable delimiter dropdown text to the actual
+        single-character delimiter string.
 
+        Returns:
+            str: The delimiter character (e.g. ',', '\t', ';', ' ', '|').
+        """
+        mapping = {
+            "Comma (,)": ',',
+            "Tab (\\t)": '\t',
+            "Semicolon (;)": ';',
+            "Space ( )": ' ',
+            "Pipe (|)": '|',
+        }
+        return mapping.get(self.delimiter_box.currentText(), ',')
+
+    def load_csv(self):
+        """
+        Open a file dialog and kick off metadata loading in a background thread.
+
+        **All file I/O is performed off the main (GUI) thread** to prevent the
+        interface from freezing on large files.  A pulsing progress bar provides
+        visual feedback while loading is in progress, and all interactive controls
+        are disabled so that stray clicks cannot corrupt application state.
+        """
         self.file_path, _ = QFileDialog.getOpenFileName(
             self,
             "Open CSV/TSV",
             self.controller.get_default_metadata_path(),
             "Data Files (*.csv *.tsv *.xml);;CSV Files (*.csv);;TSV Files (*.tsv);;XML Files (*.xml);;All Files (*)"
         )
-        
-        if self.file_path:
-            try:
 
-                self.next_button.setEnabled(False)  # Disable the next button until the file is loaded
-                self.next_button.setStyleSheet("")  # Change button color to grey
+        if not self.file_path:
+            return  # User cancelled the dialog
 
-                # Determine delimiter based on file extension
-                _, file_extension = os.path.splitext(self.file_path)
-                if self.delimiter_box.currentText() == "Select Delimiter":
-                    delimiter = '\t' if file_extension.lower() == '.tsv' else ','
-                elif self.delimiter_box.currentText() == "Comma (,)":
-                    delimiter = ','
-                elif self.delimiter_box.currentText() == "Tab (\\t)":
-                    delimiter = '\t'
-                elif self.delimiter_box.currentText() == "Semicolon (;)":
-                    delimiter = ';'
-                elif self.delimiter_box.currentText() == "Space ( )":
-                    delimiter = ' '
-                elif self.delimiter_box.currentText() == "Pipe (|)":
-                    delimiter = '|'
-                else:
-                    delimiter = ','  # Default to comma if somehow nothing is selected
+        try:
+            delimiter = self._resolve_delimiter()
 
+            # --- Lock the UI while loading ---
+            # Disabling all interactive widgets prevents user actions from
+            # queuing up Qt events that would fire after the load completes,
+            # which was the root cause of the freeze-on-click bug.
+            self.next_button.setEnabled(False)
+            self.next_button.setStyleSheet("")
+            self.load_button.setEnabled(False)
+            self.load_button.setStyleSheet("")
+            self.delimiter_box.setEnabled(False)
+            self.previous_button.setEnabled(False)
 
-                # Load the file into a DataFrame with TSV-specific handling
-                if file_extension.lower() == '.xml':
-                    try:
-                        # Try to parse EAD files with proper namespace for c01/did elements
-                        namespaces = {'ead': 'urn:isbn:1-931666-22-9'}
-                        self.df = pd.read_xml(self.file_path, xpath='.//ead:c01/ead:did', 
-                                            namespaces=namespaces, parser='etree', encoding='utf-8')
-                    except Exception:
-                        try:
-                            # Try parsing c01 elements without namespace (for other XML types)
-                            self.df = pd.read_xml(self.file_path, xpath='.//c01/did', parser='etree', encoding='utf-8')
-                        except Exception:
-                            try:
-                                # Fallback: read the whole XML with etree parser
-                                self.df = pd.read_xml(self.file_path, parser='etree', encoding='utf-8')
-                            except Exception:
-                                # If XML parsing fails, create single row with raw XML
-                                with open(self.file_path, 'r', encoding='utf-8') as f:
-                                    xml_content = f.read()
-                                self.df = pd.DataFrame({'xml_content': [xml_content]})
-                else:
-                    self.df = pd.read_csv(self.file_path, delimiter=delimiter, encoding='utf-8', on_bad_lines='warn', nrows=1000)
+            # Show the pulsing progress bar so the user knows work is happening
+            self.progress_bar.setVisible(True)
+            self.info_label.setText(
+                f"Loading Metadata: {self.file_path} <br> <b>Please wait...</b>"
+            )
 
-                self.load_button.setDisabled(True)  # Disable the load button after loading the file
-                self.load_button.setStyleSheet("")  # Change button color to grey
-                self.info_label.setText(f"Loading Metadata: {self.file_path} <br> <b>Please wait...</b>")
+            file_size = os.path.getsize(self.file_path)
+            print(f"File size: {file_size} bytes")
+            if file_size > 100 * 1024 * 1024:
+                self.show_alert(
+                    "Warning",
+                    "The file is larger than 100 MB. This may take a while to load."
+                )
 
-                file_size = os.path.getsize(self.file_path)
-                print(f"File size: {file_size} bytes")
+            # --- Spawn the background worker ---
+            # Worker is a plain QObject (not a QThread subclass) that is moved
+            # to a dedicated QThread.  This is the correct Qt pattern: the
+            # QThread owns the event loop, and the Worker's slots run inside it.
+            self.worker = MetadataLoadWorker(self.controller, self.file_path, delimiter)
+            self.thread = QThread()
+            self.worker.moveToThread(self.thread)
 
-                if file_size > 100 * 1024 * 1024:  # Check if file size is greater than 100 MB
-                    self.show_alert("Warning", "The file is larger than 100 MB. This may take a while to load.")
+            # Wire signals: thread start -> worker.run, worker done -> cleanup
+            self.thread.started.connect(self.worker.run)
+            self.worker.finished.connect(self.file_successfully_loaded)
+            self.worker.finished.connect(self.thread.quit)
+            self.worker.finished.connect(self.worker.deleteLater)
+            self.thread.finished.connect(self.thread.deleteLater)
 
-                self.thread = QThread()
-                self.worker = Worker(self.controller, self.file_path, delimiter)  # Pass the file path to the worker
-                self.worker.moveToThread(self.thread)
+            self.thread.start()
 
-                self.thread.started.connect(self.worker.run)
-                self.worker.finished.connect(self.worker.deleteLater)
-                self.worker.finished.connect(self.file_successfully_loaded)
-                self.thread.finished.connect(self.thread.deleteLater)
-                self.worker.finished.connect(self.thread.quit)
+        except Exception as e:
+            self._restore_ui_after_load()
+            self.info_label.setText(f"Failed to load file: {e}")
 
-                self.thread.start()
-                self.controller = self.worker.controller  # Update the controller reference in the worker
+    def _restore_ui_after_load(self):
+        """
+        Re-enable all interactive controls and hide the progress bar.
 
-            except Exception as e:
-                self.info_label.setText(f"Failed to load CSV: {e}")
+        Called after loading completes (success or failure) to return the
+        window to an interactable state.
+        """
+        self.progress_bar.setVisible(False)
+        self.load_button.setEnabled(True)
+        self.delimiter_box.setEnabled(True)
+        self.previous_button.setEnabled(True)
+        self.update_load_button_state()  # Re-apply correct button styling
 
     def file_successfully_loaded(self, success):
         """
-        
-        Update the status of whether a file has been successfully loaded
-        
+        Slot called when the background worker finishes loading metadata.
+
+        On success, populates the preview table with up to 1000 rows and
+        enables navigation to the next screen.  On failure, shows an error
+        alert and re-enables the load controls so the user can retry.
+
         Args:
-            success (bool): Indicates whether the file was loaded successfully.
-
+            success (bool): True if the file was parsed and loaded without error.
         """
-        if success:
-            # Once a CSV is loaded, enable the 'Next' button
-            self.next_button.setEnabled(True)
-            self.info_label.setText(f"CSV loaded successfully: {self.file_path}")
+        # Always restore the UI first so the user can interact again
+        self._restore_ui_after_load()
 
-            # Use the model's DataFrame if available (especially important for XML)
+        if success:
+            self.next_button.setEnabled(True)
+            self.info_label.setText(f"Metadata loaded successfully: {self.file_path}")
+
+            # Pull the authoritative DataFrame from the model.
+            # The model's load_metadata handles CSV, TSV, and EAD XML uniformly.
             try:
                 if hasattr(self.controller.model, 'metadata_df') and self.controller.model.metadata_df is not None:
                     self.df = self.controller.model.metadata_df
             except Exception:
-                pass  # Fall back to the view's DataFrame
-                
-            self.display_csv()
-            self.show_alert("Success", "Metadata loaded successfully!<br>Only the <b>first 1000 rows</b> are displayed in the table widget. <br>Click Next to proceed to the next step.")
+                pass  # Fall back to whatever the view already has
 
-            # Reset the styles of the buttons
+            self.display_csv()
+            self.show_alert(
+                "Success",
+                "Metadata loaded successfully!<br>Only the <b>first 1000 rows</b> "
+                "are displayed in the table widget.<br>Click Next to proceed to the next step."
+            )
+
+            # Style the Next button to draw attention
             self.load_button.setStyleSheet("")
-            self.next_button.setStyleSheet("background-color: #890000; color: white;")  # Set button color
+            self.next_button.setStyleSheet("background-color: #890000; color: white;")
         else:
             self.show_alert("Error", "Failed to load metadata. Please check the file format.")
             self.info_label.setText("Failed to load metadata. Please try again.")
-        self.load_button.setDisabled(False)  # Re-enable the load button
 
 
-    def display_csv(self):
-        """ Display the CSV data in the table widget """
-        self.table_widget.setRowCount(self.df.shape[0])
-        self.table_widget.setColumnCount(self.df.shape[1])
-        self.table_widget.setHorizontalHeaderLabels(self.df.columns)
+    def display_csv(self, max_preview_rows=1000):
+        """
+        Display a preview of the loaded metadata in the table widget.
 
-        for row in range(self.df.shape[0]):
-            for col in range(self.df.shape[1]):
-                item = QTableWidgetItem(str(self.df.iloc[row, col]))
+        QTableWidget allocates a QTableWidgetItem object for every visible cell.
+        For large files (e.g. 100k rows × 20 columns = 2 million objects) this
+        consumes enough memory to crash the application.  Capping the preview at
+        ``max_preview_rows`` keeps the widget lightweight while still giving the
+        user a representative view of their data.
+
+        The full, uncapped DataFrame is preserved in the model for matching —
+        only the *preview* is truncated.
+
+        Args:
+            max_preview_rows (int): Maximum number of rows to render in the
+                table widget.  Defaults to 1000.
+        """
+        preview = self.df.head(max_preview_rows)
+
+        self.table_widget.setRowCount(preview.shape[0])
+        self.table_widget.setColumnCount(preview.shape[1])
+        self.table_widget.setHorizontalHeaderLabels(preview.columns.astype(str))
+
+        for row in range(preview.shape[0]):
+            for col in range(preview.shape[1]):
+                item = QTableWidgetItem(str(preview.iloc[row, col]))
                 self.table_widget.setItem(row, col, item)
 
     def go_to_next_page(self):
@@ -363,31 +413,37 @@ class MetadataWindow(BaseWidget):
         # Always call base implementation
         super().resizeEvent(event)
 
-class Worker(QThread):
+class MetadataLoadWorker(QObject):
     """
-    
-    Worker class for loading metadata in a separate thread.
-    This class is responsible for performing the long-running task of loading metadata
-    from a CSV file without blocking the main GUI thread.
+    Background worker that loads a metadata file off the main GUI thread.
+
+    This is a plain QObject (not a QThread subclass) that gets moved into
+    a QThread via moveToThread().  This follows the recommended Qt pattern:
+    the QThread owns the event loop and the worker's slots execute inside it,
+    keeping the main thread free to process paint events and user input.
+
+    The previous implementation subclassed QThread *and* called moveToThread()
+    on the worker, which is an anti-pattern that caused signal delivery to
+    happen on the wrong thread, leading to GUI freezes when the user clicked
+    during a load.
 
     Attributes:
-        finished (pyqtSignal): Signal emitted when the worker has finished its task.
-        controller (Controller): The controller instance that manages the application logic.
-        file_path (str): The path to the CSV file to be loaded.
-    
+        finished (pyqtSignal[bool]): Emitted when loading completes.
+            True = success, False = failure.
+        controller: The application controller used to delegate the actual
+            file parsing (CSV, TSV, or EAD XML) to the model layer.
+        file_path (str): Absolute path to the metadata file.
+        delimiter (str): Column delimiter for CSV/TSV files.
     """
-    
+
     finished = pyqtSignal(bool)
 
     def __init__(self, controller, file_path, delimiter):
-        """ 
-
-        Initialize the worker with a controller and file path 
-
+        """
         Args:
-            controller (Controller): The controller instance that manages the application logic.
-            file_path (str): The path to the CSV file to be loaded.
-        
+            controller: The application controller instance.
+            file_path (str): Path to the metadata file to load.
+            delimiter (str): The column delimiter character.
         """
         super().__init__()
         self.controller = controller
@@ -395,8 +451,14 @@ class Worker(QThread):
         self.delimiter = delimiter
 
     def run(self):
-        """ Run the long-running task in a separate thread """
-        if self.controller.load_metadata(self.file_path, self.delimiter):
-            self.finished.emit(True)
-        else:
+        """
+        Perform the file load.  Called automatically when the owning
+        QThread starts.  Emits ``finished(True)`` on success or
+        ``finished(False)`` on any exception.
+        """
+        try:
+            success = self.controller.load_metadata(self.file_path, self.delimiter)
+            self.finished.emit(success)
+        except Exception as e:
+            print(f"MetadataLoadWorker error: {e}")
             self.finished.emit(False)
