@@ -11,6 +11,7 @@ Date: 2025-06-18
 
 """
 import sys
+from multiprocessing import freeze_support # Required for multiprocessing on Windows when packaged
 from PyQt6.QtWidgets import QApplication
 from PyQt6.QtGui import QFont
 from controllers.gui_controller import MainController
@@ -18,6 +19,8 @@ from controllers.gui_controller import MainController
 
 def main():
     """Main function to run the command line interface."""
+
+    freeze_support()  # Must be called before any multiprocessing on Windows (no-op on other platforms)
 
     app = QApplication(sys.argv)
 

@@ -22,6 +22,72 @@ import pandas as pd # Pandas for data manipulation
 import re # Regex for pattern matching
 from PyQt6.QtCore import QObject, pyqtSignal
 import numpy as np # Needed for handling missing values
+import concurrent.futures # Process-based parallelism to bypass the GIL
+import os # CPU core count detection for worker pool sizing
+
+
+def _match_terms_in_column(args):
+    """
+    Process-safe worker function that searches a single metadata column for a batch
+    of lexicon terms using vectorized pandas string operations.
+
+    This function is designed to run in a separate process via ProcessPoolExecutor,
+    bypassing Python's Global Interpreter Lock (GIL) for true parallel execution.
+    It must remain at module level (not inside a class) so that the multiprocessing
+    framework can pickle and transfer it to worker processes.
+
+    Each invocation handles one (column, term_batch) unit of work. Pandas'
+    str.contains() is used instead of a Python-level row loop, delegating the
+    per-row iteration to optimized C-level code for a significant speed improvement.
+
+    Args:
+        args (tuple): A packed tuple containing:
+            - col_values (list): Raw values from the metadata column to search.
+            - id_values (list): Corresponding identifier values for each row.
+            - col_name (str): Name of the metadata column being searched.
+            - term_batch (list of tuple): (term, category) pairs from the lexicon.
+
+    Returns:
+        list of dict: Matched results. Each dict contains:
+            - 'Identifier': The row's identifier value.
+            - 'Term': The lexicon term that was matched.
+            - 'Category': The category of the matched term.
+            - 'Column': The metadata column where the match was found.
+            - 'Original Text': The full text of the cell containing the match.
+    """
+    col_values, id_values, col_name, term_batch = args
+
+    # Rebuild a pandas Series in this worker process for vectorized string operations.
+    # Converting from a list is fast and avoids the pickling overhead of a full DataFrame.
+    col_series = pd.Series(col_values)
+    matches = []
+
+    for term, category in term_batch:
+        # Build a whole-word, case-insensitive regex pattern for the current term
+        pattern = r'\b' + re.escape(term) + r'\b'
+
+        try:
+            # Vectorized regex search across the entire column.
+            # This runs at C level inside pandas/numpy, far faster than a Python loop.
+            mask = col_series.str.contains(pattern, case=False, na=False, regex=True)
+        except re.error:
+            # Skip terms that produce invalid regex patterns gracefully
+            continue
+
+        # Only iterate over the (typically small) set of matching rows
+        if mask.any():
+            matched_indices = mask[mask].index
+            for idx in matched_indices:
+                matches.append({
+                    'Identifier': id_values[idx],
+                    'Term': term,
+                    'Category': category,
+                    'Column': col_name,
+                    'Original Text': col_values[idx]
+                })
+
+    return matches
+
 
 class marmat_processing(QObject):
     """
@@ -418,73 +484,129 @@ class marmat_processing(QObject):
 
     def find_matches(self, sel_col) -> pd.DataFrame:
         """
-        
         Find matches between metadata and lexicon based on selected columns and categories.
-        This method iterates through the selected columns in the metadata and searches for terms from the lexicon.
-        It uses regex to match whole words, ensuring case-insensitive matching.
-        This method emits progress updates during the matching process.
+
+        Uses a two-pronged optimization strategy to maximize throughput:
+          1. **Vectorized string operations**: pandas' str.contains() replaces the inner
+             Python-level loop over metadata rows, delegating per-row regex matching
+             to C-level code for ~10-100x speedup on the innermost loop.
+          2. **Process-based parallelism**: concurrent.futures.ProcessPoolExecutor
+             distributes (column, term_batch) work units across CPU cores, bypassing
+             the Global Interpreter Lock (GIL) for true parallel execution.
+
+        Work is divided into granular (column, term_batch) units to balance CPU
+        utilization and provide responsive progress bar updates.
+
+        Progress signals are emitted from the calling thread (QThread) as worker
+        processes complete their units, keeping the GUI responsive.
+
+        If multiprocessing is unavailable (e.g., in a frozen/packaged environment),
+        the method falls back to single-process vectorized matching, which is still
+        substantially faster than the naive triple-nested Python loop.
 
         Args:
-            selected_columns (list of str): List of column names from metadata for matching.
+            sel_col (list of str): Column names from the metadata DataFrame to
+                search for lexicon term matches.
 
         Returns:
-            list of tuple: List of tuples containing matched results (Identifier, Term, Category, Column).
-
+            DataFrame: Matched results sorted by 'Identifier', with columns:
+                'Identifier', 'Term', 'Category', 'Column', 'Original Text'.
+                Returns an empty DataFrame if no matches are found.
         """
-        
         lex = self.filtered_lexicon
         meta = self.metadata_df
-        matches = []
-        
-        total_cells_to_search = len(meta) * len(lex) * len(sel_col)
-        self.progress = 0  # Initialize progress variable
-        
-        progress_update_threshold = int(total_cells_to_search * 0.01)  # Update progress every 0.1% of total cells
-        
-        progress_percent = 0
-        
-        print(f"Searching {total_cells_to_search} cells for matches...")
 
-        print(f"Progress update threshold: {progress_update_threshold}")
-        
-        # Iterate through each selected column
+        # Guard against missing or empty data before starting expensive work
+        if lex is None or lex.empty or meta is None or meta.empty:
+            print("No data available for matching.")
+            self.matches_df = pd.DataFrame()
+            self.progress_update.emit(100)
+            self.finished.emit(self.matches_df)
+            return self.matches_df
+
+        # Build (term, category) pairs from the filtered lexicon for serialization
+        terms_categories = list(zip(lex['term'], lex['category']))
+
+        print(f"Matching {len(terms_categories)} terms across {len(sel_col)} columns "
+              f"in {len(meta)} metadata rows...")
+
+        # --- Work Partitioning ---
+        # Determine CPU core count and split terms into batches.
+        # Targeting ~2 batches per core per column gives fine-grained progress
+        # updates while keeping per-batch serialization overhead low.
+        num_cores = os.cpu_count() or 4
+        batch_count = max(1, num_cores * 2)
+        batch_size = max(1, len(terms_categories) // batch_count)
+        term_batches = [
+            terms_categories[i:i + batch_size]
+            for i in range(0, len(terms_categories), batch_size)
+        ]
+
+        # Build work items: one per (column, term_batch) combination.
+        # Each item is a self-contained, picklable tuple for a worker process.
+        work_items = []
         for col in sel_col:
-            # Iterate through each row in the lexicon
-            for _, row in lex.iterrows():
-                term = row['term']
-                category = row['category']
-                
-                # Create a regex pattern that matches the whole word, case-insensitive
-                pattern = r'\b' + re.escape(term) + r'\b'
+            col_data = meta[col].tolist()
+            id_data = meta[self.identifier_column].tolist()
+            for batch in term_batches:
+                work_items.append((col_data, id_data, col, batch))
 
-                # Iterate through each row in the metadata
-                for index, value in meta[col].items():
-                    if isinstance(value, str) and re.search(pattern, value, flags=re.IGNORECASE):
-                        matches.append({
-                            'Identifier': meta[self.identifier_column][index],
-                            'Term': term,
-                            'Category': category,
-                            'Column': col,
-                            'Original Text': value
-                        })
-                    
-                    # Update progress
-                    self.progress += 1
-                    
-                    if (self.progress % progress_update_threshold == 0):
-                        progress_percent += 1
-                        self.progress_update.emit(progress_percent)  # Emit progress update
+        total_work_items = len(work_items)
+        num_workers = min(total_work_items, num_cores)
 
-        
-        
-        self.matches_df = pd.DataFrame(matches)
+        print(f"Dispatching {total_work_items} work units across up to "
+              f"{num_workers} processes...")
 
-        self.matches_df = self.matches_df.sort_values(by='Identifier')
-        
+        # --- Parallel Execution (bypasses the GIL via separate processes) ---
+        all_matches = []
+
+        try:
+            with concurrent.futures.ProcessPoolExecutor(max_workers=num_workers) as executor:
+                # Submit all work items; map each future to its index for tracking
+                futures = {
+                    executor.submit(_match_terms_in_column, item): i
+                    for i, item in enumerate(work_items)
+                }
+
+                completed_count = 0
+                for future in concurrent.futures.as_completed(futures):
+                    try:
+                        result = future.result()
+                        all_matches.extend(result)
+                    except Exception as e:
+                        print(f"Worker process error: {e}")
+
+                    # Emit progress as each work unit finishes (cap at 99% until final assembly)
+                    completed_count += 1
+                    progress_percent = int((completed_count / total_work_items) * 99)
+                    self.progress_update.emit(progress_percent)
+
+        except Exception as e:
+            # Fallback: single-process vectorized matching if process spawning fails
+            # (e.g., in frozen/packaged environments or restricted OS configurations).
+            # Still uses vectorized pandas operations, so performance remains good.
+            print(f"Multiprocessing unavailable ({e}). "
+                  f"Falling back to single-process vectorized mode.")
+            for i, item in enumerate(work_items):
+                result = _match_terms_in_column(item)
+                all_matches.extend(result)
+                progress_percent = int(((i + 1) / total_work_items) * 99)
+                self.progress_update.emit(progress_percent)
+
+        # --- Result Assembly ---
+        self.matches_df = pd.DataFrame(all_matches)
+
+        if not self.matches_df.empty:
+            # Sort by Identifier for consistent output, with secondary keys
+            # for deterministic ordering regardless of process completion order
+            self.matches_df = self.matches_df.sort_values(
+                by=['Identifier', 'Column', 'Term']
+            ).reset_index(drop=True)
+
+        # Signal completion to the GUI layer
         self.progress_update.emit(100)
-        self.finished.emit(self.matches_df)  # Emit signal when matching completes
-        
-        
+        self.finished.emit(self.matches_df)
+
         return self.matches_df
     
     def open_output_file_location(self):
