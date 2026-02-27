@@ -14,7 +14,7 @@ Date: 2025-08-28
 from PyQt6.QtCore import Qt, QCoreApplication
 from PyQt6.QtWidgets import (QMainWindow, QVBoxLayout, QHBoxLayout, QComboBox, 
                              QListWidget, QPushButton, QWidget, QLabel, QListWidgetItem)
-from PyQt6.QtGui import QFont, QKeySequence, QShortcut
+from PyQt6.QtGui import QFont, QKeySequence, QShortcut, QCursor
 from views.base_widget import BaseWidget
 
 class DataSelectionWindow(BaseWidget):
@@ -204,25 +204,39 @@ class DataSelectionWindow(BaseWidget):
 
     def handle_item_pressed(self, item: QListWidgetItem):
         """
-        
         Handle the item pressed signal to toggle the check state of the item.
-        Does this by checking the mouse position relative to the item.
-        This allows clicking on the item text to toggle the checkbox, while clicking on the checkbox itself will not toggle it.
-        
+
+        When the user clicks the text portion of a list item (not the checkbox
+        itself), Qt does not automatically toggle the check state.  This method
+        detects whether the click landed outside the checkbox area and performs
+        the toggle manually.
+
+        The checkbox indicator in a QListWidget is rendered in the left ~20 px
+        of the item row inside the widget's *viewport*.  The position must be
+        mapped into viewport coordinates — mapping into the QListWidget widget
+        coordinates directly gives wrong values because the viewport has its own
+        coordinate space offset by scrollbars and frame borders.
+
         Args:
             item (QListWidgetItem): The item that was pressed.
-
         """
-        # Get the widget that sent the signal
         widget = self.sender()
 
-        # Get mouse position relative to the widget
-        pos = widget.mapFromGlobal(self.mapFromGlobal(widget.cursor().pos()))
+        # QCursor.pos() returns the cursor position in global screen coordinates.
+        # We map it into the list widget's viewport (not the widget itself) so
+        # that the x value is correct regardless of scroll position or window
+        # placement on screen.
+        pos = widget.viewport().mapFromGlobal(QCursor.pos())
 
-        # Assume the checkbox is on the left side (say, 0-20 pixels)
+        # The checkbox indicator occupies roughly the first 20 px on the left.
+        # Clicks inside that zone are handled natively by Qt; clicks outside
+        # need a manual toggle so that clicking anywhere on the row works.
         if pos.x() > 20:
-            # If clicked outside the checkbox, toggle manually
-            new_state = Qt.CheckState.Unchecked if item.checkState() == Qt.CheckState.Checked else Qt.CheckState.Checked
+            new_state = (
+                Qt.CheckState.Unchecked
+                if item.checkState() == Qt.CheckState.Checked
+                else Qt.CheckState.Checked
+            )
             item.setCheckState(new_state)
 
     def select_all_items(self, list_widget: QListWidget, button: QPushButton):

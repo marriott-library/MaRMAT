@@ -255,8 +255,10 @@ class PerformMatchingWindow(BaseWidget):
         self.back_button.setEnabled(True)
         self.open_file_explorer_button.setEnabled(True)  # Enable the button to open the output file location
         self.open_file_explorer_button.setStyleSheet("background-color: #890000; color: white;")  # Set button color
-        self.back_button.setStyleSheet("background-color: #890000; color: white;")  # Set button color
+        # self.back_button.setStyleSheet("background-color: #890000; color: white;")  # Set button color
         self.perform_matching_button.setStyleSheet("")  # Set button color
+        self.finished_button.setEnabled(True)  # Enable the finish button
+        self.finished_button.setStyleSheet("background-color: #890000; color: white;")  # Set button color
 
     def update_table(self, df):
         """
