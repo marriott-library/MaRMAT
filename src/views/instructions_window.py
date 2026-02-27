@@ -45,9 +45,6 @@ class InstructionsWindow(BaseWidget):
 
     def init_ui(self):
         """Initialize the user interface for the InstructionsWindow."""
-        # Set window title and size
-        self.setWindowTitle("Instructions - MaRMAT")
-        self.resize(1280, 720)
 
         # Create a label for instructions text
         instructions_text = """

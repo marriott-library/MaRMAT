@@ -121,33 +121,56 @@ class MainController:
     def run(self):
         """
         Run the application and show the main window.
-        """
 
+        Sets up the QStackedWidget with a sane minimum size, then either
+        enters fullscreen (if the user's saved setting says so) or shows
+        a centred 1280×720 window — clamped to the available screen area
+        so the window never extends off-screen.
+        """
         self.stack.setCurrentWidget(self.main_window)
-        self.stack.showMaximized()  # Show the main window in full screen mode
-        self.stack.setWindowIcon(self.main_window.windowIcon())  # Set the window icon
-        self.stack.setWindowTitle("MaRMAT 2.6.1-rc")  # Set the window title
-        
+        self.stack.setWindowIcon(self.main_window.windowIcon())
+        self.stack.setWindowTitle("MaRMAT 2.6.1-rc")
+
+        # Allow shrinking down to a reasonable minimum, but never lock
+        # the maximum — that would prevent resizing and maximizing.
         self.stack.setMinimumSize(540, 420)
-        
-          # Start the event loop
-        self.stack.show()  # Show the main window in normal mode
 
         if self.settings_model.fullscreen_enabled:
             self.stack.showFullScreen()
         else:
-            self.stack.showNormal()
-            # self.stack.setFixedSize(1280, 720) 
-            self.stack.resize(1280, 720)  # Set a fixed size for the window
-            
-            # Get current screen geometry
-            screen = self.stack.screen()
-            geometry = screen.availableGeometry()
+            self._show_windowed()
 
-            # Center the window on the screen
-            x = (geometry.width() - self.stack.width()) // 2
-            y = (geometry.height() - self.stack.height()) // 2
-            self.stack.move(x, y)
+    # ------------------------------------------------------------------ #
+    #  Window-geometry helpers                                             #
+    # ------------------------------------------------------------------ #
+
+    def _show_windowed(self, preferred_width=1280, preferred_height=720):
+        """
+        Show the stack in normal (non-fullscreen) mode, centred on the
+        current screen.
+
+        The requested size is clamped to 90 % of the available screen area
+        so the window never extends beyond the edges — even on small or
+        scaled displays.
+
+        Args:
+            preferred_width  (int): Desired window width  (default 1280).
+            preferred_height (int): Desired window height (default 720).
+        """
+        self.stack.showNormal()
+
+        screen = self.stack.screen()
+        avail = screen.availableGeometry()
+
+        # Clamp to 90 % of available space so the window fits comfortably
+        width  = min(preferred_width,  int(avail.width()  * 0.9))
+        height = min(preferred_height, int(avail.height() * 0.9))
+        self.stack.resize(width, height)
+
+        # Centre the window on the screen
+        x = avail.x() + (avail.width()  - width)  // 2
+        y = avail.y() + (avail.height() - height) // 2
+        self.stack.move(x, y)
 
 
     # Functions to handle user input and actions
@@ -318,30 +341,40 @@ class MainController:
         self.perform_matching_window.show_matching_results()
     
     def toggle_fullscreen(self):
-        """Toggle fullscreen mode."""
+        """
+        Toggle between fullscreen and windowed mode.
+
+        When entering fullscreen the current window geometry is saved so it
+        can be faithfully restored later — instead of always falling back to
+        a hardcoded 1280×720 which may be larger than the screen.
+        """
         if self.settings_model.fullscreen_enabled:
+            # --- Exit fullscreen → restore previous windowed geometry ---
             self.settings_model.fullscreen_enabled = False
             self.save_settings()
             print("Exiting fullscreen mode...")
-            self.stack.showNormal()
-            # self.stack.setFixedSize(1280, 720)  # Set a fixed size for the window
-            self.stack.resize(1280, 720)
-            # Get current screen geometry
-            screen = self.stack.screen()
-            geometry = screen.availableGeometry()
 
-            # Center the window on the screen
-            x = (geometry.width() - self.stack.width()) // 2
-            y = (geometry.height() - self.stack.height()) // 2
-            self.stack.move(x, y)
+            # Restore the geometry that was saved before entering fullscreen.
+            # If nothing was saved (e.g., the app launched in fullscreen),
+            # fall back to the centred-and-clamped default.
+            saved = getattr(self, '_pre_fullscreen_geometry', None)
+            if saved is not None:
+                self.stack.showNormal()
+                self.stack.setGeometry(saved)
+            else:
+                self._show_windowed()
         else:
+            # --- Enter fullscreen → save current geometry first ---
+            self._pre_fullscreen_geometry = self.stack.geometry()
             self.settings_model.fullscreen_enabled = True
             self.save_settings()
-            print("In fullscreen mode, exiting...")
+            print("Entering fullscreen mode...")
             self.stack.showFullScreen()
 
-        self.settings_window.fullscreen_label.setText(f"Fullscreen is currently: {'<b>Enabled</b>' if self.settings_model.fullscreen_enabled else '<b>Disabled</b>'}")
-    
+        self.settings_window.fullscreen_label.setText(
+            f"Fullscreen is currently: "
+            f"{'<b>Enabled</b>' if self.settings_model.fullscreen_enabled else '<b>Disabled</b>'}"
+        )    
     def open_output_file_location(self):
         """Open the output file location in the file explorer."""
         if platform.system() == "Windows":

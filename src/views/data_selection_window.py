@@ -44,10 +44,6 @@ class DataSelectionWindow(BaseWidget):
     def init_ui(self):
         """Initialize the user interface for the data selection window."""
 
-        # Set window title and size
-        self.setWindowTitle("Data Selection")
-        self.resize(1280, 720)
-
         # Main layout
         main_layout = QVBoxLayout()
 
@@ -113,10 +109,8 @@ class DataSelectionWindow(BaseWidget):
         column_list_label = QLabel("<b>Check the boxes next to the names of the columns from your metadata file that you want MaRMAT to analyze:</b>")
         column_list_label.setWordWrap(True)
         column_list_container.addWidget(column_list_label)
-        column_list_container.addWidget(self.column_list_widget)
+        column_list_container.addWidget(self.column_list_widget, 1)  # stretch=1 lets the list grow/shrink
         column_list_container.addWidget(self.select_all_button_column)
-        column_list_container.setAlignment(Qt.AlignmentFlag.AlignTop)
-
 
         lists_layout.addLayout(column_list_container)
 
@@ -140,9 +134,8 @@ class DataSelectionWindow(BaseWidget):
         unique_values_label = QLabel("<b>Check the boxes next to the categories of terms from your selected lexicon that you want MaRMAT to check for in your metadata file:</b>")
         unique_values_label.setWordWrap(True)
         unique_values_container.addWidget(unique_values_label)
-        unique_values_container.addWidget(self.lexicon_list_widget)
+        unique_values_container.addWidget(self.lexicon_list_widget, 1)  # stretch=1 lets the list grow/shrink
         unique_values_container.addWidget(self.select_all_button_lexicon)
-        unique_values_container.setAlignment(Qt.AlignmentFlag.AlignTop)
 
         lists_layout.addLayout(unique_values_container)
 
@@ -158,9 +151,10 @@ class DataSelectionWindow(BaseWidget):
         self.column_list_widget.itemChanged.connect(self.update_button_state)
         self.lexicon_list_widget.itemChanged.connect(self.update_button_state)
 
-        # Add the column and lexicon list containers to the main layout
-        lists_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
-        main_layout.addLayout(lists_layout)
+        # Add the column and lexicon list containers to the main layout.
+        # The stretch factor of 1 lets the lists area absorb extra vertical
+        # space when the window grows, and release it when the window shrinks.
+        main_layout.addLayout(lists_layout, 1)
 
         # Navigation Buttons
         button_layout = QHBoxLayout()
