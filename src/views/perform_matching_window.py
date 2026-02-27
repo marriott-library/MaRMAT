@@ -292,6 +292,7 @@ class PerformMatchingWindow(BaseWidget):
         self.controller.set_output_path(self.output_file_path)  # Ensure the output path is set before starting matching
 
         self.perform_matching_button.setEnabled(False)
+        self.perform_matching_button.setStyleSheet("")  # Set button color
         self.select_file_button.setEnabled(False)
         self.back_button.setEnabled(False)
 
