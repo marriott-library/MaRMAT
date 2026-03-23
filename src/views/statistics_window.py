@@ -30,10 +30,14 @@ from views.base_widget import BaseWidget
 try:
     from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
     from matplotlib.figure import Figure
+    from matplotlib import style as mpl_style
+    import numpy as np
     HAS_MATPLOTLIB = True
 except Exception:
     FigureCanvas = None
     Figure = None
+    mpl_style = None
+    np = None
     HAS_MATPLOTLIB = False
 
 try:
@@ -55,6 +59,9 @@ class StatisticsWindow(BaseWidget):
         self.chart_messages = {}
         self.no_data_label = None
         self.init_ui()
+
+        if HAS_MATPLOTLIB:
+            self._apply_modern_chart_style()
 
     def init_ui(self):
         self.setWindowTitle("Statistics - MaRMAT")
@@ -171,7 +178,7 @@ class StatisticsWindow(BaseWidget):
         layout.addWidget(title_label)
 
         if HAS_MATPLOTLIB:
-            figure = Figure(figsize=(5.5, 3.5), tight_layout=True)
+            figure = Figure(figsize=(6.2, 3.8), tight_layout=True)
             canvas = FigureCanvas(figure)
             self.chart_canvases[chart_key] = canvas
             layout.addWidget(canvas)
@@ -187,6 +194,39 @@ class StatisticsWindow(BaseWidget):
 
         frame.setLayout(layout)
         return frame
+
+    def _apply_modern_chart_style(self):
+        """Apply a cohesive, modern plotting style across all dashboard charts."""
+        try:
+            mpl_style.use('seaborn-v0_8-whitegrid')
+        except Exception:
+            pass
+
+    def _style_axis(self, axis, title: str):
+        """Apply consistent modern axis formatting."""
+        axis.set_title(title, loc='left', fontsize=12, fontweight='bold', pad=10)
+        axis.spines['top'].set_visible(False)
+        axis.spines['right'].set_visible(False)
+        axis.grid(axis='x', linestyle='--', alpha=0.25)
+        axis.grid(axis='y', linestyle='-', alpha=0.12)
+        axis.tick_params(axis='x', labelsize=9)
+        axis.tick_params(axis='y', labelsize=9)
+
+    def _annotate_horizontal_bars(self, axis, values):
+        for idx, value in enumerate(values):
+            axis.text(value, idx, f" {int(value)}", va='center', fontsize=8)
+
+    def _annotate_vertical_bars(self, axis, bars):
+        for bar in bars:
+            height = bar.get_height()
+            axis.text(
+                bar.get_x() + bar.get_width() / 2,
+                height,
+                f"{int(height)}",
+                ha='center',
+                va='bottom',
+                fontsize=8,
+            )
 
     def load_statistics_data(self):
         """Load and render KPIs/charts from current matching results."""
@@ -263,13 +303,20 @@ class StatisticsWindow(BaseWidget):
 
         if 'Category' in df.columns and not df['Category'].dropna().empty:
             category_counts = df['Category'].value_counts().sort_values(ascending=True)
-            axis.barh(category_counts.index.astype(str), category_counts.values)
+            bars = axis.barh(
+                category_counts.index.astype(str),
+                category_counts.values,
+                color='tab:blue',
+                edgecolor='white',
+                linewidth=0.7,
+            )
             axis.set_xlabel("Count")
             axis.set_ylabel("Category")
+            self._annotate_horizontal_bars(axis, category_counts.values)
         else:
             axis.text(0.5, 0.5, "No Category data", ha='center', va='center', transform=axis.transAxes)
 
-        axis.set_title("Category Distribution")
+        self._style_axis(axis, "Category Distribution")
         canvas.draw_idle()
 
     def _plot_top_terms(self, df):
@@ -283,14 +330,28 @@ class StatisticsWindow(BaseWidget):
 
         if 'Term' in df.columns and not df['Term'].dropna().empty:
             top_terms = df['Term'].value_counts().head(10)
-            axis.bar(top_terms.index.astype(str), top_terms.values)
+            colors = None
+            if np is not None:
+                colors = [
+                    f"C{int(i % 10)}"
+                    for i in np.linspace(0, 9, len(top_terms.index))
+                ]
+
+            bars = axis.bar(
+                top_terms.index.astype(str),
+                top_terms.values,
+                color=colors,
+                edgecolor='white',
+                linewidth=0.7,
+            )
             axis.set_ylabel("Count")
             axis.set_xticks(range(len(top_terms.index)))
             axis.set_xticklabels(top_terms.index.astype(str), rotation=45, ha='right')
+            self._annotate_vertical_bars(axis, bars)
         else:
             axis.text(0.5, 0.5, "No Term data", ha='center', va='center', transform=axis.transAxes)
 
-        axis.set_title("Top 10 Most Frequent Terms")
+        self._style_axis(axis, "Top 10 Most Frequent Terms")
         canvas.draw_idle()
 
     def _plot_top_terms_by_category(self, df):
@@ -327,14 +388,14 @@ class StatisticsWindow(BaseWidget):
                 index='Category', columns='Term', values='count', fill_value=0
             )
 
-            pivot_df.plot(kind='bar', stacked=True, ax=axis)
+            pivot_df.plot(kind='bar', stacked=True, ax=axis, colormap='tab20c', width=0.8)
             axis.set_xlabel("Category")
             axis.set_ylabel("Count")
-            axis.legend(loc='upper right', fontsize=8)
+            axis.legend(loc='upper left', bbox_to_anchor=(1.01, 1), fontsize=8, frameon=False, title='Term')
         else:
             axis.text(0.5, 0.5, "No Category/Term data", ha='center', va='center', transform=axis.transAxes)
 
-        axis.set_title("Top Terms by Category")
+        self._style_axis(axis, "Top Terms by Category")
         canvas.draw_idle()
 
     def _plot_word_cloud(self, df):
@@ -376,10 +437,17 @@ class StatisticsWindow(BaseWidget):
             canvas.draw_idle()
             return
 
-        word_cloud = WordCloud(width=1200, height=700, background_color='white').generate(term_text)
+        word_cloud = WordCloud(
+            width=1200,
+            height=700,
+            background_color='white',
+            colormap='viridis',
+            collocations=False,
+            max_words=120,
+        ).generate(term_text)
         axis.imshow(word_cloud, interpolation='bilinear')
         axis.axis('off')
-        axis.set_title("Word Cloud")
+        axis.set_title("Word Cloud", loc='left', fontsize=12, fontweight='bold', pad=10)
         if message_label is not None:
             message_label.setText("")
         canvas.draw_idle()
