@@ -57,10 +57,16 @@ class StatisticsWindow(BaseWidget):
         self.controller = controller
         self.kpi_labels = {}
         self.chart_canvases = {}
+        self.chart_frames = {}
+        self.chart_positions = {}
         self.chart_messages = {}
         self.chart_export_buttons = {}
         self.no_data_label = None
         self.scroll_area = None
+        self.charts_widget = None
+        self.charts_layout = None
+        self.back_to_grid_button = None
+        self.maximized_chart_key = None
         self.init_ui()
 
         if HAS_MATPLOTLIB:
@@ -100,9 +106,9 @@ class StatisticsWindow(BaseWidget):
         self.kpi_container = self._build_kpi_section()
         content_layout.addWidget(self.kpi_container)
 
-        charts_widget = QWidget()
-        charts_layout = QGridLayout()
-        charts_layout.setSpacing(12)
+        self.charts_widget = QWidget()
+        self.charts_layout = QGridLayout()
+        self.charts_layout.setSpacing(12)
 
         chart_specs = [
             ("category_distribution", "Category Distribution (Horizontal Bar Chart)"),
@@ -115,10 +121,17 @@ class StatisticsWindow(BaseWidget):
             chart_frame = self._build_chart_frame(chart_key, chart_title)
             row = idx // 2
             col = idx % 2
-            charts_layout.addWidget(chart_frame, row, col)
+            self.charts_layout.addWidget(chart_frame, row, col)
+            self.chart_frames[chart_key] = chart_frame
+            self.chart_positions[chart_key] = (row, col)
 
-        charts_widget.setLayout(charts_layout)
-        content_layout.addWidget(charts_widget)
+        self.charts_widget.setLayout(self.charts_layout)
+        content_layout.addWidget(self.charts_widget)
+
+        self.back_to_grid_button = QPushButton("Back to 4 Graph View")
+        self.back_to_grid_button.clicked.connect(self.restore_chart_grid)
+        self.back_to_grid_button.setVisible(False)
+        content_layout.addWidget(self.back_to_grid_button)
 
         content_widget.setLayout(content_layout)
         self.scroll_area.setWidget(content_widget)
@@ -128,9 +141,14 @@ class StatisticsWindow(BaseWidget):
         self.installEventFilter(self)
         self._install_scroll_event_filter(content_widget)
         self._install_scroll_event_filter(self.kpi_container)
-        self._install_scroll_event_filter(charts_widget)
+        self._install_scroll_event_filter(self.charts_widget)
 
         button_layout = QHBoxLayout()
+        self.export_all_button = QPushButton("Export All Graphs")
+        self.export_all_button.clicked.connect(self.export_all_charts)
+        self.export_all_button.setEnabled(HAS_MATPLOTLIB)
+        button_layout.addWidget(self.export_all_button)
+
         self.back_button = QPushButton("Back to Results")
         self.back_button.clicked.connect(self.controller.show_perform_matching_screen)
         button_layout.addWidget(self.back_button)
@@ -191,6 +209,7 @@ class StatisticsWindow(BaseWidget):
             figure = Figure(figsize=(6.2, 3.8), tight_layout=True)
             canvas = FigureCanvas(figure)
             self.chart_canvases[chart_key] = canvas
+            canvas.mpl_connect('button_press_event', lambda _, key=chart_key: self.maximize_chart(key))
             layout.addWidget(canvas)
         else:
             canvas = None
@@ -254,6 +273,54 @@ class StatisticsWindow(BaseWidget):
             self.show_alert("Export Complete", f"Graph exported to: {file_path}")
         except Exception as error:
             self.show_alert("Export Failed", f"Could not export graph: {error}")
+
+    def export_all_charts(self):
+        """Export all rendered charts to a selected folder as PNG files."""
+        if not HAS_MATPLOTLIB or not self.chart_canvases:
+            return
+
+        target_folder = QFileDialog.getExistingDirectory(self, "Select Folder to Export All Graphs", "")
+        if not target_folder:
+            return
+
+        try:
+            for chart_key, canvas in self.chart_canvases.items():
+                output_path = f"{target_folder}/marmat_{chart_key}.png"
+                canvas.figure.savefig(output_path, dpi=300, bbox_inches='tight')
+            self.show_alert("Export Complete", f"All graphs exported to: {target_folder}")
+        except Exception as error:
+            self.show_alert("Export Failed", f"Could not export all graphs: {error}")
+
+    def maximize_chart(self, chart_key: str):
+        """Maximize a chart into a focused single-chart view."""
+        if self.maximized_chart_key == chart_key:
+            return
+
+        self.maximized_chart_key = chart_key
+
+        for key, frame in self.chart_frames.items():
+            if key != chart_key:
+                frame.setVisible(False)
+
+        selected_frame = self.chart_frames.get(chart_key)
+        if selected_frame is None:
+            return
+
+        self.charts_layout.removeWidget(selected_frame)
+        self.charts_layout.addWidget(selected_frame, 0, 0, 2, 2)
+        selected_frame.setVisible(True)
+        self.back_to_grid_button.setVisible(True)
+
+    def restore_chart_grid(self):
+        """Restore the default 4-chart grid view."""
+        for key, frame in self.chart_frames.items():
+            self.charts_layout.removeWidget(frame)
+            row, col = self.chart_positions[key]
+            self.charts_layout.addWidget(frame, row, col)
+            frame.setVisible(True)
+
+        self.maximized_chart_key = None
+        self.back_to_grid_button.setVisible(False)
 
     def _apply_modern_chart_style(self):
         """Apply a cohesive, modern plotting style across all dashboard charts."""
