@@ -84,6 +84,7 @@ class DataSelectionWindow(BaseWidget):
         self.collection_title_combo.currentTextChanged.connect(self.update_collection_title_column)
         self.collection_title_combo.setEnabled(False)
         self.collection_title_combo.setVisible(False)
+        self.auto_select_collection_title_column()
         dropdown_layout.addWidget(self.collection_title_combo)
 
         main_layout.addLayout(dropdown_layout)
@@ -296,6 +297,34 @@ class DataSelectionWindow(BaseWidget):
         if selected_column:
             self.controller.set_collection_title_column(selected_column)
 
+    def auto_select_collection_title_column(self):
+        """Auto-select a likely title column if one exists."""
+        column_names = [
+            self.collection_title_combo.itemText(i)
+            for i in range(self.collection_title_combo.count())
+        ]
+
+        if not column_names:
+            return
+
+        # Prefer exact "title" first, then any column containing "title".
+        exact_index = next(
+            (idx for idx, name in enumerate(column_names) if name.strip().lower() == "title"),
+            -1
+        )
+
+        if exact_index != -1:
+            self.collection_title_combo.setCurrentIndex(exact_index)
+            return
+
+        contains_index = next(
+            (idx for idx, name in enumerate(column_names) if "title" in name.strip().lower()),
+            -1
+        )
+
+        if contains_index != -1:
+            self.collection_title_combo.setCurrentIndex(contains_index)
+
     def update_button_state(self):
         """ Enable the Next button only if there is at least one selection in each widget. """
         column_selected = self.column_combo.currentText() != ""
@@ -355,6 +384,7 @@ class DataSelectionWindow(BaseWidget):
 
         self.collection_title_combo.clear()
         self.collection_title_combo.addItems(metadata_columns)
+        self.auto_select_collection_title_column()
         self.collection_title_combo.setEnabled(False)
         self.collection_title_combo.setVisible(False)
         self.include_collection_title_button.setChecked(False)
