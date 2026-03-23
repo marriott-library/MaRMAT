@@ -73,6 +73,19 @@ class DataSelectionWindow(BaseWidget):
         self.column_combo.currentTextChanged.connect(self.update_button_state)
 
         dropdown_layout.addWidget(self.column_combo)
+
+        self.include_collection_title_button = QPushButton("Include Collection Title: Off")
+        self.include_collection_title_button.setCheckable(True)
+        self.include_collection_title_button.clicked.connect(self.toggle_collection_title_option)
+        dropdown_layout.addWidget(self.include_collection_title_button)
+
+        self.collection_title_combo = QComboBox()
+        self.collection_title_combo.addItems(self.controller.get_metadata_columns())
+        self.collection_title_combo.currentTextChanged.connect(self.update_collection_title_column)
+        self.collection_title_combo.setEnabled(False)
+        self.collection_title_combo.setVisible(False)
+        dropdown_layout.addWidget(self.collection_title_combo)
+
         main_layout.addLayout(dropdown_layout)
 
         # Lists row
@@ -262,6 +275,27 @@ class DataSelectionWindow(BaseWidget):
         if selected_column:
             self.controller.set_identifier_column(selected_column)
 
+    def toggle_collection_title_option(self, checked: bool):
+        """Enable or disable inclusion of a collection title column in output."""
+        self.include_collection_title_button.setText(
+            "Include Collection Title: On" if checked else "Include Collection Title: Off"
+        )
+
+        self.collection_title_combo.setEnabled(checked)
+        self.collection_title_combo.setVisible(checked)
+
+        if checked:
+            self.controller.set_include_collection_title(True)
+            self.update_collection_title_column()
+        else:
+            self.controller.set_include_collection_title(False)
+
+    def update_collection_title_column(self):
+        """Set the selected collection title column in the controller."""
+        selected_column = self.collection_title_combo.currentText()
+        if selected_column:
+            self.controller.set_collection_title_column(selected_column)
+
     def update_button_state(self):
         """ Enable the Next button only if there is at least one selection in each widget. """
         column_selected = self.column_combo.currentText() != ""
@@ -301,6 +335,11 @@ class DataSelectionWindow(BaseWidget):
         self.controller.set_selected_categories(selected_lexicon_value_checkboxes)
         self.controller.set_identifier_column(self.column_combo.currentText())
 
+        include_collection_title = self.include_collection_title_button.isChecked()
+        self.controller.set_include_collection_title(include_collection_title)
+        if include_collection_title:
+            self.controller.set_collection_title_column(self.collection_title_combo.currentText())
+
         self.close()
 
     def refresh_data(self):
@@ -313,6 +352,14 @@ class DataSelectionWindow(BaseWidget):
         self.column_combo.clear()
         metadata_columns = self.controller.get_metadata_columns() or []
         self.column_combo.addItems(metadata_columns)
+
+        self.collection_title_combo.clear()
+        self.collection_title_combo.addItems(metadata_columns)
+        self.collection_title_combo.setEnabled(False)
+        self.collection_title_combo.setVisible(False)
+        self.include_collection_title_button.setChecked(False)
+        self.include_collection_title_button.setText("Include Collection Title: Off")
+        self.controller.set_include_collection_title(False)
 
         # --- Metadata list ---
         self.column_list_widget.clear()

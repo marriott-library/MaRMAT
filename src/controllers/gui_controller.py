@@ -286,6 +286,16 @@ class MainController:
         self.model.select_categories(categories)
         print("Selected categories set:", categories)
 
+    def set_include_collection_title(self, include_collection_title: bool):
+        """Set whether to include collection title in output."""
+        self.model.set_include_collection_title(include_collection_title)
+        print("Include collection title set:", include_collection_title)
+
+    def set_collection_title_column(self, column: str):
+        """Set the metadata column used as collection title in output."""
+        self.model.select_collection_title_column(column)
+        print("Collection title column set:", column)
+
     def perform_matching(self, progress_callback=None):
         """
 

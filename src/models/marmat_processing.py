@@ -45,7 +45,9 @@ def _match_terms_in_column(args):
             - col_values (list): Raw values from the metadata column to search.
             - id_values (list): Corresponding identifier values for each row.
             - col_name (str): Name of the metadata column being searched.
-            - term_batch (list of tuple): (term, category) pairs from the lexicon.
+                        - term_batch (list of tuple): (term, category) pairs from the lexicon.
+                        - collection_title_values (list, optional): Row-aligned values from the
+                            selected collection-title metadata column.
 
     Returns:
         list of dict: Matched results. Each dict contains:
@@ -55,7 +57,7 @@ def _match_terms_in_column(args):
             - 'Column': The metadata column where the match was found.
             - 'Original Text': The full text of the cell containing the match.
     """
-    col_values, id_values, col_name, term_batch = args
+    col_values, id_values, col_name, term_batch, collection_title_values = args
 
     # Rebuild a pandas Series in this worker process for vectorized string operations.
     # Converting from a list is fast and avoids the pickling overhead of a full DataFrame.
@@ -80,6 +82,7 @@ def _match_terms_in_column(args):
             for idx in matched_indices:
                 matches.append({
                     'Identifier': id_values[idx],
+                    'Collection Title': collection_title_values[idx] if collection_title_values is not None else None,
                     'Term': term,
                     'Category': category,
                     'Column': col_name,
@@ -114,6 +117,8 @@ class marmat_processing(QObject):
     matches_df = pd.DataFrame # DataFrame to store matches
     filtered_lexicon = pd.DataFrame # DataFrame to store filtered lexicon
     output_file_type = '.csv' # Default output file type
+    include_collection_title = False
+    collection_title_column = None
 
     # Multithreading signals
     progress_update = pyqtSignal(int) # Signal to update progress bar
@@ -424,6 +429,14 @@ class marmat_processing(QObject):
         
         print(self.filtered_lexicon.head())
 
+    def set_include_collection_title(self, include_collection_title: bool):
+        """Set whether to include collection title in output."""
+        self.include_collection_title = include_collection_title
+
+    def select_collection_title_column(self, column: str):
+        """Set the metadata column to use as collection title in output."""
+        self.collection_title_column = column
+
     def perform_matching(self, output_file, progress_callback=None) -> None:
         """
         
@@ -527,6 +540,14 @@ class marmat_processing(QObject):
         # Build (term, category) pairs from the filtered lexicon for serialization
         terms_categories = list(zip(lex['term'], lex['category']))
 
+        collection_title_values = None
+        if (
+            self.include_collection_title
+            and self.collection_title_column
+            and self.collection_title_column in meta.columns
+        ):
+            collection_title_values = meta[self.collection_title_column].tolist()
+
         print(f"Matching {len(terms_categories)} terms across {len(sel_col)} columns "
               f"in {len(meta)} metadata rows...")
 
@@ -549,7 +570,7 @@ class marmat_processing(QObject):
             col_data = meta[col].tolist()
             id_data = meta[self.identifier_column].tolist()
             for batch in term_batches:
-                work_items.append((col_data, id_data, col, batch))
+                work_items.append((col_data, id_data, col, batch, collection_title_values))
 
         total_work_items = len(work_items)
         num_workers = min(total_work_items, num_cores)
@@ -602,6 +623,21 @@ class marmat_processing(QObject):
             self.matches_df = self.matches_df.sort_values(
                 by=['Identifier', 'Column', 'Term']
             ).reset_index(drop=True)
+
+            if not self.include_collection_title and 'Collection Title' in self.matches_df.columns:
+                self.matches_df = self.matches_df.drop(columns=['Collection Title'])
+
+            if self.include_collection_title and 'Collection Title' in self.matches_df.columns:
+                ordered_columns = [
+                    'Identifier',
+                    'Collection Title',
+                    'Term',
+                    'Category',
+                    'Column',
+                    'Original Text'
+                ]
+                existing_ordered_columns = [col for col in ordered_columns if col in self.matches_df.columns]
+                self.matches_df = self.matches_df[existing_ordered_columns]
 
         # Signal completion to the GUI layer
         self.progress_update.emit(100)
