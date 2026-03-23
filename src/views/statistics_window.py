@@ -12,7 +12,7 @@ Date: 2026-03-22
 
 """
 
-from PyQt6.QtCore import Qt
+from PyQt6.QtCore import Qt, QEvent
 from PyQt6.QtGui import QFont
 from PyQt6.QtWidgets import (
     QLabel,
@@ -23,6 +23,7 @@ from PyQt6.QtWidgets import (
     QGridLayout,
     QScrollArea,
     QFrame,
+    QFileDialog,
 )
 
 from views.base_widget import BaseWidget
@@ -57,7 +58,9 @@ class StatisticsWindow(BaseWidget):
         self.kpi_labels = {}
         self.chart_canvases = {}
         self.chart_messages = {}
+        self.chart_export_buttons = {}
         self.no_data_label = None
+        self.scroll_area = None
         self.init_ui()
 
         if HAS_MATPLOTLIB:
@@ -87,8 +90,9 @@ class StatisticsWindow(BaseWidget):
         self.no_data_label.setStyleSheet("color: #890000;")
         main_layout.addWidget(self.no_data_label)
 
-        scroll_area = QScrollArea()
-        scroll_area.setWidgetResizable(True)
+        self.scroll_area = QScrollArea()
+        self.scroll_area.setWidgetResizable(True)
+        self.scroll_area.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         content_widget = QWidget()
         content_layout = QVBoxLayout()
         content_layout.setSpacing(16)
@@ -117,8 +121,14 @@ class StatisticsWindow(BaseWidget):
         content_layout.addWidget(charts_widget)
 
         content_widget.setLayout(content_layout)
-        scroll_area.setWidget(content_widget)
-        main_layout.addWidget(scroll_area)
+        self.scroll_area.setWidget(content_widget)
+        main_layout.addWidget(self.scroll_area)
+
+        # Enable wheel scrolling regardless of cursor location in the dashboard.
+        self.installEventFilter(self)
+        self._install_scroll_event_filter(content_widget)
+        self._install_scroll_event_filter(self.kpi_container)
+        self._install_scroll_event_filter(charts_widget)
 
         button_layout = QHBoxLayout()
         self.back_button = QPushButton("Back to Results")
@@ -192,8 +202,58 @@ class StatisticsWindow(BaseWidget):
         layout.addWidget(message_label)
         self.chart_messages[chart_key] = message_label
 
+        export_button = QPushButton("Export Graph")
+        export_button.clicked.connect(lambda _, key=chart_key: self.export_chart(key))
+        export_button.setEnabled(HAS_MATPLOTLIB)
+        layout.addWidget(export_button)
+        self.chart_export_buttons[chart_key] = export_button
+
         frame.setLayout(layout)
+        self._install_scroll_event_filter(frame)
+        if HAS_MATPLOTLIB and chart_key in self.chart_canvases:
+            self._install_scroll_event_filter(self.chart_canvases[chart_key])
         return frame
+
+    def _install_scroll_event_filter(self, widget):
+        """Install this widget as an event filter recursively for wheel scrolling."""
+        widget.installEventFilter(self)
+        for child in widget.findChildren(QWidget):
+            child.installEventFilter(self)
+
+    def eventFilter(self, watched, event):
+        """Route wheel events to the scroll area so scrolling works anywhere."""
+        if event.type() == QEvent.Type.Wheel and self.scroll_area is not None:
+            if event.modifiers() & Qt.KeyboardModifier.ControlModifier:
+                return False
+
+            scrollbar = self.scroll_area.verticalScrollBar()
+            scrollbar.setValue(scrollbar.value() - event.angleDelta().y())
+            return True
+
+        return super().eventFilter(watched, event)
+
+    def export_chart(self, chart_key: str):
+        """Export a rendered chart to an image file."""
+        canvas = self.chart_canvases.get(chart_key)
+        if canvas is None:
+            return
+
+        default_name = f"marmat_{chart_key}.png"
+        file_path, _ = QFileDialog.getSaveFileName(
+            self,
+            "Export Graph",
+            default_name,
+            "PNG Files (*.png);;JPEG Files (*.jpg *.jpeg);;PDF Files (*.pdf)"
+        )
+
+        if not file_path:
+            return
+
+        try:
+            canvas.figure.savefig(file_path, dpi=300, bbox_inches='tight')
+            self.show_alert("Export Complete", f"Graph exported to: {file_path}")
+        except Exception as error:
+            self.show_alert("Export Failed", f"Could not export graph: {error}")
 
     def _apply_modern_chart_style(self):
         """Apply a cohesive, modern plotting style across all dashboard charts."""
