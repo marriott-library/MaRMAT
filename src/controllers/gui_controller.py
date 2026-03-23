@@ -28,7 +28,7 @@ from PyQt6.QtGui import QFont
 from views import (
     MainWindow, MetadataWindow, LexiconWindow,
     InstructionsWindow, DataSelectionWindow,
-    PerformMatchingWindow, SettingsWindow
+    PerformMatchingWindow, SettingsWindow, StatisticsWindow
 )
 
 # Application models
@@ -71,6 +71,7 @@ class MainController:
         self.data_selection_window = DataSelectionWindow(self)
         self.perform_matching_window = PerformMatchingWindow(self)
         self.settings_window = SettingsWindow(self)
+        self.statistics_window = StatisticsWindow(self)
 
         # Add views to stack
         self.stack.addWidget(self.main_window)
@@ -80,6 +81,7 @@ class MainController:
         self.stack.addWidget(self.data_selection_window)
         self.stack.addWidget(self.perform_matching_window)
         self.stack.addWidget(self.settings_window)
+        self.stack.addWidget(self.statistics_window)
 
 
 
@@ -114,6 +116,11 @@ class MainController:
     def show_settings_screen(self):
         """Switch to the settings screen"""
         self.stack.setCurrentWidget(self.settings_window)
+
+    def show_statistics_screen(self):
+        """Switch to the statistics dashboard screen."""
+        self.statistics_window.load_statistics_data()
+        self.stack.setCurrentWidget(self.statistics_window)
 
 
     # Run function to start the application

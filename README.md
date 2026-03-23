@@ -71,11 +71,15 @@ To run MaRMAT, you will need **Python 3** installed on your computer. If Python 
 
 MaRMAT also requires two Python libraries: `pandas` and `PyQt6`. To install them, follow the instructions for your operating system below.
 
+For the Statistics dashboard visualizations, install these optional libraries as well:
+- `matplotlib` (for chart rendering)
+- `wordcloud` (for the word cloud visualization)
+
 **MacOS:**
 1. Open **Terminal** (Applications > Utilities > Terminal).
 2. Run the following command:
    ```bash
-   pip3 install pandas PyQt6
+   pip3 install pandas PyQt6 matplotlib wordcloud
    ```
   
 **Windows:**
@@ -90,7 +94,7 @@ Option B:
 1. Open **Command Prompt** (search for `cmd`) or **PowerShell**
 2. Run the following command:
    ```bash
-   py -m pip install pandas PyQt6
+   py -m pip install pandas PyQt6 matplotlib wordcloud
    ```
 
 ### 2.3 Troubleshooting 

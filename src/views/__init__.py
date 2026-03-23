@@ -11,3 +11,4 @@ from .instructions_window import InstructionsWindow
 from .data_selection_window import DataSelectionWindow
 from .perform_matching_window import PerformMatchingWindow
 from .settings_window import SettingsWindow
+from .statistics_window import StatisticsWindow

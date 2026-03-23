@@ -158,6 +158,10 @@ class PerformMatchingWindow(BaseWidget):
         self.open_file_explorer_button.clicked.connect(self.controller.open_output_file_location)
         self.open_file_explorer_button.setEnabled(False)  # Disable the button initially
 
+        self.load_statistics_button = QPushButton("Load Statistics")
+        self.load_statistics_button.clicked.connect(self.controller.show_statistics_screen)
+        self.load_statistics_button.setEnabled(False)
+
 
         # Create a layout for the perform matching window
         layout = QVBoxLayout()
@@ -172,6 +176,7 @@ class PerformMatchingWindow(BaseWidget):
         layout.addWidget(self.table_widget)  # Add the table widget to the layout
         layout.addWidget(finished_label)
         layout.addWidget(self.open_file_explorer_button)
+        layout.addWidget(self.load_statistics_button)
         layout.addLayout(bottom_layout)
         layout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
@@ -255,6 +260,8 @@ class PerformMatchingWindow(BaseWidget):
         self.back_button.setEnabled(True)
         self.open_file_explorer_button.setEnabled(True)  # Enable the button to open the output file location
         self.open_file_explorer_button.setStyleSheet("background-color: #890000; color: white;")  # Set button color
+        self.load_statistics_button.setEnabled(True)
+        self.load_statistics_button.setStyleSheet("background-color: #890000; color: white;")
         # self.back_button.setStyleSheet("background-color: #890000; color: white;")  # Set button color
         self.perform_matching_button.setStyleSheet("")  # Set button color
         self.finished_button.setEnabled(True)  # Enable the finish button
@@ -295,6 +302,8 @@ class PerformMatchingWindow(BaseWidget):
         self.perform_matching_button.setStyleSheet("")  # Set button color
         self.select_file_button.setEnabled(False)
         self.back_button.setEnabled(False)
+        self.load_statistics_button.setEnabled(False)
+        self.load_statistics_button.setStyleSheet("")
 
         # Create a worker thread to perform matching
         self.thread = QThread()
