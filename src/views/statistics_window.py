@@ -31,12 +31,16 @@ from views.base_widget import BaseWidget
 try:
     from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
     from matplotlib.figure import Figure
+    from matplotlib.patches import Patch
+    from matplotlib import cm as mpl_cm
     from matplotlib import style as mpl_style
     import numpy as np
     HAS_MATPLOTLIB = True
 except Exception:
     FigureCanvas = None
     Figure = None
+    Patch = None
+    mpl_cm = None
     mpl_style = None
     np = None
     HAS_MATPLOTLIB = False
@@ -355,6 +359,27 @@ class StatisticsWindow(BaseWidget):
                 fontsize=8,
             )
 
+    def _build_category_color_map(self, categories):
+        """Build a deterministic category -> color mapping for charts/legends."""
+        if not categories:
+            return {}
+
+        color_map = {}
+        if mpl_cm is not None:
+            try:
+                cmap = mpl_cm.get_cmap('tab20')
+                denominator = max(len(categories) - 1, 1)
+                for idx, category in enumerate(categories):
+                    color_position = idx / denominator if len(categories) > 1 else 0
+                    color_map[category] = cmap(color_position)
+                return color_map
+            except Exception:
+                pass
+
+        for idx, category in enumerate(categories):
+            color_map[category] = f"C{idx % 10}"
+        return color_map
+
     def load_statistics_data(self):
         """Load and render KPIs/charts from current matching results."""
         df = self.controller.get_matching_results()
@@ -457,23 +482,66 @@ class StatisticsWindow(BaseWidget):
 
         if 'Term' in df.columns and not df['Term'].dropna().empty:
             top_terms = df['Term'].value_counts().head(10)
-            colors = None
-            if np is not None:
-                colors = [
-                    f"C{int(i % 10)}"
-                    for i in np.linspace(0, 9, len(top_terms.index))
-                ]
+            term_labels = top_terms.index.astype(str).tolist()
+
+            dominant_category_by_term = {}
+            if 'Category' in df.columns:
+                category_by_term = (
+                    df[
+                        df['Term'].notna()
+                        & df['Term'].astype(str).isin(term_labels)
+                    ]
+                    .assign(
+                        Term=df['Term'].astype(str),
+                        Category=df['Category'].fillna('Uncategorized').astype(str),
+                    )
+                    .groupby(['Term', 'Category'])
+                    .size()
+                    .reset_index(name='count')
+                    .sort_values(['Term', 'count'], ascending=[True, False])
+                    .drop_duplicates(subset='Term', keep='first')
+                )
+                dominant_category_by_term = dict(
+                    zip(category_by_term['Term'], category_by_term['Category'])
+                )
+
+            bar_categories = [
+                dominant_category_by_term.get(term, 'Uncategorized')
+                for term in term_labels
+            ]
+            ordered_categories = list(dict.fromkeys(bar_categories))
+            category_colors = self._build_category_color_map(ordered_categories)
+            bar_colors = [category_colors[category] for category in bar_categories]
 
             bars = axis.bar(
-                top_terms.index.astype(str),
+                range(len(term_labels)),
                 top_terms.values,
-                color=colors,
+                color=bar_colors,
                 edgecolor='white',
                 linewidth=0.7,
             )
             axis.set_ylabel("Count")
-            axis.set_xticks(range(len(top_terms.index)))
-            axis.set_xticklabels(top_terms.index.astype(str), rotation=45, ha='right')
+            axis.set_xticks(range(len(term_labels)))
+            axis.set_xticklabels(term_labels, rotation=45, ha='right')
+
+            if Patch is not None and ordered_categories:
+                legend_handles = [
+                    Patch(
+                        facecolor=category_colors[category],
+                        edgecolor='white',
+                        label=category,
+                    )
+                    for category in ordered_categories
+                ]
+                axis.legend(
+                    handles=legend_handles,
+                    title='Category',
+                    loc='upper left',
+                    bbox_to_anchor=(1.01, 1),
+                    fontsize=8,
+                    frameon=False,
+                )
+
             self._annotate_vertical_bars(axis, bars)
         else:
             axis.text(0.5, 0.5, "No Term data", ha='center', va='center', transform=axis.transAxes)
