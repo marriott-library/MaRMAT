@@ -56,6 +56,7 @@ class MainController:
         """Main controller initialization."""
 
         self.output_path = "output.csv"  # Default output path
+        self._metadata_missing_logged = False
 
         self.stack = QStackedWidget()
 
@@ -201,6 +202,7 @@ class MainController:
 
         """
         if self.model.load_metadata(file_path, delimiter=delimiter):
+            self._metadata_missing_logged = False
             print("Metadata loaded:", file_path)
             print("Metadata shape:", self.model.metadata_df.shape)
             return True
@@ -240,9 +242,19 @@ class MainController:
 
         """
         try:
-            return list(self.model.get_selecteable_columns())
-        except:
-            print("No metadata loaded.")
+            if getattr(self.model, "metadata_df", None) is None:
+                if not self._metadata_missing_logged:
+                    print("No metadata loaded.")
+                    self._metadata_missing_logged = True
+                return []
+
+            columns = list(self.model.get_selecteable_columns())
+            self._metadata_missing_logged = False
+            return columns
+        except Exception:
+            if not self._metadata_missing_logged:
+                print("No metadata loaded.")
+                self._metadata_missing_logged = True
             return []
 
     def get_lexicon_columns(self) -> list:
