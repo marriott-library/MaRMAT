@@ -1,1 +1,17 @@
 __pycache__/
+MaRMAT.spec
+build/MaRMAT/Analysis-00.toc
+build/MaRMAT/base_library.zip
+build/MaRMAT/EXE-00.toc
+build/MaRMAT/MaRMAT.pkg
+build/MaRMAT/PKG-00.toc
+build/MaRMAT/PYZ-00.pyz
+build/MaRMAT/PYZ-00.toc
+build/MaRMAT/warn-MaRMAT.txt
+build/MaRMAT/xref-MaRMAT.html
+build/MaRMAT/localpycs/pyimod01_archive.pyc
+build/MaRMAT/localpycs/pyimod02_importers.pyc
+build/MaRMAT/localpycs/pyimod03_ctypes.pyc
+build/MaRMAT/localpycs/pyimod04_pywin32.pyc
+build/MaRMAT/localpycs/struct.pyc
+dist/MaRMAT.exe
