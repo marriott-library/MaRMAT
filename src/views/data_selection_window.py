@@ -76,8 +76,18 @@ class DataSelectionWindow(BaseWidget):
 
         self.include_collection_title_button = QPushButton("Include Collection Title: Off")
         self.include_collection_title_button.setCheckable(True)
+        self.include_collection_title_button.setStyleSheet(
+            "QPushButton:checked { background-color: #890000; color: white; }"
+        )
         self.include_collection_title_button.clicked.connect(self.toggle_collection_title_option)
         dropdown_layout.addWidget(self.include_collection_title_button)
+
+        self.collection_title_notice_label = QLabel(
+            "Collection Title enabled: output will now include a Collection Title for each row."
+        )
+        self.collection_title_notice_label.setWordWrap(True)
+        self.collection_title_notice_label.setVisible(False)
+        dropdown_layout.addWidget(self.collection_title_notice_label)
 
         self.collection_title_combo = QComboBox()
         self.collection_title_combo.addItems(self.controller.get_metadata_columns())
@@ -281,6 +291,7 @@ class DataSelectionWindow(BaseWidget):
         self.include_collection_title_button.setText(
             "Include Collection Title: On" if checked else "Include Collection Title: Off"
         )
+        self.collection_title_notice_label.setVisible(checked)
 
         self.collection_title_combo.setEnabled(checked)
         self.collection_title_combo.setVisible(checked)
@@ -389,6 +400,7 @@ class DataSelectionWindow(BaseWidget):
         self.collection_title_combo.setVisible(False)
         self.include_collection_title_button.setChecked(False)
         self.include_collection_title_button.setText("Include Collection Title: Off")
+        self.collection_title_notice_label.setVisible(False)
         self.controller.set_include_collection_title(False)
 
         # --- Metadata list ---
