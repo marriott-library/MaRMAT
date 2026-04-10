@@ -117,7 +117,7 @@ class StatisticsWindow(BaseWidget):
         chart_specs = [
             ("category_distribution", "Category Distribution (Horizontal Bar Chart)"),
             ("top_terms", "Top 10 Most Frequent Terms (Vertical Bar Chart)"),
-            ("top_terms_by_category", "Top Terms by Category (Stacked Bar Chart)"),
+            ("category_pie", "Category Distribution (Pie Chart)"),
             ("word_cloud", "Word Cloud (Term Frequency)"),
         ]
 
@@ -441,7 +441,7 @@ class StatisticsWindow(BaseWidget):
 
         self._plot_category_distribution(df)
         self._plot_top_terms(df)
-        self._plot_top_terms_by_category(df)
+        self._plot_category_pie(df)
         self._plot_word_cloud(df)
 
     def _plot_category_distribution(self, df):
@@ -549,8 +549,8 @@ class StatisticsWindow(BaseWidget):
         self._style_axis(axis, "Top 10 Most Frequent Terms")
         canvas.draw_idle()
 
-    def _plot_top_terms_by_category(self, df):
-        canvas = self.chart_canvases.get('top_terms_by_category')
+    def _plot_category_pie(self, df):
+        canvas = self.chart_canvases.get('category_pie')
         if canvas is None:
             return
 
@@ -558,39 +558,48 @@ class StatisticsWindow(BaseWidget):
         figure.clear()
         axis = figure.add_subplot(111)
 
-        if (
-            'Category' in df.columns
-            and 'Term' in df.columns
-            and not df['Category'].dropna().empty
-            and not df['Term'].dropna().empty
-        ):
-            top_categories = df['Category'].value_counts().head(5).index
-            subset = df[df['Category'].isin(top_categories)]
-
-            grouped = (
-                subset.groupby(['Category', 'Term'])
-                .size()
-                .reset_index(name='count')
-                .sort_values(['Category', 'count'], ascending=[True, False])
+        if 'Category' in df.columns and not df['Category'].dropna().empty:
+            category_counts = (
+                df['Category']
+                .fillna('Uncategorized')
+                .astype(str)
+                .value_counts()
             )
+            categories = category_counts.index.tolist()
+            category_colors = self._build_category_color_map(categories)
+            pie_colors = [category_colors[category] for category in categories]
+            total_count = int(category_counts.sum())
 
-            top_terms_per_category = (
-                grouped.groupby('Category', group_keys=False)
-                .head(3)
+            wedges, _, autotexts = axis.pie(
+                category_counts.values,
+                labels=None,
+                autopct=lambda pct: (
+                    f"{pct:.1f}%\n({int(round(pct * total_count / 100.0))})"
+                    if pct >= 4
+                    else ""
+                ),
+                startangle=90,
+                colors=pie_colors,
+                wedgeprops={'linewidth': 0.7, 'edgecolor': 'white'},
+                pctdistance=0.75,
             )
+            for autotext in autotexts:
+                autotext.set_fontsize(8)
 
-            pivot_df = top_terms_per_category.pivot_table(
-                index='Category', columns='Term', values='count', fill_value=0
+            axis.legend(
+                wedges,
+                categories,
+                title='Category',
+                loc='center left',
+                bbox_to_anchor=(1.02, 0.5),
+                fontsize=8,
+                frameon=False,
             )
-
-            pivot_df.plot(kind='bar', stacked=True, ax=axis, colormap='tab20c', width=0.8)
-            axis.set_xlabel("Category")
-            axis.set_ylabel("Count")
-            axis.legend(loc='upper left', bbox_to_anchor=(1.01, 1), fontsize=8, frameon=False, title='Term')
+            axis.axis('equal')
         else:
-            axis.text(0.5, 0.5, "No Category/Term data", ha='center', va='center', transform=axis.transAxes)
+            axis.text(0.5, 0.5, "No Category data", ha='center', va='center', transform=axis.transAxes)
 
-        self._style_axis(axis, "Top Terms by Category")
+        axis.set_title("Category Distribution", loc='left', fontsize=12, fontweight='bold', pad=10)
         canvas.draw_idle()
 
     def _plot_word_cloud(self, df):
