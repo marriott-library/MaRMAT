@@ -13,7 +13,8 @@ Date: 2025-08-28
 """
 from PyQt6.QtCore import Qt, QCoreApplication
 from PyQt6.QtWidgets import (QMainWindow, QVBoxLayout, QHBoxLayout, QComboBox, 
-                             QListWidget, QPushButton, QWidget, QLabel, QListWidgetItem)
+                             QListWidget, QPushButton, QWidget, QLabel, QListWidgetItem,
+                             QGroupBox, QFormLayout, QSizePolicy)
 from PyQt6.QtGui import QFont, QKeySequence, QShortcut, QCursor
 from views.base_widget import BaseWidget
 
@@ -43,36 +44,49 @@ class DataSelectionWindow(BaseWidget):
         
     def init_ui(self):
         """Initialize the user interface for the data selection window."""
+        self.setMinimumSize(980, 700)
 
         # Main layout
         main_layout = QVBoxLayout()
+        main_layout.setSpacing(12)
+        main_layout.setContentsMargins(20, 16, 20, 16)
 
-        # Title and instructions
-        title_desc_layout = QVBoxLayout()
+        # Header and instructions
         title_label = QLabel("<b>Configure Analysis</b>")
-        title_label.setAlignment(Qt.AlignmentFlag.AlignTop)
-        title_label.setFont(QFont("Calibri", 48))
-        title_desc_layout.addWidget(title_label)
-        description_text = """
-            On this screen, you will select the ID column from your metadata file that you want to use as a unique identifier (i.e., key column) between your original file and MaRMAT’s output file. 
-            You will then select the fields from your metadata file that you want MaRMAT to analyze and the categories of terms from the lexicon that you want MaRMAT to check for in your metadata file.
-        """
-        instructions_label = QLabel(description_text)
-        instructions_label.setAlignment(Qt.AlignmentFlag.AlignTop)
-        instructions_label.setWordWrap(True)
-        title_desc_layout.addWidget(instructions_label)
-        main_layout.addLayout(title_desc_layout)
+        title_label.setFont(QFont("Calibri", 34))
+        title_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
+        main_layout.addWidget(title_label)
 
-        # Dropdown row
-        dropdown_layout = QVBoxLayout()
-        dropdown_layout.addWidget(QLabel("<b>Select the ID column from your metadata file:</b><br>(Defaults to the first column in your file)"))
+        instructions_label = QLabel(
+            "Select your metadata ID column, choose which metadata fields to analyze, "
+            "and select which lexicon categories MaRMAT should check against those fields."
+        )
+        instructions_label.setWordWrap(True)
+        instructions_label.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
+        main_layout.addWidget(instructions_label)
+
+        # Selection controls
+        setup_group = QGroupBox("Matching Setup")
+        setup_layout = QFormLayout()
+        setup_layout.setLabelAlignment(Qt.AlignmentFlag.AlignLeft)
+        setup_layout.setFormAlignment(Qt.AlignmentFlag.AlignTop)
+        setup_layout.setHorizontalSpacing(24)
+        setup_layout.setVerticalSpacing(12)
 
         self.column_combo = QComboBox()
         self.column_combo.addItems(self.controller.get_metadata_columns())
         self.column_combo.currentTextChanged.connect(self.update_identifier_column)
         self.column_combo.currentTextChanged.connect(self.update_button_state)
+        self.column_combo.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
 
-        dropdown_layout.addWidget(self.column_combo)
+        id_hint_label = QLabel("Used as the unique key column in MaRMAT output.")
+        id_hint_label.setWordWrap(True)
+        id_row_layout = QVBoxLayout()
+        id_row_layout.setContentsMargins(0, 0, 0, 0)
+        id_row_layout.setSpacing(4)
+        id_row_layout.addWidget(self.column_combo)
+        id_row_layout.addWidget(id_hint_label)
+        setup_layout.addRow("ID Column", id_row_layout)
 
         self.include_collection_title_button = QPushButton("Include Collection Title: Off")
         self.include_collection_title_button.setCheckable(True)
@@ -80,14 +94,12 @@ class DataSelectionWindow(BaseWidget):
             "QPushButton:checked { background-color: #890000; color: white; }"
         )
         self.include_collection_title_button.clicked.connect(self.toggle_collection_title_option)
-        dropdown_layout.addWidget(self.include_collection_title_button)
 
         self.collection_title_notice_label = QLabel(
-            "Collection Title enabled: output will now include a Collection Title for each row."
+            "Collection Title enabled: output will include a collection title value for each row."
         )
         self.collection_title_notice_label.setWordWrap(True)
         self.collection_title_notice_label.setVisible(False)
-        dropdown_layout.addWidget(self.collection_title_notice_label)
 
         self.collection_title_combo = QComboBox()
         self.collection_title_combo.addItems(self.controller.get_metadata_columns())
@@ -95,77 +107,85 @@ class DataSelectionWindow(BaseWidget):
         self.collection_title_combo.setEnabled(False)
         self.collection_title_combo.setVisible(False)
         self.auto_select_collection_title_column()
-        dropdown_layout.addWidget(self.collection_title_combo)
 
-        main_layout.addLayout(dropdown_layout)
+        collection_title_row = QVBoxLayout()
+        collection_title_row.setContentsMargins(0, 0, 0, 0)
+        collection_title_row.setSpacing(6)
+        collection_title_row.addWidget(self.include_collection_title_button)
+        collection_title_row.addWidget(self.collection_title_notice_label)
+        collection_title_row.addWidget(self.collection_title_combo)
+        setup_layout.addRow("Optional Output", collection_title_row)
 
-        # Lists row
+        setup_group.setLayout(setup_layout)
+        main_layout.addWidget(setup_group)
+
+        # Checklist panels
         lists_layout = QHBoxLayout()
+        lists_layout.setSpacing(16)
 
-        # Column list - Columns to check for matching
+        columns_group = QGroupBox("Metadata Fields to Analyze")
+        columns_layout = QVBoxLayout()
+        columns_layout.setContentsMargins(12, 12, 12, 12)
+        columns_layout.setSpacing(8)
+
+        column_list_label = QLabel(
+            "Check all metadata columns that should be scanned during analysis."
+        )
+        column_list_label.setWordWrap(True)
+        columns_layout.addWidget(column_list_label)
+
         self.column_list_widget = QListWidget()
         self.column_list_widget.setSelectionMode(QListWidget.SelectionMode.NoSelection)
+        self.column_list_widget.setAlternatingRowColors(True)
+        self.column_list_widget.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.column_list_widget.addItems(self.controller.get_metadata_columns())
-
-        # # Print the self.column_list_widget items
-        # print("Metadata columns in list:")
-        # for index in range(self.column_list_widget.count()):
-        #     item = self.column_list_widget.item(index)
-        #     print(f" - {item.text()}")
-
-        # print("Metadata columns:")
-        # for col in self.controller.get_metadata_columns():
-        #     print(f" - {col}")
 
         for index in range(self.column_list_widget.count()):
             item = self.column_list_widget.item(index)
             item.setCheckState(Qt.CheckState.Unchecked)
 
-        # Create select all and deselect all button for column list
         self.select_all_button_column = QPushButton("Select All Fields")
-        self.select_all_button_column.clicked.connect(lambda: self.select_all_items(self.column_list_widget, self.select_all_button_column))
+        self.select_all_button_column.clicked.connect(
+            lambda: self.select_all_items(self.column_list_widget, self.select_all_button_column)
+        )
+        self.select_all_button_column.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Fixed)
 
-        # Create a container for the column list and its label
-        column_list_container = QVBoxLayout()
-        column_list_container.setContentsMargins(0, 0, 0, 0)  # Remove margins for better alignment
-        column_list_container.setSpacing(5)  # Add some spacing between elements
+        columns_layout.addWidget(self.select_all_button_column, alignment=Qt.AlignmentFlag.AlignLeft)
+        columns_layout.addWidget(self.column_list_widget, 1)
+        columns_group.setLayout(columns_layout)
+        lists_layout.addWidget(columns_group, 1)
 
-        column_list_label = QLabel("<b>Check the boxes next to the names of the columns from your metadata file that you want MaRMAT to analyze:</b>")
-        column_list_label.setWordWrap(True)
-        column_list_container.addWidget(column_list_label)
-        column_list_container.addWidget(self.column_list_widget, 1)  # stretch=1 lets the list grow/shrink
-        column_list_container.addWidget(self.select_all_button_column)
+        lexicon_group = QGroupBox("Lexicon Categories to Check")
+        lexicon_layout = QVBoxLayout()
+        lexicon_layout.setContentsMargins(12, 12, 12, 12)
+        lexicon_layout.setSpacing(8)
 
-        lists_layout.addLayout(column_list_container)
+        unique_values_label = QLabel(
+            "Check all lexicon categories that should be matched against your metadata."
+        )
+        unique_values_label.setWordWrap(True)
+        lexicon_layout.addWidget(unique_values_label)
 
-        # Lexicon list - Unique categories to check for matching
         self.lexicon_list_widget = QListWidget()
         self.lexicon_list_widget.setSelectionMode(QListWidget.SelectionMode.NoSelection)
+        self.lexicon_list_widget.setAlternatingRowColors(True)
+        self.lexicon_list_widget.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self.lexicon_list_widget.addItems(self.controller.get_lexicon_columns())
 
         for index in range(self.lexicon_list_widget.count()):
             item = self.lexicon_list_widget.item(index)
             item.setCheckState(Qt.CheckState.Unchecked)
 
-        # Create select all and deselect all button for column list
         self.select_all_button_lexicon = QPushButton("Select All Fields")
-        self.select_all_button_lexicon.clicked.connect(lambda: self.select_all_items(self.lexicon_list_widget, self.select_all_button_lexicon))
+        self.select_all_button_lexicon.clicked.connect(
+            lambda: self.select_all_items(self.lexicon_list_widget, self.select_all_button_lexicon)
+        )
+        self.select_all_button_lexicon.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Fixed)
 
-        unique_values_container = QVBoxLayout()
-        unique_values_container.setContentsMargins(0, 0, 0, 0)  # Remove margins for better alignment
-        unique_values_container.setSpacing(5)  # Add some spacing between elements
-
-        unique_values_label = QLabel("<b>Check the boxes next to the categories of terms from your selected lexicon that you want MaRMAT to check for in your metadata file:</b>")
-        unique_values_label.setWordWrap(True)
-        unique_values_container.addWidget(unique_values_label)
-        unique_values_container.addWidget(self.lexicon_list_widget, 1)  # stretch=1 lets the list grow/shrink
-        unique_values_container.addWidget(self.select_all_button_lexicon)
-
-        lists_layout.addLayout(unique_values_container)
-
-        lists_layout.setSpacing(20)
-        lists_layout.setContentsMargins(0, 0, 0, 0)
-
+        lexicon_layout.addWidget(self.select_all_button_lexicon, alignment=Qt.AlignmentFlag.AlignLeft)
+        lexicon_layout.addWidget(self.lexicon_list_widget, 1)
+        lexicon_group.setLayout(lexicon_layout)
+        lists_layout.addWidget(lexicon_group, 1)
 
         # Connect the itemClicked signal to the toggle_item_check_state method
         self.column_list_widget.itemPressed.connect(self.handle_item_pressed)
@@ -175,33 +195,33 @@ class DataSelectionWindow(BaseWidget):
         self.column_list_widget.itemChanged.connect(self.update_button_state)
         self.lexicon_list_widget.itemChanged.connect(self.update_button_state)
 
-        # Add the column and lexicon list containers to the main layout.
-        # The stretch factor of 1 lets the lists area absorb extra vertical
-        # space when the window grows, and release it when the window shrinks.
-        main_layout.addLayout(lists_layout, 1)
+        # Let checklist area absorb most of the resize changes.
+        main_layout.addLayout(lists_layout, 2)
 
-        # Navigation Buttons
+        # Footer notes and navigation
+        footer_layout = QHBoxLayout()
+
+        final_instructions_label = QLabel("Once you have finished making your selections, click <b>Next</b>.")
+        final_instructions_label.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
+        final_instructions_label.setWordWrap(True)
+        footer_layout.addWidget(final_instructions_label, 1)
+
         button_layout = QHBoxLayout()
+        button_layout.setSpacing(10)
 
         self.previous_button = QPushButton("Previous")
+        self.previous_button.setMinimumWidth(140)
         self.previous_button.clicked.connect(self.go_to_previous_page)
         button_layout.addWidget(self.previous_button)
 
         self.next_button = QPushButton("Next")
+        self.next_button.setMinimumWidth(140)
         self.next_button.setEnabled(False)  # Initially disabled
         self.next_button.clicked.connect(self.go_to_next_page)
         button_layout.addWidget(self.next_button)
 
-        # Add a final instructions label
-        final_instructions_label = QLabel("Once you have finished making your selections, click <b>Next</b>.")
-        final_instructions_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        final_instructions_label.setWordWrap(True)
-
-        main_layout.setSpacing(20)  # Add some spacing between elements
-        main_layout.setContentsMargins(20, 20, 20, 20)  # Add margins around the main layout
-
-        main_layout.addWidget(final_instructions_label)
-        main_layout.addLayout(button_layout)
+        footer_layout.addLayout(button_layout)
+        main_layout.addLayout(footer_layout)
 
         # Set the layout to the window
         self.setLayout(main_layout)
