@@ -117,7 +117,7 @@ class StatisticsWindow(BaseWidget):
         chart_specs = [
             ("category_distribution", "Category Distribution (Horizontal Bar Chart)"),
             ("top_terms", "Top 10 Most Frequent Terms (Vertical Bar Chart)"),
-            ("category_pie", "Category Distribution (Pie Chart)"),
+            ("category_pie", "Metadata Column Hit Distribution (Pie Chart)"),
             ("word_cloud", "Word Cloud (Term Frequency)"),
         ]
 
@@ -558,20 +558,22 @@ class StatisticsWindow(BaseWidget):
         figure.clear()
         axis = figure.add_subplot(111)
 
-        if 'Category' in df.columns and not df['Category'].dropna().empty:
-            category_counts = (
-                df['Category']
-                .fillna('Uncategorized')
+        column_key = 'Column' if 'Column' in df.columns else 'column' if 'column' in df.columns else None
+
+        if column_key is not None and not df[column_key].dropna().empty:
+            column_counts = (
+                df[column_key]
+                .fillna('Unknown Column')
                 .astype(str)
                 .value_counts()
             )
-            categories = category_counts.index.tolist()
-            category_colors = self._build_category_color_map(categories)
-            pie_colors = [category_colors[category] for category in categories]
-            total_count = int(category_counts.sum())
+            columns = column_counts.index.tolist()
+            category_colors = self._build_category_color_map(columns)
+            pie_colors = [category_colors[column_name] for column_name in columns]
+            total_count = int(column_counts.sum())
 
             wedges, _, autotexts = axis.pie(
-                category_counts.values,
+                column_counts.values,
                 labels=None,
                 autopct=lambda pct: (
                     f"{pct:.1f}%\n({int(round(pct * total_count / 100.0))})"
@@ -588,8 +590,8 @@ class StatisticsWindow(BaseWidget):
 
             axis.legend(
                 wedges,
-                categories,
-                title='Category',
+                columns,
+                title='Metadata Column',
                 loc='center left',
                 bbox_to_anchor=(1.02, 0.5),
                 fontsize=8,
@@ -597,9 +599,9 @@ class StatisticsWindow(BaseWidget):
             )
             axis.axis('equal')
         else:
-            axis.text(0.5, 0.5, "No Category data", ha='center', va='center', transform=axis.transAxes)
+            axis.text(0.5, 0.5, "No metadata column hit data", ha='center', va='center', transform=axis.transAxes)
 
-        axis.set_title("Category Distribution", loc='left', fontsize=12, fontweight='bold', pad=10)
+        axis.set_title("Metadata Column Hit Distribution", loc='left', fontsize=12, fontweight='bold', pad=10)
         canvas.draw_idle()
 
     def _plot_word_cloud(self, df):
