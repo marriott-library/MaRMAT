@@ -137,7 +137,7 @@ class MainController:
         """
         self.stack.setCurrentWidget(self.main_window)
         self.stack.setWindowIcon(self.main_window.windowIcon())
-        self.stack.setWindowTitle("MaRMAT 2.6.1-rc")
+        self.stack.setWindowTitle("MaRMAT 2.7.0-rc")
 
         # Allow shrinking down to a reasonable minimum, but never lock
         # the maximum — that would prevent resizing and maximizing.
