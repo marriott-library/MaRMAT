@@ -90,8 +90,14 @@ class DataSelectionWindow(BaseWidget):
 
         self.include_collection_title_button = QPushButton("Include Collection Title: Off")
         self.include_collection_title_button.setCheckable(True)
+        collection_button_font = self.include_collection_title_button.font()
+        if collection_button_font.pointSizeF() > 0:
+            collection_button_font.setPointSizeF(max(8.0, collection_button_font.pointSizeF() - 1.0))
+        else:
+            collection_button_font.setPointSize(11)
+        self.include_collection_title_button.setFont(collection_button_font)
         self.include_collection_title_button.setStyleSheet(
-            "QPushButton:checked { background-color: #890000; color: white; }"
+            "QPushButton:checked { background-color: #890000; color: white; ; font-size: 12pt; }"
         )
         self.include_collection_title_button.clicked.connect(self.toggle_collection_title_option)
 
