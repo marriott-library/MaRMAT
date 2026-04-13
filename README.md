@@ -123,7 +123,7 @@ Option B:
    ```
 
 ### 3.2 Windows Users
-1. Download `MaRMAT_v.2.6.0-rc_Windows.zip` from our [release assets](https://github.com/marriott-library/MaRMAT/releases/tag/v2.6.0-rc).
+1. Download `MaRMAT_v2.7.0_Windows.zip` from our [release assets](https://github.com/marriott-library/MaRMAT/releases/tag/v2.7.0).
 2. Unzip the downloaded folder to a location on your computer, such as your `Desktop` or `Downloads` folder.
 3. If the necesssary python libraries haven't been installed yet, double-click to `install-dependencies.bat` file.
 4. Open MaRMAT by double-clicking the `run-marmat.bat` file.
