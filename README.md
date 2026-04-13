@@ -49,19 +49,19 @@ MaRMAT uses specialized lexicons—carefully curated lists of terms—to identif
 
 | Lexicon      | Description |
 | :----------:| ---------- |
-| Reparative Metadata Lexicon​   | The [Reparative Metadata Lexicon](https://github.com/marriott-library/MaRMAT/blob/main/Lexicons/reparative-metadata-lexicon_20250604.csv) includes potentially harmful terminology organized according to category (e.g., aggrandizement, ability, gender, LGBTQ, mental health, race, slavery, US Japanese Incarceration). This lexicon is best suited for use on uncontrolled metadata fields (e.g., title, description). [*The Inclusive Metadata Toolkit*](https://osf.io/yf96h) and its associated [Resource Directory](https://docs.google.com/spreadsheets/d/1pdyZz6t2TFj9sHamWSSPxcf7lFkfyV_Zb7_ygC8AbHc/edit?gid=0#gid=0), developed by the [Digital Library Federation's Cultural Assessment Working Group](https://wiki.diglib.org/Assessment:Cultural_Assessment), provides additional resources for reparative metadata practice. WARNING: In order to perform robust metadata assessment, this lexicon contains extremely offensive terminology including expletives, racial slurs, pejoratives, and other derogatory terms for marginalized groups of people. *Note: If you are running this lexicon against a large set of metadata, processing times may be delayed. To improve processing speed, we recommend selecting a subset of these categories in MaRMAT's interface rather than assessing for all categories at once.*  |
-| Library of Congress Subject Headings (LCSH) Lexicon​   | The [LCSH Lexicon](https://github.com/marriott-library/MaRMAT/blob/main/Lexicons/LCSH-lexicon_20250507.csv) includes selected changed and canceled [Library of Congress Subject Headings](https://id.loc.gov/) as well as headings that have been identified on [The Cataloguing Lab](https://cataloginglab.org/problem-lcsh/). Select changed and canceled headings, mostly relating to people and places, were mined from the [Library of Congress Subject Heading Approved Monthly Lists](https://classweb.org/approved-subjects/) for 2023-2024, along with a few notable changes from 2025. The LCSH Lexicon is best suited for use against metadata fields that use LCSH as a controlled vocabulary (e.g., subject). |
-|Sensitive Content Lexicon​   | The [Sensitive Content Lexicon](https://github.com/marriott-library/MaRMAT/blob/main/Lexicons/sensitive-content-_20250604.csv) includes terms may be used to identify records with sensitive content that may be eligible for either a sensitive content viewer or removal from public display. Sensitive topics identified include deceased people, nudity, and graphic, violent, or sexual content. It also includes Indigenous American material that may need restriction or removal due to cultural sensitivity or potential violation of the [Native American Graves Protection and Repatriation Act (NAGPRA)](https://www.bia.gov/service/nagpra). Each organization has their own set of parameters for implementing content warnings and criteria for sensitive content. Please use this lexicon directionally and adhere to your organization's established policies or guidelines.
+| Reparative Metadata Lexicon​   | The [Reparative Metadata Lexicon](https://github.com/marriott-library/MaRMAT/blob/main/Lexicons/reparative-metadata-lexicon_20260412.csv) includes potentially harmful terminology organized according to category (e.g., aggrandizement, ability, gender, LGBTQ, mental health, race, slavery, US Japanese Incarceration). This lexicon is best suited for use on uncontrolled metadata fields (e.g., title, description). [*The Inclusive Metadata Toolkit*](https://osf.io/yf96h) and its associated [Resource Directory](https://docs.google.com/spreadsheets/d/1pdyZz6t2TFj9sHamWSSPxcf7lFkfyV_Zb7_ygC8AbHc/edit?gid=0#gid=0), developed by the [Digital Library Federation's Cultural Assessment Working Group](https://wiki.diglib.org/Assessment:Cultural_Assessment), provides additional resources for reparative metadata practice. WARNING: In order to perform robust metadata assessment, this lexicon contains extremely offensive terminology including expletives, racial slurs, pejoratives, and other derogatory terms for marginalized groups of people. *Note: If you are running this lexicon against a large set of metadata, processing times may be delayed. To improve processing speed, we recommend selecting a subset of these categories in MaRMAT's interface rather than assessing for all categories at once.*  |
+| Library of Congress Subject Headings (LCSH) Lexicon​   | The [LCSH Lexicon](https://github.com/marriott-library/MaRMAT/blob/main/Lexicons/LCSH-lexicon_20260409.csv) includes selected changed and canceled [Library of Congress Subject Headings](https://id.loc.gov/) as well as headings that have been identified on [The Cataloguing Lab](https://cataloginglab.org/problem-lcsh/). Select changed and canceled headings, mostly relating to people and places, were mined from the [Library of Congress Subject Heading Approved Monthly Lists](https://classweb.org/approved-subjects/) for 2023-2024, along with a few notable changes from 2025. The LCSH Lexicon is best suited for use against metadata fields that use LCSH as a controlled vocabulary (e.g., subject). |
+|Sensitive Content Lexicon​   | The [Sensitive Content Lexicon](https://github.com/marriott-library/MaRMAT/blob/main/Lexicons/sensitive-content_20260409.csv) includes terms may be used to identify records with sensitive content that may be eligible for either a sensitive content viewer or removal from public display. Sensitive topics identified include deceased people, nudity, and graphic, violent, or sexual content. It also includes Indigenous American material that may need restriction or removal due to cultural sensitivity or potential violation of the [Native American Graves Protection and Repatriation Act (NAGPRA)](https://www.bia.gov/service/nagpra). Each organization has their own set of parameters for implementing content warnings and criteria for sensitive content. Please use this lexicon directionally and adhere to your organization's established policies or guidelines.
 
 ## 2. Installation
 
 ### 2.1 Download
 
-**MacOS Users:** Go to [v2.6.0-rc](https://github.com/marriott-library/MaRMAT/releases/tag/v2.6.0-rc) and download `MaRMAT_v.2.6.0-rc_macOS.zip` from Assets.
+**MacOS Users:** Go to [v2.7.0](https://github.com/marriott-library/MaRMAT/releases/tag/v2.7.0) and download `MaRMAT_v2.7.0_MacOS.zip` from Assets.
 
-**Windows Users:** Go to [v2.6.0-rc](https://github.com/marriott-library/MaRMAT/releases/tag/v2.6.0-rc) and download `MaRMAT_v.2.6.0-rc_Windows.zip` from Assets.
+**Windows Users:** Go to [v2.7.0](https://github.com/marriott-library/MaRMAT/releases/tag/v2.7.0) and download `MaRMAT_v.2.7.0_Windows.zip` from Assets.
 
-**Linux Users:** Go to [v2.6.0-rc](https://github.com/marriott-library/MaRMAT/releases/tag/v2.6.0-rc) and download `MaRMAT_v.2.6.0-rc_Linux-x64.zip` from Assets.
+**Linux Users:** Go to [v2.7.0](https://github.com/marriott-library/MaRMAT/releases/tag/v2.7.0) and download `MaRMAT_v2.7.0_Linux-x64.zip` from Assets.
 
 ### 2.2 Dependencies
 
@@ -84,11 +84,16 @@ For the Statistics dashboard visualizations, install these optional libraries as
   
 **Windows:**
 
-Windows users have two options for installation:
+Windows users have three options for installation:
+
+Option 1: 
+1. Unzip the `MaRMAT_v2.7.0_Windows.zip`
+2. Open the MaRMAT_v2-7-0.exe and run program
 
 Option A:
-1. Unzip the `MaRMAT_v.2.6.0-rc_Windows.zip`
+1. Unzip the `MaRMAT_v2.7.0_Windows.zip`
 2. Double-click on the `install-dependencies.bat` file
+3. Double-click the run-marmat.bat or go to src folder and double click main.py file
 
 Option B:
 1. Open **Command Prompt** (search for `cmd`) or **PowerShell**
@@ -106,11 +111,11 @@ Option B:
 ## 3. Running MaRMAT
 
 ### 3.1 MacOS Users
-1. Download `MaRMAT_v.2.6.0-rc_macOS.zip` from our [release assets](https://github.com/marriott-library/MaRMAT/releases/tag/v2.6.0-rc).
+1. Download `MaRMAT_v.2.7.0_MacOS.zip` from our [release assets](https://github.com/marriott-library/MaRMAT/releases/tag/v2.7.0).
 2. Unzip the downloaded folder to a location on your computer, such as your `Desktop` or `Downloads` folder.
 3. Use the `cd` command in `Terminal` to change directories to the unzipped MaRMAT folder. For example, if you unzipped the folder to your Desktop, run:
    ```bash
-   cd Desktop/MaRMAT_v.2.6.0-rc_macOS/src
+   cd Desktop/MaRMAT_v.2.7.0_MacOS/src
    ```
 4. Then run the following command to launch the MaRMAT user interface:
    ```bash
