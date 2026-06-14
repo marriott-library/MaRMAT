@@ -199,7 +199,10 @@ class marmat_processing(QObject):
                 self.identifier_column = 'identifier'
             else:
                 # Handle CSV/TSV files as before
-                self.metadata_df = pd.read_csv(file_path, delimiter=delimiter, encoding='utf-8', on_bad_lines='warn')
+                try:
+                    self.metadata_df = pd.read_csv(file_path, delimiter=delimiter, encoding='utf-8-sig', on_bad_lines='warn')
+                except UnicodeDecodeError:
+                    self.metadata_df = pd.read_csv(file_path, delimiter=delimiter, encoding='latin1', on_bad_lines='warn')
             
             print("Metadata loaded successfully.")
             
