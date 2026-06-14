@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Settings — MaRMAT{% endblock %}
+
+{% block content %}
+<h1 class="page__title">Settings</h1>
+<p class="page__lead">
+  Default folder preferences. These are remembered between sessions on this machine.
+</p>
+
+<div class="card">
+  <h2 class="card__title">Default folders</h2>
+  <div class="field">
+    <label for="default-results-path">Default results folder</label>
+    <input type="text" id="default-results-path" value="{{ settings.default_results_path }}">
+    <p class="field__hint">Suggested location when downloading results. (Your browser ultimately controls where downloads are saved.)</p>
+  </div>
+  <div class="field">
+    <label for="default-metadata-path">Default metadata folder</label>
+    <input type="text" id="default-metadata-path" value="{{ settings.default_metadata_path }}">
+  </div>
+  <div class="field">
+    <label for="default-lexicon-path">Default lexicon folder</label>
+    <input type="text" id="default-lexicon-path" value="{{ settings.default_lexicon_path }}">
+  </div>
+
+  <div id="status" class="notice" hidden></div>
+  <button class="btn btn--primary" id="save-btn">Save settings</button>
+</div>
+
+<div class="actions">
+  <a class="btn btn--ghost" href="{{ url_for('marmat.index') }}">← Home</a>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+<script>
+(function () {
+  const statusEl = document.getElementById("status");
+  document.getElementById("save-btn").addEventListener("click", async () => {
+    try {
+      await MaRMAT.postJSON("/api/settings", {
+        default_results_path: document.getElementById("default-results-path").value,
+        default_metadata_path: document.getElementById("default-metadata-path").value,
+        default_lexicon_path: document.getElementById("default-lexicon-path").value,
+      });
+      MaRMAT.notice(statusEl, "success", "Settings saved.");
+    } catch (err) {
+      MaRMAT.notice(statusEl, "error", err.message);
+    }
+  });
+})();
+</script>
+{% endblock %}

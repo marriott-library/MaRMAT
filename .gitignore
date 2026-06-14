@@ -6,5 +6,10 @@ __pycache__/
 # PyInstaller spec files
 *.spec
 
+# Build scripts
+build.ps1
+build.sh
+build.bat
+
 # Log files
 *.log

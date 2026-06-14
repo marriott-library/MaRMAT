@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}Load Metadata — MaRMAT{% endblock %}
+
+{% block content %}
+<h1 class="page__title">Load your metadata</h1>
+<p class="page__lead">
+  Upload a tabular metadata file (CSV or TSV) or an EAD XML finding aid.
+  Each row should represent one record, and one column should serve as a unique identifier.
+</p>
+
+<div class="card">
+  <div class="field">
+    <label for="delimiter">Delimiter (for CSV/TSV files)</label>
+    <select id="delimiter" style="max-width:280px;">
+      <option value=",">Comma ( , )</option>
+      <option value="tab">Tab</option>
+      <option value=";">Semicolon ( ; )</option>
+      <option value="|">Pipe ( | )</option>
+    </select>
+    <p class="field__hint">Ignored for EAD XML files.</p>
+  </div>
+
+  <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Upload metadata file">
+    <div class="dropzone__icon">⬆</div>
+    <div><strong>Drag &amp; drop</strong> a file here, or <strong>click to browse</strong></div>
+    <div class="dropzone__hint">.csv, .tsv, or .xml</div>
+    <input type="file" id="file-input" accept=".csv,.tsv,.txt,.xml">
+  </div>
+
+  <div id="status" class="notice" hidden></div>
+  <div id="file-info" style="margin-top:14px;" hidden>
+    <span class="file-badge">✓ <span id="file-name"></span></span>
+    <span class="muted" id="row-count" style="margin-left:10px;"></span>
+  </div>
+</div>
+
+<div class="card" id="preview-card" hidden>
+  <h2 class="card__title">Preview <span class="muted" id="preview-note"></span></h2>
+  <div id="preview"></div>
+</div>
+
+<div class="actions">
+  <a class="btn btn--ghost" href="{{ url_for('marmat.index') }}">← Home</a>
+  <a class="btn btn--primary" id="next-btn" href="{{ url_for('marmat.upload_lexicon_page') }}"
+     aria-disabled="{{ 'false' if metadata_filename else 'true' }}">Next: Lexicon →</a>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+<script>
+(function () {
+  const dropzone = document.getElementById("dropzone");
+  const input = document.getElementById("file-input");
+  const statusEl = document.getElementById("status");
+  const nextBtn = document.getElementById("next-btn");
+  const previewCard = document.getElementById("preview-card");
+
+  const alreadyLoaded = {{ 'true' if metadata_filename else 'false' }};
+  if (alreadyLoaded) nextBtn.setAttribute("aria-disabled", "false");
+
+  dropzone.addEventListener("click", () => input.click());
+  dropzone.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); input.click(); } });
+  dropzone.addEventListener("dragover", (e) => { e.preventDefault(); dropzone.classList.add("is-dragover"); });
+  dropzone.addEventListener("dragleave", () => dropzone.classList.remove("is-dragover"));
+  dropzone.addEventListener("drop", (e) => {
+    e.preventDefault();
+    dropzone.classList.remove("is-dragover");
+    if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+  });
+  input.addEventListener("change", () => { if (input.files.length) handleFile(input.files[0]); });
+
+  async function handleFile(file) {
+    MaRMAT.notice(statusEl, "info", `Uploading ${file.name}…`);
+    nextBtn.setAttribute("aria-disabled", "true");
+    try {
+      const delimiter = document.getElementById("delimiter").value;
+      const data = await MaRMAT.uploadFile("/api/metadata", file, { delimiter });
+      statusEl.hidden = true;
+
+      document.getElementById("file-name").textContent = data.filename;
+      document.getElementById("row-count").textContent = `${data.rowCount.toLocaleString()} rows · ${data.columns.length} columns`;
+      document.getElementById("file-info").hidden = false;
+
+      const note = document.getElementById("preview-note");
+      note.textContent = data.isEad ? "(parsed from EAD XML)" : "(first 50 rows)";
+      MaRMAT.renderTable(document.getElementById("preview"), data.preview);
+      previewCard.hidden = false;
+
+      if (data.isEad) {
+        MaRMAT.notice(statusEl, "info", "EAD XML detected — the identifier column has been set automatically.");
+      }
+      nextBtn.setAttribute("aria-disabled", "false");
+    } catch (err) {
+      MaRMAT.notice(statusEl, "error", err.message);
+    }
+  }
+
+  nextBtn.addEventListener("click", (e) => {
+    if (nextBtn.getAttribute("aria-disabled") === "true") e.preventDefault();
+  });
+})();
+</script>
+{% endblock %}

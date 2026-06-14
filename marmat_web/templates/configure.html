@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+{% block title %}Configure Analysis — MaRMAT{% endblock %}
+
+{% block content %}
+<h1 class="page__title">Configure analysis</h1>
+<p class="page__lead">
+  Choose your ID column, select which metadata fields to scan, and pick the lexicon
+  categories MaRMAT should check against those fields.
+</p>
+
+<div class="card">
+  <h2 class="card__title">Matching setup</h2>
+  <div class="field">
+    <label for="id-column">ID column</label>
+    <select id="id-column" style="max-width:420px;"></select>
+    <p class="field__hint">Used as the unique key column in MaRMAT output.</p>
+  </div>
+
+  <div class="field">
+    <label>Optional output</label>
+    <div class="toggle-row">
+      <label class="switch">
+        <input type="checkbox" id="include-title">
+        <span class="switch__slider"></span>
+      </label>
+      <span>Include a collection title column in the output</span>
+    </div>
+    <div id="title-column-wrap" hidden style="margin-top:12px;">
+      <label for="title-column">Collection title column</label>
+      <select id="title-column" style="max-width:420px;"></select>
+    </div>
+  </div>
+</div>
+
+<div class="two-col">
+  <div class="card">
+    <h2 class="card__title">Metadata fields to analyze</h2>
+    <p class="field__hint" style="margin-bottom:10px;">Check all columns that should be scanned.</p>
+    <button class="btn btn--secondary" id="select-all-columns" type="button" style="margin-bottom:10px;">Select all</button>
+    <div class="checklist" id="columns-list"></div>
+  </div>
+
+  <div class="card">
+    <h2 class="card__title">Lexicon categories to check</h2>
+    <p class="field__hint" style="margin-bottom:10px;">Check all categories to match against your metadata.</p>
+    <button class="btn btn--secondary" id="select-all-categories" type="button" style="margin-bottom:10px;">Select all</button>
+    <div class="checklist" id="categories-list"></div>
+  </div>
+</div>
+
+<div id="status" class="notice" hidden></div>
+
+<div class="actions">
+  <a class="btn btn--ghost" href="{{ url_for('marmat.upload_lexicon_page') }}">← Back</a>
+  <button class="btn btn--primary" id="next-btn" disabled>Next: Run &amp; Results →</button>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+<script>
+(function () {
+  const idSelect = document.getElementById("id-column");
+  const titleSelect = document.getElementById("title-column");
+  const includeTitle = document.getElementById("include-title");
+  const titleWrap = document.getElementById("title-column-wrap");
+  const columnsList = document.getElementById("columns-list");
+  const categoriesList = document.getElementById("categories-list");
+  const nextBtn = document.getElementById("next-btn");
+  const statusEl = document.getElementById("status");
+
+  function checklistItem(name, group) {
+    const id = `${group}-${name}`.replace(/[^a-zA-Z0-9_-]/g, "_");
+    const div = document.createElement("label");
+    div.className = "checklist__item";
+    div.innerHTML =
+      `<input type="checkbox" id="${id}" value="${MaRMAT.esc(name)}"><label for="${id}">${MaRMAT.esc(name)}</label>`;
+    div.querySelector("input").addEventListener("change", updateButtonState);
+    return div;
+  }
+
+  function checkedValues(container) {
+    return Array.from(container.querySelectorAll("input:checked")).map((c) => c.value);
+  }
+
+  function updateButtonState() {
+    const ok = idSelect.value &&
+      checkedValues(columnsList).length > 0 &&
+      checkedValues(categoriesList).length > 0;
+    nextBtn.disabled = !ok;
+  }
+
+  includeTitle.addEventListener("change", () => {
+    titleWrap.hidden = !includeTitle.checked;
+  });
+
+  document.getElementById("select-all-columns").addEventListener("click", function () {
+    toggleAll(columnsList, this);
+  });
+  document.getElementById("select-all-categories").addEventListener("click", function () {
+    toggleAll(categoriesList, this);
+  });
+  function toggleAll(container, btn) {
+    const selectAll = btn.textContent === "Select all";
+    container.querySelectorAll("input").forEach((c) => (c.checked = selectAll));
+    btn.textContent = selectAll ? "Deselect all" : "Select all";
+    updateButtonState();
+  }
+
+  (async function load() {
+    try {
+      const [cols, cats] = await Promise.all([
+        MaRMAT.getJSON("/api/columns"),
+        MaRMAT.getJSON("/api/categories"),
+      ]);
+
+      cols.columns.forEach((c) => {
+        idSelect.add(new Option(c, c));
+        titleSelect.add(new Option(c, c));
+        columnsList.appendChild(checklistItem(c, "col"));
+      });
+      if (cols.identifierSuggestion) idSelect.value = cols.identifierSuggestion;
+      if (cols.collectionTitleSuggestion) titleSelect.value = cols.collectionTitleSuggestion;
+
+      cats.categories.forEach((c) => categoriesList.appendChild(checklistItem(c, "cat")));
+
+      idSelect.addEventListener("change", updateButtonState);
+      updateButtonState();
+    } catch (err) {
+      MaRMAT.notice(statusEl, "error", err.message);
+    }
+  })();
+
+  nextBtn.addEventListener("click", async () => {
+    nextBtn.disabled = true;
+    try {
+      await MaRMAT.postJSON("/api/configure", {
+        identifierColumn: idSelect.value,
+        selectedColumns: checkedValues(columnsList),
+        selectedCategories: checkedValues(categoriesList),
+        includeCollectionTitle: includeTitle.checked,
+        collectionTitleColumn: includeTitle.checked ? titleSelect.value : null,
+      });
+      window.location.href = "{{ url_for('marmat.run_page') }}";
+    } catch (err) {
+      MaRMAT.notice(statusEl, "error", err.message);
+      updateButtonState();
+    }
+  });
+})();
+</script>
+{% endblock %}

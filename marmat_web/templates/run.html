@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% block title %}Run &amp; Results — MaRMAT{% endblock %}
+
+{% block content %}
+<h1 class="page__title">Run analysis &amp; review results</h1>
+<p class="page__lead">
+  Start matching to scan your selected metadata fields against the chosen lexicon categories.
+  Results appear below and can be downloaded as CSV or TSV.
+</p>
+
+<div class="card">
+  <div class="actions__group">
+    <button class="btn btn--primary btn--lg" id="run-btn">▶ Perform analysis</button>
+    <a class="btn btn--secondary" id="download-csv" href="#" hidden>⬇ Download CSV</a>
+    <a class="btn btn--secondary" id="download-tsv" href="#" hidden>⬇ Download TSV</a>
+    <a class="btn btn--secondary" id="stats-btn" href="{{ url_for('marmat.statistics_page') }}" hidden>📊 View statistics</a>
+  </div>
+
+  <div id="progress-wrap" style="margin-top:20px;" hidden>
+    <div class="progress"><div class="progress__bar" id="progress-bar"></div></div>
+    <div class="progress-label" id="progress-label">Starting…</div>
+  </div>
+
+  <div id="status" class="notice" hidden></div>
+</div>
+
+<div class="card" id="results-card" hidden>
+  <h2 class="card__title">Results <span class="muted" id="results-count"></span></h2>
+  <div id="results"></div>
+  <div class="pager" id="pager" hidden>
+    <button class="btn btn--secondary" id="prev-page">← Prev</button>
+    <span class="pager__info" id="pager-info"></span>
+    <button class="btn btn--secondary" id="next-page">Next →</button>
+  </div>
+</div>
+
+<div class="actions">
+  <a class="btn btn--ghost" href="{{ url_for('marmat.configure_page') }}">← Back</a>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+<script>
+(function () {
+  const runBtn = document.getElementById("run-btn");
+  const statusEl = document.getElementById("status");
+  const progressWrap = document.getElementById("progress-wrap");
+  const progressBar = document.getElementById("progress-bar");
+  const progressLabel = document.getElementById("progress-label");
+  const resultsCard = document.getElementById("results-card");
+
+  const PAGE_SIZE = 100;
+  let page = 1, totalPages = 1, total = 0;
+
+  runBtn.addEventListener("click", startMatch);
+
+  async function startMatch() {
+    runBtn.disabled = true;
+    statusEl.hidden = true;
+    progressWrap.hidden = false;
+    setProgress(0, "Starting…");
+    try {
+      await MaRMAT.postJSON("/api/match", {});
+      poll();
+    } catch (err) {
+      MaRMAT.notice(statusEl, "error", err.message);
+      runBtn.disabled = false;
+      progressWrap.hidden = true;
+    }
+  }
+
+  function setProgress(pct, label) {
+    progressBar.style.width = pct + "%";
+    progressLabel.textContent = label || (pct + "%");
+  }
+
+  async function poll() {
+    try {
+      const p = await MaRMAT.getJSON("/api/match/progress");
+      setProgress(p.percent, p.message || p.percent + "%");
+      if (p.status === "running") { setTimeout(poll, 500); return; }
+      if (p.status === "error") {
+        MaRMAT.notice(statusEl, "error", p.message);
+        runBtn.disabled = false;
+        return;
+      }
+      // done
+      runBtn.disabled = false;
+      total = p.resultCount || 0;
+      if (total === 0) {
+        MaRMAT.notice(statusEl, "info", "No matches were found for your selections. Try different fields or categories.");
+        return;
+      }
+      MaRMAT.notice(statusEl, "success", p.message);
+      document.getElementById("download-csv").hidden = false;
+      document.getElementById("download-csv").href = "/api/results/download?format=csv";
+      document.getElementById("download-tsv").hidden = false;
+      document.getElementById("download-tsv").href = "/api/results/download?format=tsv";
+      document.getElementById("stats-btn").hidden = false;
+      page = 1;
+      loadResults();
+    } catch (err) {
+      MaRMAT.notice(statusEl, "error", err.message);
+      runBtn.disabled = false;
+    }
+  }
+
+  async function loadResults() {
+    const data = await MaRMAT.getJSON(`/api/results?page=${page}&pageSize=${PAGE_SIZE}`);
+    total = data.total;
+    totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+    MaRMAT.renderTable(document.getElementById("results"), { columns: data.columns, rows: data.rows });
+    document.getElementById("results-count").textContent = `(${total.toLocaleString()} flagged instances)`;
+    resultsCard.hidden = false;
+    const pager = document.getElementById("pager");
+    pager.hidden = totalPages <= 1;
+    document.getElementById("pager-info").textContent = `Page ${page} of ${totalPages}`;
+    document.getElementById("prev-page").disabled = page <= 1;
+    document.getElementById("next-page").disabled = page >= totalPages;
+  }
+
+  document.getElementById("prev-page").addEventListener("click", () => { if (page > 1) { page--; loadResults(); } });
+  document.getElementById("next-page").addEventListener("click", () => { if (page < totalPages) { page++; loadResults(); } });
+
+  // If results already exist (e.g. returning to this page), show them.
+  (async function checkExisting() {
+    try {
+      const data = await MaRMAT.getJSON(`/api/results?page=1&pageSize=${PAGE_SIZE}`);
+      if (data.total > 0) {
+        total = data.total;
+        document.getElementById("download-csv").hidden = false;
+        document.getElementById("download-csv").href = "/api/results/download?format=csv";
+        document.getElementById("download-tsv").hidden = false;
+        document.getElementById("download-tsv").href = "/api/results/download?format=tsv";
+        document.getElementById("stats-btn").hidden = false;
+        loadResults();
+      }
+    } catch (e) { /* ignore */ }
+  })();
+})();
+</script>
+{% endblock %}

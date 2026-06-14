@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}MaRMAT{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/marmat.css') }}">
+  <link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
+</head>
+<body>
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a class="brand" href="{{ url_for('marmat.index') }}">
+        <span class="brand__mark" aria-hidden="true">U</span>
+        <span class="brand__text">
+          <span class="brand__title">MaRMAT</span>
+          <span class="brand__sub">J. Willard Marriott Library &middot; University of Utah</span>
+        </span>
+      </a>
+      <nav class="site-nav">
+        <a href="{{ url_for('marmat.instructions_page') }}" class="{{ 'is-active' if step == 'instructions' }}">Instructions</a>
+        <a href="{{ url_for('marmat.settings_page') }}" class="{{ 'is-active' if step == 'settings' }}">Settings</a>
+      </nav>
+    </div>
+  </header>
+
+  {% set steps = [
+      ('metadata', 'Metadata', 'marmat.upload_metadata_page'),
+      ('lexicon', 'Lexicon', 'marmat.upload_lexicon_page'),
+      ('configure', 'Configure', 'marmat.configure_page'),
+      ('run', 'Run & Results', 'marmat.run_page'),
+      ('statistics', 'Statistics', 'marmat.statistics_page'),
+  ] %}
+  {% set step_order = ['metadata', 'lexicon', 'configure', 'run', 'statistics'] %}
+  {% if step in step_order %}
+  <div class="stepper" role="navigation" aria-label="Progress">
+    <ol class="stepper__list">
+      {% set current_index = step_order.index(step) %}
+      {% for key, label, endpoint in steps %}
+        {% set idx = loop.index0 %}
+        <li class="stepper__item
+            {{ 'is-current' if key == step }}
+            {{ 'is-done' if idx < current_index }}">
+          <span class="stepper__num">{{ loop.index }}</span>
+          <span class="stepper__label">{{ label }}</span>
+        </li>
+      {% endfor %}
+    </ol>
+  </div>
+  {% endif %}
+
+  <main class="page">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <p>MaRMAT &middot; Marriott Reparative Metadata Assessment Tool &middot;
+      <a href="https://marmatproject.org/" target="_blank" rel="noopener">marmatproject.org</a></p>
+  </footer>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>

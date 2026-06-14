@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Getting Started — MaRMAT{% endblock %}
+
+{% block content %}
+<h1 class="page__title">Getting started</h1>
+<p class="page__lead">
+  MaRMAT helps you flag harmful, outdated, or otherwise problematic language in
+  tabular metadata using pre-curated and custom lexicons. Follow these steps to
+  run an assessment.
+</p>
+
+<div class="card">
+  <h2 class="card__title">The workflow</h2>
+  <ol>
+    <li><strong>Load metadata</strong> — Upload a CSV, TSV, or EAD XML file. Each row should be
+      one record, and one column should be a unique identifier (e.g. a Record ID).</li>
+    <li><strong>Choose a lexicon</strong> — Use a bundled lexicon or upload your own CSV with
+      <span class="mono">term</span> and <span class="mono">category</span> columns.</li>
+    <li><strong>Configure</strong> — Pick your ID column, the metadata fields to scan, and the
+      lexicon categories to check.</li>
+    <li><strong>Run &amp; review</strong> — Perform the analysis, browse the results table, and
+      download them as CSV or TSV.</li>
+    <li><strong>Statistics</strong> — Explore an interactive dashboard summarizing your results.</li>
+  </ol>
+</div>
+
+<div class="card">
+  <h2 class="card__title">The lexicons</h2>
+  <p>
+    Lexicons are carefully curated lists of terms grouped by category. MaRMAT ships
+    with three pre-curated lexicons, and you can supply your own.
+  </p>
+  <ul>
+    <li><strong>Reparative Metadata Lexicon</strong> — potentially harmful terminology organized
+      by category (e.g. ability, gender, LGBTQ, mental health, race, slavery). Best suited for
+      uncontrolled fields such as title and description.
+      <div class="notice notice--warn">
+        Warning: this lexicon contains extremely offensive terminology, including slurs and
+        pejoratives, so that robust assessment is possible.
+      </div>
+    </li>
+    <li><strong>LCSH Lexicon</strong> — selected changed and canceled Library of Congress Subject
+      Headings. Best for fields using LCSH as a controlled vocabulary (e.g. subject).</li>
+    <li><strong>Sensitive Content Lexicon</strong> — terms that may indicate sensitive content
+      (deceased people, nudity, graphic/violent content, and material that may be subject to
+      NAGPRA). Use directionally and follow your organization's policies.</li>
+  </ul>
+  <p class="muted">
+    Browse the full lexicon CSVs on the
+    <a href="https://www.marmatproject.org/lexicons/" target="_blank" rel="noopener">MaRMAT website</a>.
+  </p>
+</div>
+
+<div class="card">
+  <h2 class="card__title">Tips</h2>
+  <ul>
+    <li>Metadata files should be CSV or TSV; lexicon files should be CSV.</li>
+    <li>The lexicon file needs <span class="mono">term</span> and <span class="mono">category</span> columns.</li>
+    <li>Include an identifier column so results can be reconciled with your original metadata.</li>
+    <li>For large metadata sets, select a subset of categories to improve processing speed.</li>
+    <li>Matching is whole-word and case-insensitive (e.g. "potato" will not match "potatoes").</li>
+  </ul>
+</div>
+
+<div class="actions">
+  <a class="btn btn--ghost" href="{{ url_for('marmat.index') }}">← Home</a>
+  <a class="btn btn--primary" href="{{ url_for('marmat.upload_metadata_page') }}">Start Analysis →</a>
+</div>
+{% endblock %}

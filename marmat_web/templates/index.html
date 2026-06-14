@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}MaRMAT — Metadata Assessment{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <h1>Marriott Reparative Metadata Assessment Tool</h1>
+  <p>
+    Flag harmful, outdated, or otherwise problematic language in tabular metadata
+    using pre-curated and custom lexicons. Schema-agnostic, batch-capable, and
+    built for thoughtful reparative metadata work.
+  </p>
+  <div class="actions__group" style="justify-content:center;">
+    <a class="btn btn--primary btn--lg" href="{{ url_for('marmat.upload_metadata_page') }}">Start Analysis →</a>
+    <a class="btn btn--secondary btn--lg" href="{{ url_for('marmat.instructions_page') }}">Getting Started</a>
+  </div>
+
+  <div class="feature-grid">
+    <div class="feature card">
+      <h3>1 &middot; Load metadata</h3>
+      <p>Upload a CSV, TSV, or EAD XML file. MaRMAT previews it and detects your columns automatically.</p>
+    </div>
+    <div class="feature card">
+      <h3>2 &middot; Choose a lexicon</h3>
+      <p>Use a bundled lexicon (Reparative, LCSH, Sensitive Content) or upload your own term/category list.</p>
+    </div>
+    <div class="feature card">
+      <h3>3 &middot; Review &amp; visualize</h3>
+      <p>Run matching, export results, and explore an interactive statistics dashboard powered by D3.</p>
+    </div>
+  </div>
+</section>
+{% endblock %}

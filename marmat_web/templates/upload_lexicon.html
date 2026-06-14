@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+{% block title %}Choose Lexicon — MaRMAT{% endblock %}
+
+{% block content %}
+<h1 class="page__title">Choose a lexicon</h1>
+<p class="page__lead">
+  A lexicon is a CSV with <span class="mono">term</span> and <span class="mono">category</span> columns.
+  Pick one of the bundled, pre-curated lexicons or upload your own.
+</p>
+
+<div class="card">
+  <div class="tabs" role="tablist">
+    <button class="tab is-active" id="tab-bundled" role="tab" aria-selected="true">Bundled lexicons</button>
+    <button class="tab" id="tab-upload" role="tab" aria-selected="false">Upload your own</button>
+  </div>
+
+  <div class="tab-panel" id="panel-bundled" role="tabpanel">
+    <div id="bundled-list"><p class="muted">Loading bundled lexicons…</p></div>
+  </div>
+
+  <div class="tab-panel" id="panel-upload" role="tabpanel" hidden>
+    <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Upload lexicon CSV">
+      <div class="dropzone__icon">⬆</div>
+      <div><strong>Drag &amp; drop</strong> a lexicon CSV, or <strong>click to browse</strong></div>
+      <div class="dropzone__hint">.csv with term, category columns</div>
+      <input type="file" id="file-input" accept=".csv">
+    </div>
+  </div>
+
+  <div id="status" class="notice" hidden></div>
+  <div id="lex-info" style="margin-top:14px;" hidden>
+    <span class="file-badge">✓ <span id="lex-name"></span></span>
+    <span class="muted" id="lex-meta" style="margin-left:10px;"></span>
+  </div>
+</div>
+
+<div class="card" id="preview-card" hidden>
+  <h2 class="card__title">Preview <span class="muted">(first 50 rows)</span></h2>
+  <div id="preview"></div>
+</div>
+
+<div class="actions">
+  <a class="btn btn--ghost" href="{{ url_for('marmat.upload_metadata_page') }}">← Back</a>
+  <a class="btn btn--primary" id="next-btn" href="{{ url_for('marmat.configure_page') }}"
+     aria-disabled="{{ 'false' if lexicon_name else 'true' }}">Next: Configure →</a>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+<script>
+(function () {
+  const statusEl = document.getElementById("status");
+  const nextBtn = document.getElementById("next-btn");
+
+  // Tabs
+  const tabBundled = document.getElementById("tab-bundled");
+  const tabUpload = document.getElementById("tab-upload");
+  const panelBundled = document.getElementById("panel-bundled");
+  const panelUpload = document.getElementById("panel-upload");
+  function selectTab(which) {
+    const bundled = which === "bundled";
+    tabBundled.classList.toggle("is-active", bundled);
+    tabUpload.classList.toggle("is-active", !bundled);
+    tabBundled.setAttribute("aria-selected", bundled);
+    tabUpload.setAttribute("aria-selected", !bundled);
+    panelBundled.hidden = !bundled;
+    panelUpload.hidden = bundled;
+  }
+  tabBundled.addEventListener("click", () => selectTab("bundled"));
+  tabUpload.addEventListener("click", () => selectTab("upload"));
+
+  // Bundled list
+  (async function loadBundled() {
+    const list = document.getElementById("bundled-list");
+    try {
+      const data = await MaRMAT.getJSON("/api/lexicons/bundled");
+      if (!data.lexicons.length) { list.innerHTML = '<p class="muted">No bundled lexicons found.</p>'; return; }
+      list.innerHTML = data.lexicons.map((lex) => `
+        <label class="checklist__item" style="border:1px solid var(--gray-200);border-radius:8px;margin-bottom:8px;">
+          <input type="radio" name="bundled" value="${MaRMAT.esc(lex.id)}">
+          <span>
+            <strong>${MaRMAT.esc(lex.name)}</strong>
+            <span class="muted">${lex.termCount != null ? "· " + lex.termCount.toLocaleString() + " terms" : ""}</span>
+          </span>
+        </label>`).join("");
+      list.querySelectorAll('input[name="bundled"]').forEach((radio) => {
+        radio.addEventListener("change", () => selectBundled(radio.value));
+      });
+    } catch (err) {
+      list.innerHTML = `<p class="notice notice--error">${MaRMAT.esc(err.message)}</p>`;
+    }
+  })();
+
+  async function selectBundled(id) {
+    MaRMAT.notice(statusEl, "info", "Loading lexicon…");
+    nextBtn.setAttribute("aria-disabled", "true");
+    try {
+      const data = await MaRMAT.postJSON("/api/lexicon/bundled", { id });
+      onLoaded(data);
+    } catch (err) { MaRMAT.notice(statusEl, "error", err.message); }
+  }
+
+  // Upload
+  const dropzone = document.getElementById("dropzone");
+  const input = document.getElementById("file-input");
+  dropzone.addEventListener("click", () => input.click());
+  dropzone.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); input.click(); } });
+  dropzone.addEventListener("dragover", (e) => { e.preventDefault(); dropzone.classList.add("is-dragover"); });
+  dropzone.addEventListener("dragleave", () => dropzone.classList.remove("is-dragover"));
+  dropzone.addEventListener("drop", (e) => { e.preventDefault(); dropzone.classList.remove("is-dragover"); if (e.dataTransfer.files.length) uploadLex(e.dataTransfer.files[0]); });
+  input.addEventListener("change", () => { if (input.files.length) uploadLex(input.files[0]); });
+
+  async function uploadLex(file) {
+    MaRMAT.notice(statusEl, "info", `Uploading ${file.name}…`);
+    nextBtn.setAttribute("aria-disabled", "true");
+    try {
+      const data = await MaRMAT.uploadFile("/api/lexicon", file, {});
+      onLoaded(data);
+    } catch (err) { MaRMAT.notice(statusEl, "error", err.message); }
+  }
+
+  function onLoaded(data) {
+    statusEl.hidden = true;
+    document.getElementById("lex-name").textContent = data.name;
+    document.getElementById("lex-meta").textContent =
+      `${data.termCount.toLocaleString()} terms · ${data.categories.length} categories`;
+    document.getElementById("lex-info").hidden = false;
+    MaRMAT.renderTable(document.getElementById("preview"), data.preview);
+    document.getElementById("preview-card").hidden = false;
+    nextBtn.setAttribute("aria-disabled", "false");
+  }
+
+  nextBtn.addEventListener("click", (e) => { if (nextBtn.getAttribute("aria-disabled") === "true") e.preventDefault(); });
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Statistics — MaRMAT{% endblock %}
+
+{% block content %}
+<h1 class="page__title">Statistics dashboard</h1>
+<p class="page__lead">
+  An interactive overview of your matching results, rendered with D3.js.
+</p>
+
+<div id="stats-status" class="notice" hidden></div>
+
+<div id="dashboard" hidden>
+  <div class="kpi-grid">
+    <div class="kpi"><div class="kpi__value" id="kpi-total">0</div><div class="kpi__label">Flagged instances</div></div>
+    <div class="kpi"><div class="kpi__value" id="kpi-collections">0</div><div class="kpi__label">Unique collections</div></div>
+    <div class="kpi"><div class="kpi__value" id="kpi-terms">0</div><div class="kpi__label">Unique terms</div></div>
+    <div class="kpi"><div class="kpi__value" id="kpi-category">N/A</div><div class="kpi__label">Top category</div></div>
+    <div class="kpi"><div class="kpi__value" id="kpi-term">N/A</div><div class="kpi__label">Top term</div></div>
+  </div>
+
+  <div class="chart-grid">
+    <div class="chart-card">
+      <h3 class="chart-card__title">Category distribution</h3>
+      <div id="chart-category"></div>
+    </div>
+    <div class="chart-card">
+      <h3 class="chart-card__title">Top 10 most frequent terms</h3>
+      <div id="chart-terms"></div>
+      <div class="legend" id="legend-terms"></div>
+    </div>
+    <div class="chart-card">
+      <h3 class="chart-card__title">Metadata column hit distribution</h3>
+      <div id="chart-columns"></div>
+      <div class="legend" id="legend-columns"></div>
+    </div>
+    <div class="chart-card">
+      <h3 class="chart-card__title">Word cloud</h3>
+      <div id="chart-wordcloud"></div>
+    </div>
+  </div>
+</div>
+
+<div class="actions">
+  <a class="btn btn--ghost" href="{{ url_for('marmat.run_page') }}">← Back to results</a>
+  <a class="btn btn--secondary" href="{{ url_for('marmat.index') }}">Start over</a>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/vendor/d3.v7.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/vendor/d3.layout.cloud.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+<script src="{{ url_for('static', filename='js/charts/common.js') }}"></script>
+<script src="{{ url_for('static', filename='js/charts/categoryBar.js') }}"></script>
+<script src="{{ url_for('static', filename='js/charts/topTermsBar.js') }}"></script>
+<script src="{{ url_for('static', filename='js/charts/columnPie.js') }}"></script>
+<script src="{{ url_for('static', filename='js/charts/wordCloud.js') }}"></script>
+<script src="{{ url_for('static', filename='js/charts/stats.js') }}"></script>
+{% endblock %}
