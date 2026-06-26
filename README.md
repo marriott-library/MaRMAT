@@ -57,11 +57,11 @@ MaRMAT uses specialized lexicons—carefully curated lists of terms—to identif
 
 ### 2.1 Download
 
-**MacOS Users:** Go to [v2.7.0](https://github.com/marriott-library/MaRMAT/releases/tag/v2.7.0) and download `MaRMAT_v2.7.0_MacOS.zip` from Assets.
+**MacOS Users:** Go to [v2.7.0-p](https://github.com/marriott-library/MaRMAT/releases/tag/v2.7.0-p) and download `MaRMAT_v2.7.0-p_MacOS.zip` from Assets.
 
-**Windows Users:** Go to [v2.7.0](https://github.com/marriott-library/MaRMAT/releases/tag/v2.7.0) and download `MaRMAT_v.2.7.0_Windows.zip` from Assets.
+**Windows Users:** Go to [v2.7.0-p](https://github.com/marriott-library/MaRMAT/releases/tag/v2.7.0-p) and download `MaRMAT_v.2.7.0-p_Windows.zip` from Assets.
 
-**Linux Users:** Go to [v2.7.0](https://github.com/marriott-library/MaRMAT/releases/tag/v2.7.0) and download `MaRMAT_v2.7.0_Linux-x64.zip` from Assets.
+**Linux Users:** Go to [v2.7.0-p](https://github.com/marriott-library/MaRMAT/releases/tag/v2.7.0-p) and download `MaRMAT_v2.7.0-p_Linux-x64.zip` from Assets.
 
 ### 2.2 Dependencies
 
@@ -88,7 +88,7 @@ Windows users have three options for installation:
 
 Option 1: 
 1. Unzip the `MaRMAT_v2.7.0_Windows.zip`
-2. Open the MaRMAT_v2-7-0.exe and run program
+2. Open the MaRMAT_v2-7-0-p.exe and run program
 
 Option A:
 1. Unzip the `MaRMAT_v2.7.0_Windows.zip`
@@ -111,7 +111,7 @@ Option B:
 ## 3. Running MaRMAT
 
 ### 3.1 MacOS Users
-1. Download `MaRMAT_v.2.7.0_MacOS.zip` from our [release assets](https://github.com/marriott-library/MaRMAT/releases/tag/v2.7.0).
+1. Download `MaRMAT_v.2.7.0-p_MacOS.zip` from our [release assets](https://github.com/marriott-library/MaRMAT/releases/tag/v2.7.0-p).
 2. Unzip the downloaded folder to a location on your computer, such as your `Desktop` or `Downloads` folder.
 3. Use the `cd` command in `Terminal` to change directories to the unzipped MaRMAT folder. For example, if you unzipped the folder to your Desktop, run:
    ```bash
@@ -123,7 +123,7 @@ Option B:
    ```
 
 ### 3.2 Windows Users
-1. Download `MaRMAT_v2.7.0_Windows.zip` from our [release assets](https://github.com/marriott-library/MaRMAT/releases/tag/v2.7.0).
+1. Download `MaRMAT_v2.7.0-p_Windows.zip` from our [release assets](https://github.com/marriott-library/MaRMAT/releases/tag/v2.7.0-p).
 2. Unzip the downloaded folder to a location on your computer, such as your `Desktop` or `Downloads` folder.
 3. Either run the Marmat_v2-7-0.exe file or install Python and dependencies, run via below steps 4 and 5.
 4. If the necesssary python libraries haven't been installed yet, double-click to `install-dependencies.bat` file.
