@@ -42,6 +42,8 @@ MaRMAT was inspired by [Duke University Libraries Description Audit Tool](https:
 - Custom and pre-curated lexicon support
 - Batch processing of metadata records
 - Exportable results for further analysis or remediation
+- Statistics dashboard on results
+- Data visualizations automatically generated on results
 - Support for user-contributed lexicons
 
 ### 1.2 The Lexicons
