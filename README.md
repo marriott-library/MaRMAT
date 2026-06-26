@@ -90,12 +90,12 @@ Option 1:
 1. Unzip the `MaRMAT_v2.7.0_Windows.zip`
 2. Open the MaRMAT_v2-7-0-p.exe and run program
 
-Option A:
-1. Unzip the `MaRMAT_v2.7.0_Windows.zip`
+Option 2:
+1. Unzip the `MaRMAT_v2.7.0-p_Windows.zip`
 2. Double-click on the `install-dependencies.bat` file
 3. Double-click the run-marmat.bat or go to src folder and double click main.py file
 
-Option B:
+Option 3:
 1. Open **Command Prompt** (search for `cmd`) or **PowerShell**
 2. Run the following command:
    ```bash
@@ -115,7 +115,7 @@ Option B:
 2. Unzip the downloaded folder to a location on your computer, such as your `Desktop` or `Downloads` folder.
 3. Use the `cd` command in `Terminal` to change directories to the unzipped MaRMAT folder. For example, if you unzipped the folder to your Desktop, run:
    ```bash
-   cd Desktop/MaRMAT_v.2.7.0_MacOS/src
+   cd Desktop/MaRMAT_v.2.7.0-p_MacOS/src
    ```
 4. Then run the following command to launch the MaRMAT user interface:
    ```bash
