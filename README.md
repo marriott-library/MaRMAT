@@ -67,7 +67,7 @@ MaRMAT uses specialized lexicons—carefully curated lists of terms—to identif
 
 ### 2.2 Dependencies
 
-To run MaRMAT, you will need **Python 3** installed on your computer. If Python is not installed, you can download it here:
+If you are not running the Windows executable file or Mac application, you will need to install dependences in order to operate MaRMAT on your computer. To run MaRMAT, you will need **Python 3** installed on your computer. If Python is not installed, you can download it here:
    - [Python for MacOS](https://www.python.org/downloads/mac-osx/)
    - [Python for Windows](https://www.python.org/downloads/windows/)
 
@@ -86,25 +86,21 @@ For the Statistics dashboard visualizations, install these optional libraries as
   
 **Windows:**
 
-Windows users have three options for installation:
+There are a few ways to install the required dependences for Windows PC users. 
 
-Option 1: 
-1. Unzip the `MaRMAT_v2.7.0_Windows.zip`
-2. Open the MaRMAT_v2-7-0-p.exe and run program
-
-Option 2:
+Option 1:
 1. Unzip the `MaRMAT_v2.7.0-p_Windows.zip`
 2. Double-click on the `install-dependencies.bat` file
 3. Double-click the run-marmat.bat or go to src folder and double click main.py file
 
-Option 3:
+Option 2:
 1. Open **Command Prompt** (search for `cmd`) or **PowerShell**
 2. Run the following command:
    ```bash
    py -m pip install pandas PyQt6 matplotlib wordcloud
    ```
 
-### 2.3 Troubleshooting 
+### 2.3 Troubleshooting Dependicies 
 
 1. If you see a permissions error installing `pandas` and `PyQt6` on **MacOS**, try running the command with elevated privileges:
    ```bash
@@ -113,6 +109,15 @@ Option 3:
 ## 3. Running MaRMAT
 
 ### 3.1 MacOS Users
+
+Option 1: Install Application
+1. Download `MaRMAT_v.2.7.0-p_MacOS.zip` from our [release assets](https://github.com/marriott-library/MaRMAT/releases/tag/v2.7.0-p).
+2. Open MaRMAT.zip and extract files.
+3. Open and Run MaRMAT.app
+
+Troubleshooting Option 1: If you recieve a message "MaRMAT Not Opened" due to verification issues, go to System Settings --> Privacy & Secuirty --> Security, you should see a message saying "MaRMAT was blocked from use because it is not from an identified developer," click Open Anyway.
+
+Option 2: Use via Python
 1. Download `MaRMAT_v.2.7.0-p_MacOS.zip` from our [release assets](https://github.com/marriott-library/MaRMAT/releases/tag/v2.7.0-p).
 2. Unzip the downloaded folder to a location on your computer, such as your `Desktop` or `Downloads` folder.
 3. Use the `cd` command in `Terminal` to change directories to the unzipped MaRMAT folder. For example, if you unzipped the folder to your Desktop, run:
@@ -127,7 +132,7 @@ Option 3:
 ### 3.2 Windows Users
 1. Download `MaRMAT_v2.7.0-p_Windows.zip` from our [release assets](https://github.com/marriott-library/MaRMAT/releases/tag/v2.7.0-p).
 2. Unzip the downloaded folder to a location on your computer, such as your `Desktop` or `Downloads` folder.
-3. Either run the Marmat_v2-7-0.exe file or install Python and dependencies, run via below steps 4 and 5.
+3. Either run the Marmat_v2-7-0-p.exe file or install Python and dependencies, run via below steps 4 and 5.
 4. If the necesssary python libraries haven't been installed yet, double-click to `install-dependencies.bat` file.
 5. Open MaRMAT by double-clicking the `run-marmat.bat` file.
 
