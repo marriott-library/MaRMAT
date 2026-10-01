@@ -1,0 +1,6 @@
+pandas
+PyQt6
+matplotlib
+wordcloud
+beautifulsoup4
+lxml

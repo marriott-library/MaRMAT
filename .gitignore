@@ -1,4 +1,8 @@
 __pycache__/
+.venv/
+.env.local
+build-local/
+release/
 MaRMAT.spec
 build/MaRMAT/Analysis-00.toc
 build/MaRMAT/base_library.zip
@@ -31,3 +35,11 @@ build/MaRMAT-min/localpycs/pyimod03_ctypes.pyc
 build/MaRMAT-min/localpycs/pyimod04_pywin32.pyc
 build/MaRMAT-min/localpycs/struct.pyc
 dist/MaRMAT-min.exe
+
+# Local developer notes
+SETUP_NOTES.md
+local-docs/
+local-notes/
+private-docs/
+notes-local/
+*.local.md

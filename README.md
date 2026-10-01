@@ -22,6 +22,8 @@ The Marriott Reparative Metadata Assessment Tool (MaRMAT) is an open-source appl
 
    3.2 [Windows Users](#32-windows-users)
 
+   3.3 [Developer Builds](#33-developer-builds)
+
 4. [Tips](#4-tips)
 
 5. [Credits and Acknowledgments](#5-credits-and-acknowledgments)
@@ -136,6 +138,37 @@ Option 2: Use via Python
 3. Either run the Marmat_v2-7-0-p.exe file or install Python and dependencies, run via below steps 4 and 5.
 4. If the necesssary python libraries haven't been installed yet, double-click to `install-dependencies.bat` file.
 5. Open MaRMAT by double-clicking the `run-marmat.bat` file.
+
+### 3.3 Developer Builds
+
+Developers who want to run or package MaRMAT from source can use the scripts in `scripts/`.
+
+First, create local script settings and install the development dependencies:
+
+```bash
+cp .env.local.example .env.local
+./scripts/setup-dev.sh
+```
+
+To run MaRMAT directly from source:
+
+```bash
+./scripts/run-source.sh
+```
+
+To build a local macOS app bundle and release zip:
+
+```bash
+./scripts/build-macos.sh
+```
+
+The macOS build output is written to `build-local/dist/MaRMAT.app`, and the zip archive is written to `release/MaRMAT-local-macOS.zip`. To smoke test the packaged app:
+
+```bash
+./scripts/smoke-test-macos.sh
+```
+
+These scripts are intended for local developer builds. Public release distribution may still require project-specific assets, signing, notarization, and platform-specific packaging checks.
 
 ## 4. Tips
 - Ensure metadata files can be in a TSV or CSV format.
